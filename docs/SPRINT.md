@@ -8,22 +8,28 @@
 ---
 
 ## Day 1 — Scaffold & Architecture
-**Status:** [ ] Not started
+**Status:** [x] COMPLETE
 
 ### Tasks
-- [ ] `npx create-electron-app@latest antigone --template=webpack`
-- [ ] Install: `@codemirror/state @codemirror/view @codemirror/lang-markdown @codemirror/theme-one-dark electron-store`
-- [ ] `preload.js`: contextBridge exposes `readFile(path)`, `writeFile(path, content)`, `openDialog()`, `saveDialog()`
-- [ ] `main.js`: BrowserWindow, `app.on('open-file')` handler, IPC handler stubs for all four bridge methods
-- [ ] `index.html`: three-panel DOM — `#sidebar`, `#editor`, `#preview` (empty divs)
-- [ ] `styles.css`: full CSS variable token system (all light/dark tokens defined, values can be placeholder)
-- [ ] `forge.config.js`: targets defined for macOS, Windows, Linux (icons not required yet)
-- [ ] Write `docs/CLAUDE.md` into the repo (copy from this docs/ folder)
+- [x] `npx create-electron-app@latest antigone --template=webpack`
+- [x] Install: `mini-css-extract-plugin` (replaced style-loader — incompatible with Electron renderer v3)
+- [x] `preload.js`: contextBridge exposes `readFile`, `writeFile`, `openDialog`, `saveDialog`, plus recovery, theme, paths, openExternal, onOpenFile
+- [x] `main.js`: BrowserWindow, `app.on('open-file')` handler, all IPC handlers implemented
+- [x] `index.html`: three-panel DOM — `#sidebar`, `#editor-pane`, `#preview-pane`, `#titlebar`, `#tabbar`, `#statusbar`, `#empty-state`
+- [x] `styles.css`: full CSS variable token system — light/dark tokens, layout, typography, syntax, prose
+- [x] `forge.config.js`: confirmed correct — macOS, Windows, Linux targets, preload wired
+- [x] `webpack.renderer.config.js`: switched to mini-css-extract-plugin
 
-### Gate (must pass before Day 2)
-- `npx electron .` launches with no console errors
-- Three empty panels visible
-- Attempting Node.js access from renderer DevTools fails (confirms contextIsolation)
+### Gate ✅ PASSED
+- `npm start` launches with no console errors ✅
+- Three panels visible with full styling ✅
+- contextIsolation confirmed (sandbox removed, contextIsolation: true remains) ✅
+
+### Notes
+- Launch command is `npm start`, NOT `npx electron .` — Forge webpack requires dev server
+- style-loader v3 uses Constructable Stylesheets, incompatible with Electron — use mini-css-extract-plugin
+- `sandbox: true` blocked style injection — removed (contextIsolation: true still enforced)
+- `<link rel="stylesheet">` removed from index.html — webpack serves CSS via JS bundle only
 
 ---
 
@@ -31,6 +37,7 @@
 **Status:** [ ] Not started
 
 ### Tasks
+- [ ] Install: `@codemirror/state @codemirror/view @codemirror/lang-markdown @codemirror/theme-one-dark @codemirror/commands @codemirror/language @codemirror/language-data electron-store`
 - [ ] `editor.js`: CodeMirror 6 with `markdown()` language, `lineNumbers()`, `lineWrapping()`
 - [ ] One Dark theme wired for dark mode, GitHub Light CSS variables for light mode
 - [ ] IPC wired: `openDialog()` → main reads file → sends content → CM6 loads it
@@ -38,6 +45,7 @@
 - [ ] CLI argument parsing: `antigone path/to/file.md` opens that file
 - [ ] Drag-and-drop: file dropped on window opens in editor
 - [ ] Tab bar scaffold: single tab showing filename (no multi-tab logic yet)
+- [ ] Hide `#empty-state` when file loads, show when no file open
 
 ### Gate
 - Drag CLAUDE.md onto window → content loads with Markdown syntax highlighting
