@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Electron Forge build outputs
+dist/
+out/
+.webpack/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor artifacts
+*.tmp
+*.swp
+*.swo
+*~
+
+# Antigone app data — never commit these
+*.antigone-recovery-*
+.antigone-dict
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Coverage
+coverage/
+
+# IDE
+.vscode/settings.json
+.idea/
+*.iml
