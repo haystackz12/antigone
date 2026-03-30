@@ -10,6 +10,7 @@ const editorSave = require('./editor-save.js');
 const focus      = require('./focus.js');
 const wordgoal   = require('./wordgoal.js');
 const toolbar    = require('./toolbar.js');
+const tags       = require('./tags.js');
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Apply stored theme before editor mounts to prevent flash
@@ -23,6 +24,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     getCurrentPath: require('./editor.js').getCurrentPath,
   });
   toolbar.init();
+  tags.configure({ getView: require('./editor.js').getView });
+  tags.init();
 
   // Apply CM6 theme to match
   const isDark = document.documentElement.classList.contains('dark');

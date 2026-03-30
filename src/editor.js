@@ -14,9 +14,12 @@ const { defaultKeymap, history,
 const { markdown, markdownLanguage }         = require('@codemirror/lang-markdown');
 const { languages }                          = require('@codemirror/language-data');
 const { oneDark }                            = require('@codemirror/theme-one-dark');
+const { searchKeymap, highlightSelectionMatches } = require('@codemirror/search');
+const { autocompletion }                     = require('@codemirror/autocomplete');
 const { inlineRenderPlugin }                 = require('./inline-render.js');
 const editorSave                             = require('./editor-save.js');
 const toolbar                                = require('./toolbar.js');
+const { scanTags }                           = require('./tags.js');
 
 // ─── Module state ─────────────────────────────────────────────────────────────
 let view            = null;
@@ -49,6 +52,20 @@ function isDarkMode() {
   return document.documentElement.classList.contains('theme-dark');
 }
 
+// ─── Tag autocomplete ────────────────────────────────────────────────────────
+function tagCompletion(context) {
+  const word = context.matchBefore(/#[\w-]*/);
+  if (!word || word.from === word.to) return null;
+  const text = context.state.doc.toString();
+  const tags = scanTags(text);
+  const options = [...tags.keys()].map(tag => ({
+    label: `#${tag}`,
+    type: 'keyword',
+  }));
+  if (options.length === 0) return null;
+  return { from: word.from, options, validFor: /#[\w-]*/ };
+}
+
 function buildExtensions() {
   return [
     history(),
@@ -61,6 +78,7 @@ function buildExtensions() {
     keymap.of([
       ...defaultKeymap,
       ...historyKeymap,
+      ...searchKeymap,
       indentWithTab,
       { key: 'Mod-o',       run: () => { openFileDialog(); return true; } },
       { key: 'Mod-s',       run: () => { editorSave.saveFile(currentFilePath); return true; } },
@@ -69,6 +87,8 @@ function buildExtensions() {
       { key: 'Mod-i',       run: () => toolbar.wrapSelection('*') },
       { key: 'Mod-k',       run: () => toolbar.insertLink() },
     ]),
+    highlightSelectionMatches(),
+    autocompletion({ override: [tagCompletion] }),
     inlineRenderPlugin,
     themeCompartment.of(isDarkMode() ? oneDark : githubLightTheme),
     EditorView.updateListener.of(update => {

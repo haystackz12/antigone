@@ -1318,3 +1318,69 @@ body.drag-over #editor-pane::after {
 #goal-input-overlay button:hover {
   background: var(--color-surface-3, #dedbd3);
 }
+
+/* ── Tag sidebar ────────────────────────────────────────────────────────── */
+
+.tag-list {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-2, 8px);
+}
+.tag-item {
+  margin-bottom: 2px;
+}
+.tag-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--color-accent-text, #7c5c3e);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+}
+.tag-btn:hover {
+  background: var(--color-surface-3, #dedbd3);
+}
+.tag-count {
+  font-size: 11px;
+  color: var(--color-text-tertiary, #7a7670);
+  margin-left: 8px;
+}
+
+/* ── CM6 search panel overrides ─────────────────────────────────────────── */
+
+.cm-panels {
+  background: var(--color-surface-1, #f0ede8);
+  border-bottom: 1px solid var(--color-border, #d5d1c8);
+}
+.cm-panels input {
+  border: 1px solid var(--color-border, #d5d1c8);
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 13px;
+}
+.cm-panels button {
+  border: 1px solid var(--color-border, #d5d1c8);
+  border-radius: 3px;
+  padding: 2px 8px;
+  background: var(--color-surface-2, #e8e4dd);
+  cursor: pointer;
+  font-size: 12px;
+}
+.cm-panels button:hover {
+  background: var(--color-surface-3, #dedbd3);
+}
+.cm-selectionMatch {
+  background: color-mix(in srgb, var(--color-accent, #7c5c3e) 15%, transparent);
+}
+.cm-searchMatch {
+  background: color-mix(in srgb, var(--color-warning, #a06c2a) 25%, transparent);
+}
+.cm-searchMatch-selected {
+  background: color-mix(in srgb, var(--color-accent, #7c5c3e) 30%, transparent);
+}
