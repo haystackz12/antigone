@@ -6,6 +6,19 @@ None.
 
 ---
 
+## Resolved — Day 7 (batch 2)
+
+### BUG-012 — Dark mode editor content left-justified and full-width
+- **Found:** 2026-03-30, Day 7 of Sprint 2
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** In dark mode, editor content stretches full width with no centering or margins. Light mode correctly shows centered content at max 72ch width.
+- **Root cause:** The CM6 layout styles (`maxWidth: '72ch'`, `margin: '0 auto'`, scroller font/line-height, gutter styles) were defined inside `githubLightBase` — the light-only CM6 JS theme. When dark mode activates, the theme compartment switches to `oneDark` which has its own defaults (full width), discarding all the light theme's layout rules. Layout should be theme-independent.
+- **Fix:** Extracted all layout/typography styles into a new `baseEditorTheme` that is applied as a standalone extension (outside the theme compartment). The theme compartment now only switches color themes. `baseEditorTheme` provides centering, max-width, font, line-height, gutter styles, and caret color consistently in both light and dark modes.
+- **Files involved:** `src/editor.js`
+
+---
+
 ## Resolved — Day 7
 
 ### BUG-010 — ⌘H closes the app (macOS Hide Window conflict)

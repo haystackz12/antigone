@@ -27,8 +27,8 @@ let currentFilePath = null;
 let isDirty         = false;
 const themeCompartment = new Compartment();
 
-// ─── GitHub Light theme ───────────────────────────────────────────────────────
-const githubLightBase = EditorView.theme({
+// ─── Base editor theme (layout + typography, always applied in both themes) ──
+const baseEditorTheme = EditorView.theme({
   '&': { backgroundColor: 'var(--bg-editor)', color: 'var(--fg-primary)' },
   '.cm-scroller': { overflow: 'auto', fontFamily: 'var(--font-editor)', lineHeight: '1.75' },
   '.cm-content': { caretColor: 'var(--fg-primary)', padding: '20px 0', maxWidth: '72ch', margin: '0 auto' },
@@ -43,9 +43,8 @@ const githubLightBase = EditorView.theme({
   '.cm-foldPlaceholder':  { backgroundColor: 'transparent', border: 'none' },
 });
 
-
-// Light theme — syntax highlighting added in Day 3 via inline-render.js
-const githubLightTheme = githubLightBase;
+// Light theme — empty (colors come from CSS variables, layout from baseEditorTheme)
+const githubLightTheme = EditorView.theme({});
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function isDarkMode() {
@@ -92,6 +91,7 @@ function buildExtensions() {
     highlightSelectionMatches(),
     autocompletion({ override: [tagCompletion] }),
     inlineRenderPlugin,
+    baseEditorTheme,
     themeCompartment.of(isDarkMode() ? oneDark : githubLightTheme),
     EditorView.updateListener.of(update => {
       if (update.docChanged) onDocChange(update.state.doc.toString());
