@@ -28,6 +28,26 @@ None.
 - **Fix:** Changed selectors to `.tab.tab--active` and `.tab-title` to match index.html.
 - **Files involved:** `src/editor.js`
 
+### BUG-003B — File-changed banner fires on every save (self-watch loop)
+- **Found:** 2026-03-30, Day 4 of Sprint 1
+- **Severity:** High
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Saving via ⌘S or auto-save triggers the "File changed externally" banner every time, because fs.watch detects the app's own write.
+- **Reproduction:** Open a file, type, press ⌘S → banner appears immediately.
+- **Root cause:** No suppression window after saves — fs.watch fires on every file write including the app's own atomic rename, and `onFileChanged` handler showed the banner unconditionally.
+- **Fix:** Added `suppressWatchUntil` timestamp in editor-save.js. Set to `Date.now() + 1000` after a successful save. `onFileChanged` handler returns early if within the suppression window.
+- **Files involved:** `src/editor-save.js`
+
+### BUG-002B — Dirty indicator dot never appears in tab
+- **Found:** 2026-03-30, Day 4 of Sprint 1
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Typing in editor does not show the unsaved dot indicator in the tab.
+- **Reproduction:** Open a file, type any character — no dot appears in the tab.
+- **Root cause:** `updateTabBar()` was prefixing tab title text with `●` character, but the actual DOM uses a separate `<span class="tab-dot">` element that becomes visible via CSS `opacity: 1` when the parent tab has the `is-unsaved` class. The text prefix was invisible because the dot element was overlaid/separate.
+- **Fix:** Changed `updateTabBar()` to toggle `.is-unsaved` class on the tab element via `tab.classList.toggle('is-unsaved', dirty)` instead of text-prefixing. This activates the existing `.tab.is-unsaved .tab-dot { opacity: 1 }` CSS rule.
+- **Files involved:** `src/editor.js`
+
 ### BUG-004 — Word count stuck at 0 words
 - **Found:** 2026-03-30, Day 4 of Sprint 1
 - **Severity:** Low

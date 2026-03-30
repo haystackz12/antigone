@@ -145,7 +145,8 @@ function updateTabBar(filename, dirty) {
   const tab = document.querySelector('.tab.tab--active');
   if (!tab) return;
   const label = tab.querySelector('.tab-title') || tab;
-  label.textContent = (dirty ? '● ' : '') + filename;
+  label.textContent = filename;
+  tab.classList.toggle('is-unsaved', dirty);
   tab.title = currentFilePath || filename;
 }
 

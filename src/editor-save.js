@@ -6,9 +6,10 @@
 'use strict';
 
 // ─── Module state ─────────────────────────────────────────────────────────────
-let autoSaveTimer   = null;
-let recoveryId      = null;
-let recoveryTimer   = null;
+let autoSaveTimer      = null;
+let recoveryId         = null;
+let recoveryTimer      = null;
+let suppressWatchUntil = 0;
 
 // ─── Accessors (set by editor.js via configure()) ─────────────────────────────
 let getView         = null;
@@ -41,6 +42,7 @@ async function saveFile(targetPath) {
   const content = view.state.doc.toString();
   const result  = await window.api.writeFile(targetPath, content);
   if (result.ok) {
+    suppressWatchUntil = Date.now() + 1000; // suppress self-triggered watch for 1s
     setCurrentPath(targetPath);
     setDirty(false);
     updateTabBar(fileNameFromPath(targetPath), false);
@@ -156,9 +158,9 @@ async function checkRecovery() {
 function setupFileChangedListener() {
   window.api.onFileChanged((changedPath) => {
     const currentPath = getCurrentPath();
-    if (changedPath === currentPath) {
-      showFileChangedBanner();
-    }
+    if (changedPath !== currentPath) return;
+    if (Date.now() < suppressWatchUntil) return; // ignore self-triggered watch
+    showFileChangedBanner();
   });
 }
 
