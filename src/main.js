@@ -271,6 +271,27 @@ ipcMain.handle('delete-recovery', async (_event, tabId) => {
   return { ok: true };
 });
 
+// ── IPC: Save image (clipboard paste) ────────────────────────────────────────
+// Saves image data to an assets/ directory adjacent to the current file.
+// Returns the relative path for Markdown reference.
+
+ipcMain.handle('save-image', async (_event, filePath, filename, dataArray) => {
+  if (!filePath || !filename || !dataArray) {
+    return { ok: false, error: 'save-image: missing arguments' };
+  }
+  const dir = path.dirname(path.resolve(filePath));
+  const assetsDir = path.join(dir, 'assets');
+  const imagePath = path.join(assetsDir, filename);
+
+  try {
+    await fs.promises.mkdir(assetsDir, { recursive: true });
+    await fs.promises.writeFile(imagePath, Buffer.from(dataArray));
+    return { ok: true, path: imagePath, relativePath: `./assets/${filename}` };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+});
+
 // ── IPC: External link ───────────────────────────────────────────────────────
 // Renderer sends all external URL clicks here. Never navigates the editor pane.
 

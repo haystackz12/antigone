@@ -16,6 +16,7 @@ const { languages }                          = require('@codemirror/language-dat
 const { oneDark }                            = require('@codemirror/theme-one-dark');
 const { inlineRenderPlugin }                 = require('./inline-render.js');
 const editorSave                             = require('./editor-save.js');
+const toolbar                                = require('./toolbar.js');
 
 // ─── Module state ─────────────────────────────────────────────────────────────
 let view            = null;
@@ -63,6 +64,9 @@ function buildExtensions() {
       { key: 'Mod-o',       run: () => { openFileDialog(); return true; } },
       { key: 'Mod-s',       run: () => { editorSave.saveFile(currentFilePath); return true; } },
       { key: 'Mod-Shift-s', run: () => { editorSave.saveFileAs(); return true; } },
+      { key: 'Mod-b',       run: () => toolbar.wrapSelection('**') },
+      { key: 'Mod-i',       run: () => toolbar.wrapSelection('_') },
+      { key: 'Mod-k',       run: () => toolbar.insertLink() },
     ]),
     inlineRenderPlugin,
     themeCompartment.of(isDarkMode() ? oneDark : githubLightTheme),

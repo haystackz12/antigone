@@ -108,6 +108,23 @@ contextBridge.exposeInMainWorld('api', {
   listRecovery: () =>
     ipcRenderer.invoke('list-recovery'),
 
+  // ── Image save (clipboard paste) ───────────────────────────────────────────
+
+  /**
+   * Save image data to assets/ directory adjacent to the current file.
+   * @param {string} filePath    Path of the current file (for directory context).
+   * @param {string} filename    Target filename (e.g., 'image-1234.png').
+   * @param {number[]} dataArray Image data as a byte array.
+   * @returns {Promise<{ok: boolean, path?: string, relativePath?: string, error?: string}>}
+   */
+  saveImage: (filePath, filename, dataArray) =>
+    ipcRenderer.invoke(
+      'save-image',
+      requireString(filePath, 'filePath'),
+      requireString(filename, 'filename'),
+      dataArray,
+    ),
+
   // ── Shell ──────────────────────────────────────────────────────────────────
 
   /**
