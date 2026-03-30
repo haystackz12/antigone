@@ -1,49 +1,53 @@
-# NEXT_SESSION.md — Day 7 Kick-off Prompt
+# NEXT_SESSION.md — Day 8 Kick-off Prompt
 
 We are working on the Antigone project — a cross-platform Markdown editor built on
 Electron + CodeMirror 6. Repo: haystackz12/antigone | Path: ~/Projects/antigone
 
-Today is Sprint 2, Day 7 — Tags + Find/Replace + Spell Check.
+Today is Sprint 2, Day 8 — Multi-tab + TOC + Split View.
 
 ## Step 0 — Read these files before touching any code
 1. docs/CLAUDE.md
 2. docs/SESSION_STATE.md
 3. docs/SPRINT.md
 4. docs/DECISIONS.md
-5. docs/features/EDITOR.md
 
 ---
 
-## Day 7 Tasks (from SPRINT.md)
+## Day 8 Tasks (from SPRINT.md)
 
-### Task 1 — Tag indexing + sidebar
-- Scan document for `#tag` patterns (word boundary, not inside code blocks)
-- Build tag index, populate `#sidebar-content [data-section="tags"]`
-- Click tag in sidebar to jump to its location in the editor
-- Update tags on every document change (debounced)
+### Task 1 — Tab state management
+- Open, close, switch tabs
+- Each tab has its own document state, file path, dirty flag
+- + button opens a new tab (not replaces current)
+- Close tab button with unsaved guard
 
-### Task 2 — Tag autocomplete
-- While typing `#`, show autocomplete dropdown with known tags
-- Select from dropdown to complete the tag
+### Task 2 — Session restore
+- Remember open tabs on quit (store in electron-store)
+- Restore tab state on relaunch
 
-### Task 3 — Find and Replace (Cmd+F / Cmd+H)
-- Cmd+F opens find bar overlay at top of editor pane
-- Cmd+H opens find and replace bar
-- Next/Previous navigation, match count, case sensitivity toggle
-- CM6 has built-in @codemirror/search — wire it
+### Task 3 — TOC (Table of Contents)
+- Generate heading list from document
+- Populate the TOC sidebar section
+- Click heading in TOC to scroll editor to that position
+- Update on document change (debounced)
 
-### Task 4 — Spell check
-- OS spellcheck bridge via Electron's built-in webFrame spellcheck
-- Custom dictionary IPC — add/remove words from .antigone-dict (per-project, opt-in)
+### Task 4 — Split view with preview
+- Install marked.js + DOMPurify
+- Create preview.js — render Markdown to HTML in preview pane
+- Wire split view: editor changes update preview
+- Replace preview placeholder with live content
+
+### Task 5 — Enable preview-only toolbar button
+- Remove disabled attribute from preview-only button (DEC-021 revisit)
 
 ---
 
 ## Gate
-- Type `#mytag` in document, tag appears in sidebar
-- Click tag in sidebar, cursor jumps to tag
-- Cmd+F opens search, finds matches with highlighting
-- Cmd+H opens replace, replacements work
-- Misspelled words show red underline
+- Open 3 files in 3 tabs, switch between them
+- Close app, reopen — same tabs restored
+- TOC shows headings, clicking scrolls editor
+- Split view renders live Markdown preview
+- Preview-only mode shows rendered Markdown
 
 ---
 
@@ -52,9 +56,8 @@ Today is Sprint 2, Day 7 — Tags + Find/Replace + Spell Check.
 - 400-line file cap — split files if they go over
 - Show planned file changes before making them
 - All app data to `~/Library/Application Support/Antigone/` — never to source dirs
-- Recovery files to `os.tmpdir()` — never adjacent to source files
 
 ---
 
 ## End of session
-Run docs/closing_instructions.md top to bottom. Generate NEXT_SESSION.md for Day 8.
+Run docs/closing_instructions.md top to bottom. Generate NEXT_SESSION.md for Day 9.

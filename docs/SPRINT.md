@@ -33,20 +33,27 @@
 ---
 
 ## Day 7 — Tags + Find/Replace + Spell Check
-**Status:** [ ] Not started
+**Status:** [x] COMPLETE — 2026-03-30
 
 ### Tasks
-- [ ] #tag indexing: scan document for `#tag` patterns, build index
-- [ ] Tag sidebar: display tags, click to jump
-- [ ] Tag autocomplete in editor
-- [ ] ⌘F / ⌘H: find and replace UI
-- [ ] OS spellcheck bridge + custom dictionary IPC
+- [x] `tags.js`: scans document for `#tag` patterns (regex: `(?:^|\s)#([a-zA-Z][\w-]*)`) with 300ms debounce
+- [x] Tag sidebar: alphabetically sorted tag list with occurrence counts, click-to-jump
+- [x] Sidebar tab switching: click Files/Tags/TOC tabs to show/hide sections
+- [x] Tag autocomplete: CM6 `autocompletion()` with custom `tagCompletion()` source — triggers on `#` prefix
+- [x] ⌘F / ⌘H: `@codemirror/search` wired via `searchKeymap` + `highlightSelectionMatches()`
+- [x] Spell check: Electron's built-in `spellcheck: true` already active — OS spell checker underlines misspelled words. Custom dictionary IPC deferred to later sprint.
 
-### Gate
-- Type `#mytag` → appears in sidebar
-- Click tag in sidebar → cursor jumps to tag location
-- ⌘F opens find bar, searches work
-- ⌘H opens find/replace, replacements work
+### Gate ✅ PASSED
+- Type `#mytag` → appears in sidebar ✅
+- Click tag in sidebar → cursor jumps to tag location ✅
+- ⌘F opens find bar, searches work ✅
+- ⌘H opens find/replace, replacements work ✅
+- Misspelled words show red underline ✅
+
+### Notes
+- Tag autocomplete scans the full document on each completion request — acceptable for files under 150K chars
+- Sidebar tab switching was not previously wired — added in tags.js
+- Custom dictionary (.antigone-dict) IPC deferred — core OS spell check works without it
 
 ---
 
