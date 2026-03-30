@@ -50,3 +50,25 @@
 **Decision:** Tag index is a sqlite/JSON database in the OS user data directory, built by scanning open files.
 **Why:** Embedding a tag database in each file would require modifying source files to add metadata — violating the principle that Antigone edits what you give it without adding hidden state. The index is rebuilt from file content on demand.
 **Trade-off:** Tag index can go stale if files are modified outside Antigone. Mitigated by rebuilding on file open.
+
+## DEC-011 — Explicit grid-column placement for workspace children (BUG-001 fix)
+**Decision:** All four `#workspace` children (`#sidebar`, `#editor-pane`, `#split-resize`, `#preview-pane`) have explicit `grid-column` CSS rather than relying on auto-placement.
+**Why:** The workspace grid defines 5 columns (sidebar, sidebar-gutter, editor, split-gutter, preview) but only 4 DOM children exist — `#sidebar-resize` is inside `#sidebar`, not a direct grid child. CSS auto-placement shifted every element one column left, putting `#editor-pane` in a 5px gutter column with zero usable width. `#sidebar` now spans columns 1–2, absorbing its internal resize handle's gutter.
+**Date:** 2026-03-29
+
+## DEC-012 — Inline rendering via collect-sort-build pattern
+**Decision:** The `buildDecorations()` function in `inline-render.js` collects all decorations into an array of `{ from, to, deco }` tuples, sorts by position, then passes to `Decoration.set()` with `sort: true`.
+**Why:** CM6's `RangeSetBuilder` requires decorations in strict document order. Walking the Lezer syntax tree yields nodes in tree order (parents before children), but decorations for marker-hiding (`Decoration.replace`) on child nodes and content-styling (`Decoration.mark`) on parent ranges can interleave in position order. Collecting and sorting avoids subtle ordering bugs and makes the code straightforward.
+**Trade-off:** One extra sort pass per viewport update. Negligible for visible-range-scoped decoration sets.
+**Date:** 2026-03-29
+
+## DEC-013 — Cursor-line exclusion at line granularity
+**Decision:** Inline rendering excludes the entire line the cursor is on, not just the specific syntax node at the cursor position.
+**Why:** Line-level exclusion is the standard Typora-style behavior users expect. It reveals all raw syntax on the active line so the user can see and edit markers in context. Token-level exclusion would leave some markers hidden on the same line, creating a confusing mixed state.
+**Date:** 2026-03-29
+
+## DEC-014 — preview.js deferred to Sprint 2
+**Decision:** The `preview.js` module (marked.js + DOMPurify pipeline) is not created in Sprint 1.
+**Why:** The preview pane is not wired for live updates until Sprint 2 (split-view, scroll sync). Installing marked.js and DOMPurify now would add unused dependencies. The `inline-render.js` decoration layer handles all visual rendering in Sprint 1.
+**Revisit trigger:** Sprint 2, Day 8 (split-view implementation).
+**Date:** 2026-03-29

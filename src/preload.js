@@ -12,7 +12,7 @@
 //   Validate all arguments before forwarding — renderer input is untrusted.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, webUtils } = require('electron');
 
 // ── Type guards ──────────────────────────────────────────────────────────────
 
@@ -111,6 +111,20 @@ contextBridge.exposeInMainWorld('api', {
    */
   openExternal: (url) =>
     ipcRenderer.invoke('open-external', requireString(url, 'url')),
+
+  // ── File path resolution ───────────────────────────────────────────────────
+
+  /**
+   * Resolve a File object (from drag-and-drop) to an absolute path.
+   * file.path was removed in Electron 20+. webUtils.getPathForFile() is the
+   * official replacement and works with contextIsolation: true.
+   * @param {File} file  A File object from a drop event dataTransfer.
+   * @returns {string}   Absolute path, or '' if resolution fails.
+   */
+  getPathForFile: (file) => {
+    try { return webUtils.getPathForFile(file) ?? ''; }
+    catch { return ''; }
+  },
 
   // ── Theme ──────────────────────────────────────────────────────────────────
 

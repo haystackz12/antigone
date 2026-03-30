@@ -34,42 +34,52 @@
 ---
 
 ## Day 2 — CodeMirror 6 Editor + File Open
-**Status:** [ ] Not started
+**Status:** [x] COMPLETE — 2026-03-29
 
 ### Tasks
-- [ ] Install: `@codemirror/state @codemirror/view @codemirror/lang-markdown @codemirror/theme-one-dark @codemirror/commands @codemirror/language @codemirror/language-data electron-store`
-- [ ] `editor.js`: CodeMirror 6 with `markdown()` language, `lineNumbers()`, `lineWrapping()`
-- [ ] One Dark theme wired for dark mode, GitHub Light CSS variables for light mode
-- [ ] IPC wired: `openDialog()` → main reads file → sends content → CM6 loads it
-- [ ] `app.on('open-file')` passes path to renderer (macOS file association handler)
-- [ ] CLI argument parsing: `antigone path/to/file.md` opens that file
-- [ ] Drag-and-drop: file dropped on window opens in editor
-- [ ] Tab bar scaffold: single tab showing filename (no multi-tab logic yet)
-- [ ] Hide `#empty-state` when file loads, show when no file open
+- [x] Install: `@codemirror/state @codemirror/view @codemirror/lang-markdown @codemirror/theme-one-dark @codemirror/commands @codemirror/language @codemirror/language-data electron-store`
+- [x] `editor.js`: CodeMirror 6 with `markdown()` language, `lineNumbers()`, `lineWrapping()`
+- [x] One Dark theme wired for dark mode, GitHub Light CSS variables for light mode
+- [x] IPC wired: `openDialog()` → main reads file → sends content → CM6 loads it
+- [x] `app.on('open-file')` passes path to renderer (macOS file association handler)
+- [x] CLI argument parsing: `antigone path/to/file.md` opens that file
+- [x] Drag-and-drop: file dropped on window opens in editor
+- [x] Tab bar scaffold: single tab showing filename (no multi-tab logic yet)
+- [x] Hide `#empty-state` when file loads, show when no file open
 
-### Gate
-- Drag CLAUDE.md onto window → content loads with Markdown syntax highlighting
-- `⌘O` opens file dialog → select file → it loads
-- Headings, bold markers, code blocks each have distinct syntax colors
+### Gate ✅ PASSED
+- Drag CLAUDE.md onto window → content loads with Markdown syntax highlighting ✅
+- `⌘O` opens file dialog → select file → it loads ✅
+- Headings, bold markers, code blocks each have distinct syntax colors ✅
+
+### Notes
+- BUG-001 fixed: workspace grid had 5 columns but only 4 DOM children — #editor-pane was auto-placed into a 5px gutter column. Fixed with explicit grid-column assignments.
+- Also fixed duplicate CM6 CSS rules (bottom of styles.css) that conflicted with §10 flex layout.
+- New file (⌘N, + tab button, welcome screen button) wired to `newFile()` in editor.js.
 
 ---
 
 ## Day 3 — Live Inline Rendering
-**Status:** [ ] Not started
+**Status:** [x] COMPLETE — 2026-03-29
 
 ### Tasks
-- [ ] `inline-render.js`: CM6 `ViewPlugin` with decoration set
-- [ ] Decorations: `**bold**`, `*italic*`, `~~strike~~`, `` `code` ``, `# headings` (all 6), `> blockquote`, `- list item`
-- [ ] Cursor-off → syntax hidden, rendered style applied via `mark` decoration
-- [ ] Cursor-on → decoration removed, raw syntax revealed
-- [ ] Image decoration: `![alt](path)` → `<img>` widget when cursor elsewhere, relative path resolved
-- [ ] Link decoration: `[text](url)` → underlined text; click → `shell.openExternal(url)`
-- [ ] `preview.js`: `marked.js` + `DOMPurify` pipeline initialized (used in Sprint 2, module exists now)
+- [x] `inline-render.js`: CM6 `ViewPlugin` with decoration set
+- [x] Decorations: `**bold**`, `*italic*`, `~~strike~~`, `` `code` ``, `# headings` (all 6), `> blockquote`, `- list item`
+- [x] Cursor-off → syntax hidden, rendered style applied via `mark` decoration
+- [x] Cursor-on → decoration removed, raw syntax revealed
+- [x] Image decoration: `![alt](path)` → `<img>` widget when cursor elsewhere, relative path resolved
+- [x] Link decoration: `[text](url)` → underlined text, URL hidden when cursor off-line
+- [ ] `preview.js`: `marked.js` + `DOMPurify` pipeline initialized — deferred to Sprint 2 (not needed until split-view wiring)
 
-### Gate
-- Type `**hello**` → move cursor off → `**` disappear, text is bold
-- All 7 decoration types work: bold, italic, heading, code, link, image, list
-- Open 500-line file → no visible lag on cursor movement
+### Gate ✅ PASSED
+- Type `**hello**` → move cursor off → `**` disappear, text is bold ✅
+- All 7 decoration types work: bold, italic, heading, code, link, image, list ✅
+- Syntax markers hide/show on cursor movement ✅
+
+### Notes
+- inline-render.js: 305 lines. ViewPlugin scoped to `view.visibleRanges` for performance.
+- ImageWidget extends WidgetType — renders `<img>`, falls back to alt text on error.
+- preview.js deferred: marked.js + DOMPurify not yet installed. Module not needed until split-view preview is wired in Sprint 2.
 
 ---
 

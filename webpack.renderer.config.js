@@ -7,7 +7,8 @@ rules.push({
 });
 
 module.exports = {
-  module: {
+    devtool: 'source-map',
+    module: {
     rules,
   },
   plugins: [

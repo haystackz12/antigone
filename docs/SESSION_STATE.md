@@ -1,131 +1,93 @@
-# DocDiff — Session State
+# SESSION_STATE.md
+> Overwrite this file completely at the end of every session. It is the single source of truth for "where we left off."
 
-> **Purpose:** Point-in-time snapshot of deployed infrastructure, pending work, and handoff context. Update this file at the end of every session. A new implementing session should read this file first.
->
-> Last updated: 2026-03-08 | End of Session 39
+## Last updated
+2026-03-29 — Sprint 1, Day 3
 
----
+## Current sprint
+Sprint 1 — Foundation
 
-## Infrastructure State
+## Current day
+Day 3 — Live Inline Rendering — COMPLETE
 
-### Railway — Gotenberg
+## What was completed this session
+- Fixed BUG-001: workspace grid had 5 columns but only 4 DOM children — `#editor-pane` was auto-placed into a 5px gutter column. Fixed with explicit `grid-column` assignments on `#sidebar` (1/3), `#editor-pane` (3), `#split-resize` (4), `#preview-pane` (5).
+- Removed duplicate CM6 CSS rules at bottom of `styles.css` (lines ~1193-1211) that conflicted with §10 flex-based layout.
+- Removed competing `height: '100%'` from `githubLightBase` theme in `editor.js` — CSS §10 is the single authority for CM6 height.
+- Added `min-height: 0` to `#cm-editor` for proper flex shrinking.
+- Wired new file: `newFile()` function in `editor.js`, click handlers for `#btn-new-tab` and `#btn-new-file`, `⌘N` keyboard shortcut.
+- Implemented `inline-render.js` (305 lines): CM6 `ViewPlugin` with `DecorationSet` for live inline rendering of Markdown syntax.
+  - Decorations: bold, italic, strikethrough, inline code, headings (1–6), blockquote, list markers, links, images.
+  - Cursor-line exclusion: raw syntax revealed on cursor line, styled decorations on all other lines.
+  - `ImageWidget` extends `WidgetType` — renders `<img>`, falls back to alt text on error.
+  - Scoped to `view.visibleRanges` for performance.
+- Updated `SPRINT.md`: marked Day 2 and Day 3 COMPLETE with gates passed.
 
-| Field | Value |
-|-------|-------|
-| Status | ✅ ACTIVE |
-| Service name | gotenberg |
-| Docker image | `gotenberg/gotenberg:8` |
-| Public URL | `https://[your-gotenberg-url].up.railway.app` |
-| Env var set | `LIBREOFFICE_AUTO_START=true` |
-| Networking | Public domain active on port 3000 |
-| Health endpoint | `GET /health` → `{"status":"up","details":{"chromium":{"status":"up"},"libreoffice":{"status":"up"}}}` |
-| Cost | Covered by Railway's $5/month free credit |
+## Exact state of the codebase
+- `src/main.js` (273 lines): fully implemented — BrowserWindow, all IPC handlers, open-file, CLI args, security handlers. Note: `sandbox: true` not set in webPreferences (hard constraint says it should be — add next session or confirm intent).
+- `src/preload.js` (175 lines): fully implemented — complete contextBridge API surface.
+- `src/index.html` (269 lines): fully implemented — three-panel shell, all mount points.
+- `src/styles.css` (~1210 lines): fully implemented — all tokens, light/dark, layout, typography, syntax classes. Duplicate CM6 rules removed, explicit grid-column assignments added.
+- `src/renderer.js` (12 lines): entry point — imports styles.css, calls `initEditor()` on DOMContentLoaded.
+- `src/editor.js` (215 lines): CM6 editor — mount, file open (⌘O, drag-drop, macOS IPC), new file (⌘N, buttons), tab bar update, empty state toggle, theme compartment.
+- `src/inline-render.js` (305 lines): full inline rendering — ViewPlugin with DecorationSet, 10 decoration types, cursor-line exclusion, ImageWidget, visible-range scoping.
+- `webpack.renderer.config.js`: mini-css-extract-plugin wired.
+- `forge.config.js`: correct — macOS, Windows, Linux targets, preload wired.
 
-### Vercel — DocDiff
+## What to do FIRST next session
+Open `docs/SPRINT.md` Day 4 tasks. Start with `⌘S` save — implement `saveFile()` in `editor.js` that calls `window.api.writeFile()` with the current file path and document content. See `docs/features/AUTOSAVE.md` for the temp-then-rename strategy.
 
-| Field | Value |
-|-------|-------|
-| Status | ✅ LIVE and fully operational |
-| Project name | `doc-diff` |
-| Team | `haystackz12's projects` (Hobby plan) |
-| GitHub repo | `haystackz12/DocDiff` |
-| Branch | `main` (auto-deploy on push) |
-| Live URL | `https://doc-diff.vercel.app` |
-| Env var: `GOTENBERG_URL` | ✅ `https://[your-gotenberg-url].up.railway.app` (must include https://) |
-| Env var: `DOCDIFF_ORIGIN` | ✅ `https://doc-diff.vercel.app` |
+## Blockers / open issues
+- `sandbox: true` is listed as a hard constraint but is NOT set in `webPreferences` in `main.js`. SESSION_STATE from Day 1 says it was removed because it "blocked style injection." Confirm whether to re-enable now that mini-css-extract-plugin is used instead of style-loader.
+- Bundled fonts (Lora, Cormorant Garamond, Recursive, DM Sans) not yet added — falls back to system fonts. Not blocking Day 4.
+- `preview.js` (marked.js + DOMPurify) deferred — not needed until Sprint 2 split-view wiring.
+- Apple Developer ID and EV Code Signing cert still needed before Day 13.
 
----
+## Files modified this session
+- `src/editor.js` (created)
+- `src/inline-render.js` (created)
+- `src/styles.css` (modified — BUG-001 grid fix, duplicate CM6 rules removed, min-height added)
+- `src/renderer.js` (modified — imports editor.js)
+- `src/preload.js` (modified)
+- `package.json` (modified — CM6 dependencies added)
+- `package-lock.json` (modified)
+- `webpack.renderer.config.js` (modified)
+- `docs/SPRINT.md` (updated — Day 2 + Day 3 marked complete)
+- `docs/SESSION_STATE.md` (updated)
+- `docs/DECISIONS.md` (updated — new decisions logged)
+- `docs/BUGS.md` (updated — BUG-001 resolved)
 
-## Deployed File Structure
+## Known working / broken state
+| Feature | Status | Notes |
+|---------|--------|-------|
+| App launches | Working | `npm start` only — Forge webpack dev server |
+| Three-panel layout | Working | BUG-001 fixed — explicit grid-column assignments |
+| Titlebar drag region | Working | macOS traffic lights in correct position |
+| Tab bar | Working | Single tab shows filename, ● dirty prefix |
+| Status bar | Working | MD · 0 words · 0 min · Saved ✓ (static defaults) |
+| contextIsolation | Working | Confirmed true |
+| IPC bridge (window.api) | Working | All channels registered in main + preload |
+| Empty state welcome screen | Working | Shows on init, hides on file load |
+| CodeMirror 6 editor | Working | Mounts into #cm-editor, syntax highlighting active |
+| File open (⌘O) | Working | Opens native dialog, loads file content |
+| Drag-and-drop | Working | Drop .md file onto window → loads in editor |
+| New file (⌘N) | Working | + tab button, welcome screen button, ⌘N shortcut |
+| macOS open-file IPC | Working | app.on('open-file') → renderer |
+| CLI file argument | Working | `antigone path/to/file.md` opens file |
+| Inline rendering | Working | Bold, italic, strike, code, headings, blockquote, lists, links, images |
+| Cursor-line exclusion | Working | Raw syntax on cursor line, styled elsewhere |
+| Auto-save | Not started | Day 4 |
+| ⌘S / ⌘⇧S save | Not started | Day 4 |
+| File watcher | Not started | Day 4 |
+| Crash recovery | Not started | Day 4 |
+| Theme toggle | Stubbed | Token system + button present, logic Day 4 |
+| Focus mode | Stubbed | CSS complete, toggle present, logic Day 5 |
+| Word goal ring | Stubbed | SVG present, animation Day 5 |
+| Build / packaging | Not started | Day 5 |
 
-```
-haystackz12/DocDiff (main)
-├── DocDiff.html              # Single-file app — ~8,403 lines after Session 39 edits
-├── index.html                # Redirect to DocDiff.html
-├── api/
-│   ├── convert.js            # Vercel Edge Function — proxies DOCX→PDF to Gotenberg
-│   └── parse-docx.js         # Vercel serverless function — DOCX→structured paragraph maps
-├── vercel.json               # Vercel config — outputDirectory "." + functions timeout
-├── package.json              # Dependencies: mammoth, cheerio
-├── CLAUDE.txt
-├── roadmap.txt
-├── CLOSING_INSTRUCTIONS.md
-├── session_state.md
-├── USER_GUIDE.md
-├── DocDiff_Gotenberg_Integration_Brief.md
-├── manifest.json
-├── sw.js
-├── icons/
-└── docs/
-    ├── DocDiff-MVP-Roadmap.docx
-    └── progressive-render-spec.docx
-```
-
----
-
-## Sessions 31–39 — What Was Completed
-
-### ✅ Sessions 31–38 — Option C: Unified Diff Architecture (Jump-to-Change Root Fix)
-
-**Root cause identified:** Two independent diff pipelines with independent group counters caused jump-to-change desync in Redline and Formatted views. Pipeline 1 (`twoLevelDiff` → global `diffResults`) fed Sidebar + SBS + Text; Pipeline 2 (`paragraphFirstDiff` → local `rDiff`) fed Redline only — completely decoupled.
-
-**Solution — Option C:** Promoted `paragraphFirstDiff` to write `diffResults` as the single source of truth. All views walk `diffResults` directly.
-
-**9 Sprints completed:**
-- S32 Sprint 1: Token format contract — equal blocks emit one joined token per paragraph + `\n` separator
-- S32 Sprint 8: `computeStats` word count fix
-- S33 Sprint 7: Loading overlay step labels (`id="loadingStep"`)
-- S33 Sprint 2: `runComparison()` reordering — `fetchServerMaps()` before diff; Path A (structural) vs Path B (twoLevel); `diffSourceType` global
-- S34 Sprint 3: PRIMARY BUG FIX — `renderRedline()` simplified to walk `diffResults` directly (removed independent `rDiff` pipeline)
-- S35 Sprint 4: `renderFormatted()` cleanup — removed independent `fmtDiff` pipeline
-- S36 Sprint 5: Formatted HTML walker equal-token advance bug fix — `_ffIsWord` regex replaced with word-count advance
-- S37 Sprint 6: PDF+PDF navigation sync — `applyPdfGroupsByWordDiff` writes `diffResults`; re-render SBS+Text after formatted if `diffSourceType === 'pdf'`
-- S38 Sprint 9: Integration audit — fixed `_pdfGroupMap` and plain-text redline group counters for whitespace-transparent rule
-
-**Final result:** All 7 group-counter sites confirmed consistent with `buildChangeGroups` reference.
-
-### ✅ Session 39 — Jump-to Drift Fix (Formatted SbS) + Amber Ring
-
-**Bug 1 — Jump-to drift in formatted Side-by-Side view:**
-- **Root cause:** Equal-token span counter advance used `/\S+/g` (any non-whitespace), counting punctuation tokens (`.`, `,`) as spans — but `wrapWordsWithIndex` never creates DOM spans for punctuation. One span of drift per punctuation mark, compounding across the document.
-- **Fix:** Changed regex to `/[\w'\u2019]+/g` (word chars only, mirroring `wrapWordsWithIndex`) and default from `1` to `0` (pure-punctuation tokens have no span). Two lines changed at ~line 5747.
-- **Verification:** Jump-to now correctly lands on paired words in Side-by-Side formatted view.
-
-**Bug 2 — Jump-to ring barely visible:**
-- **Root cause:** `.change-active` used a thin 2px blue outline with `rgba(74,108,247,0.06)` shadow — nearly invisible against red/green diff highlights.
-- **Fix (Option B — Amber Ring):** Changed to `3px solid #f59e0b` (amber/gold) with `box-shadow: 0 0 0 6px rgba(245,158,11,0.22)`. Animation pulse updated to match. Amber sits completely outside the red/green/blue palette — no color conflict with diff highlights. Applied globally to all views (Redline, Side-by-Side, Text) via shared `.change-active` / `changePulse` CSS.
-
----
-
-## What's Pending — Session 40 Start Checklist
-
-### P0 — Start here
-
-1. **RedlineIQ rename**
-   - GitHub: `haystackz12/DocDiff` → `haystackz12/RedlineIQ`
-   - Vercel project rename + URL
-   - `DocDiff.html` → `RedlineIQ.html`
-   - ~102 internal `DocDiff` references → `RedlineIQ`
-   - `manifest.json`, `sw.js` cache name
-   - localStorage key: `docdiff-theme` read fallback must survive
-   - All 5 project docs
-   - Export filenames: `DocDiff-Report.txt/.doc`, `DocDiff-Redline.docx` → `RedlineIQ-*`
-   - Rename brief at: `RedlineIQ-Rename-Brief.md` in repo root
-
-2. **Phase 2 Item 5 — Similarity-based block alignment fallback** in `paragraphFirstDiff()`: when structural key doesn't match, add second pass over unmatched blocks using text similarity (~60% threshold) to pair them as modifications instead of delete+insert.
-
-3. **Full multi-page scroll-through verification** with server engine.
-
-4. **Phase 3 Items 7+8 — Formatting diff layer + Fmt filter button**
-
----
-
-## Lessons Learned (Sessions 31–39)
-
-| Issue | Root Cause | Fix |
-|-------|-----------|-----|
-| Jump-to desync (Redline + Formatted) | Two independent diff pipelines with independent group counters | Option C: `paragraphFirstDiff` writes `diffResults` as single source of truth |
-| Formatted SbS jump drift | Equal-token advance used `/\S+/g` — counted punct tokens that have no DOM span | Changed to `/[\w'\u2019]+/g` + default 0 (mirrors `wrapWordsWithIndex`) |
-| Jump-to ring invisible | 2px blue outline with 0.06 opacity shadow — lost against red/green highlights | Amber ring: `3px solid #f59e0b`, stronger glow, no color conflict |
-| PDF+PDF jump-to broken | `applyPdfGroupsByWordDiff` never wrote to `diffResults` | Sprint 6: function now writes `diffResults = wordDiff` + re-renders SBS/Text |
-| `_pdfGroupMap` counter drift | Reset `_pgInChange` on ALL equals including whitespace | Sprint 9: only reset on substantive equals (mirrors `buildChangeGroups`) |
+## Environment notes
+- Dev machine: macOS, ~/Projects/antigone/
+- Launch command: `npm start` (Forge webpack dev server + Electron)
+- Build command: `npm run make`
+- Node: system Node 18+
+- Python path if needed: /opt/homebrew/bin/python3.12

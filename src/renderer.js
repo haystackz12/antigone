@@ -1,3 +1,11 @@
-import './styles.css';
+// src/renderer.js
+// Webpack entry point for the renderer process.
 
-console.log('Antigone renderer loaded.');
+'use strict';
+
+require('./styles.css');
+const { init: initEditor } = require('./editor.js');
+
+document.addEventListener('DOMContentLoaded', () => {
+  initEditor();
+});

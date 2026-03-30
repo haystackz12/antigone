@@ -598,6 +598,7 @@ body {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 #sidebar {
+  grid-column:      1 / 3;            /* span sidebar + its gutter (resize handle is inside) */
   background:       var(--color-surface-1);
   border-right:     1px solid var(--color-border);
   display:          grid;
@@ -674,6 +675,7 @@ body {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 #editor-pane {
+  grid-column:      3;
   background:       var(--color-surface-0);
   display:          flex;
   flex-direction:   column;
@@ -684,6 +686,7 @@ body {
 /* CodeMirror mount — fills available height */
 #cm-editor {
   flex:             1;
+  min-height:       0;   /* allow flex child to shrink below content size */
   overflow:         hidden;
 }
 
@@ -929,6 +932,7 @@ kbd {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 #split-resize {
+  grid-column:      4;
   background:       var(--color-border-subtle);
   cursor:           col-resize;
   transition:       background var(--transition-fast);
@@ -942,6 +946,7 @@ kbd {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 #preview-pane {
+  grid-column:      5;
   background:       var(--preview-bg);
   border-left:      1px solid var(--color-border-subtle);
   overflow-y:       auto;
@@ -1184,3 +1189,24 @@ body.drag-over #editor-pane::after {
   }
   .goal-progress { transition: none; }
 }
+/* ── Day 2 additions to styles.css ─────────────────────────────────────────
+   Append these rules at the bottom of your existing styles.css.
+   They size the CM6 mount point to fill #editor-pane correctly.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* (Removed duplicate CM6 rules — authoritative styles are in §10 Editor Pane) */
+
+/* Markdown syntax color classes (used by inline-render.js Day 3) */
+.cm-bold        { font-weight: 700; }
+.cm-italic      { font-style: italic; }
+.cm-strike      { text-decoration: line-through; }
+.cm-code-inline {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  color: #e36209;
+  background: var(--bg-code-inline, rgba(0,0,0,0.05));
+  border-radius: 3px;
+  padding: 0 3px;
+}
+.cm-link-text   { color: #0969da; text-decoration: underline; }
+.cm-blockquote  { color: var(--fg-muted); border-left: 3px solid var(--accent); padding-left: 1em; }
