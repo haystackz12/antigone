@@ -20,6 +20,7 @@ const { inlineRenderPlugin }                 = require('./inline-render.js');
 const editorSave                             = require('./editor-save.js');
 const toolbar                                = require('./toolbar.js');
 const { scanTags }                           = require('./tags.js');
+const tabs                                   = require('./tabs.js');
 
 // ─── Module state ─────────────────────────────────────────────────────────────
 let view            = null;
@@ -154,25 +155,20 @@ function loadContent(content, filePath) {
 }
 
 // ─── File open ────────────────────────────────────────────────────────────────
-// main.js open-dialog handler returns { canceled, path, content }
-// content is already read by main — no second readFile IPC call needed.
+// Uses tabs module to open files in new tabs or reuse existing.
 async function openFileDialog() {
-  const ok = await editorSave.guardUnsavedChanges();
-  if (!ok) return;
   const result = await window.api.openDialog();
   if (!result || result.canceled) return;
   if (!result.path || result.content === undefined) return;
-  loadContent(result.content, result.path);
+  tabs.openFileInTab(result.path, result.content);
 }
 
 // Used by macOS open-file IPC and drag-and-drop
 async function openFilePath(filePath) {
   if (!filePath) return;
-  const ok = await editorSave.guardUnsavedChanges();
-  if (!ok) return;
   const content = await window.api.readFile(filePath);
   if (content === null || content === undefined) return;
-  loadContent(content, filePath);
+  tabs.openFileInTab(filePath, content);
 }
 
 // ─── Tab bar ──────────────────────────────────────────────────────────────────
@@ -239,24 +235,14 @@ function setupOpenButton() {
 }
 
 // ─── New file ─────────────────────────────────────────────────────────────────
-async function newFile() {
-  const ok = await editorSave.guardUnsavedChanges();
-  if (!ok) return;
-  loadContent('', null);
+function newFile() {
+  tabs.openNewTab();
 }
 
 function setupNewFileButtons() {
-  // Clone + button to remove any existing handlers, then add a clean one
-  const tabBtn = document.getElementById('btn-new-tab');
-  if (tabBtn) {
-    const fresh = tabBtn.cloneNode(true);
-    tabBtn.parentNode.replaceChild(fresh, tabBtn);
-    fresh.addEventListener('click', () => newFile());
-  }
   const emptyBtn = document.getElementById('btn-new-file');
-  if (emptyBtn) {
-    emptyBtn.addEventListener('click', () => newFile());
-  }
+  if (emptyBtn) emptyBtn.addEventListener('click', () => newFile());
+  // + button is managed by tabs.js renderTabBar()
 }
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
@@ -285,6 +271,16 @@ function init() {
   editorSave.startRecovery();
   editorSave.setupBeforeClose();
   editorSave.checkRecovery();
+
+  // Wire tabs module
+  tabs.configure({
+    getView:        () => view,
+    getCurrentPath: () => currentFilePath,
+    loadContent,
+    getIsDirty:     () => isDirty,
+    setDirty:       (val) => { isDirty = val; },
+    guardUnsaved:   editorSave.guardUnsavedChanges,
+  });
 
   console.log('[editor] CodeMirror 6 mounted ✓');
 }

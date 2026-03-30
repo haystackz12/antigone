@@ -11,6 +11,9 @@ const focus      = require('./focus.js');
 const wordgoal   = require('./wordgoal.js');
 const toolbar    = require('./toolbar.js');
 const tags       = require('./tags.js');
+const toc        = require('./toc.js');
+const preview    = require('./preview.js');
+const tabs       = require('./tabs.js');
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Apply stored theme before editor mounts to prevent flash
@@ -27,6 +30,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   toolbar.setViewMode(prefs.viewMode || 'editor');
   tags.configure({ getView: require('./editor.js').getView });
   tags.init();
+  toc.configure({ getView: require('./editor.js').getView });
+  toc.init();
+  preview.init();
+
+  // Restore session tabs (or open a blank tab if none saved)
+  await tabs.restoreSession();
 
   // Apply CM6 theme to match
   const isDark = document.documentElement.classList.contains('dark');

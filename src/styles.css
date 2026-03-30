@@ -1352,6 +1352,37 @@ body.drag-over #editor-pane::after {
   margin-left: 8px;
 }
 
+/* ── TOC sidebar ────────────────────────────────────────────────────────── */
+
+.toc-list {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-2, 8px);
+}
+.toc-item { margin-bottom: 1px; }
+.toc-btn {
+  display: block;
+  width: 100%;
+  padding: 3px 8px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--color-text-secondary, #4a4740);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.toc-btn:hover { background: var(--color-surface-3, #dedbd3); }
+.toc-level-1 .toc-btn { font-weight: 600; }
+.toc-level-2 .toc-btn { padding-left: 16px; }
+.toc-level-3 .toc-btn { padding-left: 28px; font-size: 12px; }
+.toc-level-4 .toc-btn,
+.toc-level-5 .toc-btn,
+.toc-level-6 .toc-btn { padding-left: 40px; font-size: 12px; color: var(--color-text-tertiary); }
+
 /* ── CM6 search panel overrides ─────────────────────────────────────────── */
 
 .cm-panels {
