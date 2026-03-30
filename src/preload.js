@@ -101,6 +101,13 @@ contextBridge.exposeInMainWorld('api', {
   deleteRecovery: (tabId) =>
     ipcRenderer.invoke('delete-recovery', requireString(tabId, 'tabId')),
 
+  /**
+   * List all recovery files in OS temp dir.
+   * @returns {Promise<Array<{tabId: string, path: string}>>}
+   */
+  listRecovery: () =>
+    ipcRenderer.invoke('list-recovery'),
+
   // ── Shell ──────────────────────────────────────────────────────────────────
 
   /**
@@ -154,6 +161,53 @@ contextBridge.exposeInMainWorld('api', {
    */
   getAppPaths: () =>
     ipcRenderer.invoke('get-app-paths'),
+
+  // ── File watching ──────────────────────────────────────────────────────────
+
+  /**
+   * Start watching a file for external changes.
+   * @param {string} filePath  Absolute path.
+   */
+  startWatching: (filePath) =>
+    ipcRenderer.invoke('start-watching', requireString(filePath, 'filePath')),
+
+  /**
+   * Stop watching a file.
+   * @param {string} filePath  Absolute path.
+   */
+  stopWatching: (filePath) =>
+    ipcRenderer.invoke('stop-watching', requireString(filePath, 'filePath')),
+
+  /**
+   * Subscribe to file-changed events from main (fs.watch debounced).
+   * @param {function(string): void} callback  Receives the changed file path.
+   * @returns {function(): void}  Unsubscribe.
+   */
+  onFileChanged: (callback) => {
+    const handler = (_event, filePath) => callback(filePath);
+    ipcRenderer.on('file-changed', handler);
+    return () => ipcRenderer.removeListener('file-changed', handler);
+  },
+
+  // ── Preferences (electron-store) ──────────────────────────────────────────
+
+  /** @returns {Promise<object>} All stored preferences. */
+  getPrefs: () =>
+    ipcRenderer.invoke('get-prefs'),
+
+  /**
+   * Merge a delta into stored preferences.
+   * @param {object} delta  Key-value pairs to set.
+   */
+  setPrefs: (delta) =>
+    ipcRenderer.invoke('set-prefs', delta),
+
+  /**
+   * Set the native theme source for the app.
+   * @param {'light'|'dark'|'system'} source
+   */
+  setNativeTheme: (source) =>
+    ipcRenderer.invoke('set-native-theme', requireString(source, 'source')),
 
   // ── Inbound from main ──────────────────────────────────────────────────────
 

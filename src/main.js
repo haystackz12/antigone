@@ -25,9 +25,47 @@ const os   = require('node:os');
 // ── Forge webpack injects these globals ──────────────────────────────────────
 /* global MAIN_WINDOW_WEBPACK_ENTRY, MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY */
 
+// electron-store v11 is ESM-only — loaded at runtime via webpack externals
+/** @type {import('electron-store').default|null} */
+let store = null;
+
+async function getStore() {
+  if (!store) {
+    const mod = await import('electron-store');
+    const Store = mod.default || mod;
+    store = new Store();
+  }
+  return store;
+}
+
 // ── Module-level state ───────────────────────────────────────────────────────
 /** @type {BrowserWindow|null} */
 let mainWindow = null;
+
+// ── File watchers ────────────────────────────────────────────────────────────
+/** @type {Map<string, {watcher: fs.FSWatcher, timer: ReturnType<typeof setTimeout>|null}>} */
+const fileWatchers = new Map();
+
+function startWatching(win, filePath) {
+  stopWatching(filePath);
+  let debounceTimer = null;
+  const watcher = fs.watch(filePath, () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      win.webContents.send('file-changed', filePath);
+    }, 200);
+  });
+  fileWatchers.set(filePath, { watcher, timer: debounceTimer });
+}
+
+function stopWatching(filePath) {
+  const entry = fileWatchers.get(filePath);
+  if (entry) {
+    entry.watcher.close();
+    clearTimeout(entry.timer);
+    fileWatchers.delete(filePath);
+  }
+}
 
 /**
  * File path queued by open-file event that fires before the window is ready.
@@ -51,6 +89,7 @@ function createWindow() {
       preload:          MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       contextIsolation: true,         // PERMANENT — never disable
       nodeIntegration:  false,        // PERMANENT — never enable
+      sandbox:          true,         // PERMANENT — never disable
       spellcheck:       true,
     },
   });
@@ -261,6 +300,47 @@ ipcMain.handle('get-app-paths', () => ({
   temp:     app.getPath('temp'),
   home:     app.getPath('home'),
 }));
+
+// ── IPC: File watchers ──────────────────────────────────────────────────────
+
+ipcMain.handle('start-watching', (_event, filePath) => {
+  if (!mainWindow) return;
+  startWatching(mainWindow, path.resolve(filePath));
+});
+
+ipcMain.handle('stop-watching', (_event, filePath) => {
+  stopWatching(path.resolve(filePath));
+});
+
+// ── IPC: List recovery files ────────────────────────────────────────────────
+
+ipcMain.handle('list-recovery', async () => {
+  const recoveryDir = path.join(app.getPath('temp'), 'Antigone-recovery');
+  try {
+    const files = await fs.promises.readdir(recoveryDir);
+    return files
+      .filter(f => f.endsWith('.md'))
+      .map(f => ({ tabId: f.replace('.md', ''), path: path.join(recoveryDir, f) }));
+  } catch {
+    return [];
+  }
+});
+
+// ── IPC: Preferences (electron-store) ───────────────────────────────────────
+
+ipcMain.handle('get-prefs', async () => {
+  const s = await getStore();
+  return s.store;
+});
+
+ipcMain.handle('set-prefs', async (_event, delta) => {
+  const s = await getStore();
+  s.set(delta);
+});
+
+ipcMain.handle('set-native-theme', (_event, source) => {
+  nativeTheme.themeSource = source; // 'light' | 'dark' | 'system'
+});
 
 // ── Security: block navigation and new-window ─────────────────────────────────
 

@@ -15,6 +15,7 @@ const { markdown, markdownLanguage }         = require('@codemirror/lang-markdow
 const { languages }                          = require('@codemirror/language-data');
 const { oneDark }                            = require('@codemirror/theme-one-dark');
 const { inlineRenderPlugin }                 = require('./inline-render.js');
+const editorSave                             = require('./editor-save.js');
 
 // ─── Module state ─────────────────────────────────────────────────────────────
 let view            = null;
@@ -59,7 +60,9 @@ function buildExtensions() {
       ...defaultKeymap,
       ...historyKeymap,
       indentWithTab,
-      { key: 'Mod-o', run: () => { openFileDialog(); return true; } },
+      { key: 'Mod-o',       run: () => { openFileDialog(); return true; } },
+      { key: 'Mod-s',       run: () => { editorSave.saveFile(currentFilePath); return true; } },
+      { key: 'Mod-Shift-s', run: () => { editorSave.saveFileAs(); return true; } },
     ]),
     inlineRenderPlugin,
     themeCompartment.of(isDarkMode() ? oneDark : githubLightTheme),
@@ -80,6 +83,7 @@ function onDocChange(content) {
     isDirty = true;
     updateTabBar(fileNameFromPath(currentFilePath), true);
   }
+  editorSave.scheduleAutoSave();
   window.dispatchEvent(new CustomEvent('editor:change', { detail: { content } }));
 }
 
@@ -93,11 +97,17 @@ function mount(container) {
 // ─── Load content ─────────────────────────────────────────────────────────────
 function loadContent(content, filePath) {
   if (!view) return;
+  // Stop watching previous file if switching
+  if (currentFilePath && currentFilePath !== filePath) {
+    window.api.stopWatching(currentFilePath);
+  }
   view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: content } });
   currentFilePath = filePath;
   isDirty = false;
   updateTabBar(fileNameFromPath(filePath), false);
   setEmptyState(false);
+  // Start watching the new file for external changes
+  if (filePath) window.api.startWatching(filePath);
   view.focus();
 }
 
@@ -159,6 +169,8 @@ function setupKeyboardShortcuts() {
     const mod = e.metaKey || e.ctrlKey;
     if (mod && e.key === 'o') { e.preventDefault(); openFileDialog(); }
     if (mod && e.key === 'n') { e.preventDefault(); newFile(); }
+    if (mod && !e.shiftKey && e.key === 's') { e.preventDefault(); editorSave.saveFile(currentFilePath); }
+    if (mod && e.shiftKey && e.key === 's')  { e.preventDefault(); editorSave.saveFileAs(); }
   });
 }
 
@@ -192,6 +204,8 @@ function setupNewFileButtons() {
 }
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
+function setCurrentPath(p) { currentFilePath = p; }
+
 function init() {
   const container = document.getElementById('cm-editor');
   if (!container) { console.error('[editor] Mount point #cm-editor not found'); return; }
@@ -202,6 +216,20 @@ function init() {
   setupOpenFileIPC();
   setupOpenButton();
   setupNewFileButtons();
+
+  // Wire editor-save module
+  editorSave.configure({
+    getView:        () => view,
+    getCurrentPath: () => currentFilePath,
+    setCurrentPath,
+    getIsDirty:     () => isDirty,
+    setDirty:       (val) => { isDirty = val; },
+    updateTabBar,
+  });
+  editorSave.startRecovery();
+  editorSave.setupFileChangedListener();
+  editorSave.checkRecovery();
+
   console.log('[editor] CodeMirror 6 mounted ✓');
 }
 

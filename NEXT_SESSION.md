@@ -1,51 +1,72 @@
-We are working on the Antigone project — a cross-platform Markdown and plain text
-editor built on Electron + CodeMirror 6, targeting macOS, Windows, and Linux.
-Repo: haystackz12/antigone  |  Local path: ~/Projects/antigone
+# NEXT_SESSION.md — Day 5 Kick-off Prompt
 
-Today is **Sprint 1, Day 4 — Save, Auto-Save & Themes**.
+We are working on the Antigone project — a cross-platform Markdown editor built on
+Electron + CodeMirror 6. Repo: haystackz12/antigone | Path: ~/Projects/antigone
 
-Please read the following files before we begin:
-1. `docs/CLAUDE.md`
-2. `docs/SESSION_STATE.md`
-3. `docs/SPRINT.md`
-4. `docs/DECISIONS.md`
+Today is Sprint 1, Day 5 — Focus Mode, Word Goal & Build.
 
-Also read: `docs/features/AUTOSAVE.md`
+## Step 0 — Read these files before touching any code
+1. docs/CLAUDE.md
+2. docs/SESSION_STATE.md
+3. docs/SPRINT.md
+4. docs/DECISIONS.md
 
 ---
 
-## Day 4 Tasks (from SPRINT.md)
+## Day 5 Tasks (from SPRINT.md)
 
-- [ ] `⌘S`: IPC `writeFile` with temp-then-rename strategy. `Saved ✓` indicator fades 1.5s.
-- [ ] `⌘⇧S`: `saveDialog()` → saves → updates tab title and file watcher
-- [ ] Auto-save: CM6 `onChange` → debounce 800ms → `writeFile` IPC
-- [ ] `●` unsaved indicator: CM6 state listener → prefix tab title
-- [ ] `fs.watch()` in main.js → debounce 200ms → `file-changed` IPC to renderer
-- [ ] `file-changed` banner: Reload / Keep Mine
-- [ ] Crash recovery: `setInterval` 30s → write to OS temp dir with UUID filename
-- [ ] Theme toggle: `<html>` class, `nativeTheme` listener, `electron-store` persistence
-- [ ] `prefs.js`: reads electron-store on load, applies theme, font size, line numbers
+### Task 1 — focus.js
+- `IntersectionObserver` tracks active paragraph
+- Non-active paragraphs get `dimmed` class (opacity 0.25, transition 150ms)
+- Toggle with `Cmd+Shift+F`
 
-## Gate
+### Task 2 — wordgoal.js
+- CM6 `onChange` dispatches word count to status bar
+- Goal ring: SVG `stroke-dashoffset` animation
+- `Cmd+Shift+G`: inline goal-set prompt in toolbar
 
-- Edit → wait 1s → open file in Finder Quick Look → changes are there
-- Modify file externally → banner appears in Antigone within 1s
-- Kill process while editing → relaunch → recovery banner offers restore
-- Recovery file is in OS temp dir, NOT next to the source file
+### Task 3 — Status bar wiring
+- Format: `342 / 500 words . 2 min . Ln 14, Col 8 . MD . Saved`
+- Wire cursor position from CM6 `EditorView.updateListener`
 
-## Constraints (never change these)
+### Task 4 — Empty state welcome screen
+- Already stubbed in index.html — verify it shows when no file open, hides on file load
 
+### Task 5 — Build configuration
+- `forge.config.js`: add icon assets, file associations for `.md .markdown .mdown`
+- `npm run make` to verify `.app` opens by double-click
+- Verify `.md` file association works
+
+### Task 6 — Tag and push
+- Tag `v0.1.0`
+- Push to haystackz12/antigone
+
+---
+
+## Gate (v0.1.0 release criteria)
+- Built `.app` opens `.md` files by double-click
+- Inline rendering works in the built app
+- Focus mode dims non-active paragraphs
+- Word goal ring fills as word count increases
+- All app data (prefs, recovery) in `~/Library/Application Support/Antigone/` — nothing in source dirs
+
+---
+
+## Hard constraints (never change these)
 - `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true` — permanent
-- 400-line file cap per source file
+- 400-line file cap — split files if they go over
 - Show planned file changes before making them
+- All app data to `~/Library/Application Support/Antigone/` — never to source dirs
+- Recovery files to `os.tmpdir()` — never adjacent to source files
+- Atomic writes only (temp-then-rename) — never partial writes to source file
 
-## Carry-over issues from SESSION_STATE.md
+---
 
-- `sandbox: true` is listed as a hard constraint but is NOT currently set in `webPreferences` in `main.js`. Day 1 notes say it was removed because it "blocked style injection." Now using `mini-css-extract-plugin` instead of `style-loader` — confirm whether to re-enable sandbox before starting Day 4 work.
-- Bundled fonts (Lora, Cormorant Garamond, Recursive, DM Sans) not yet added — falls back to system fonts. Not blocking Day 4.
-- `preview.js` (marked.js + DOMPurify) deferred to Sprint 2.
-- Apple Developer ID and EV Code Signing cert still needed before Day 13.
+## Carry-over from Day 4
+- Bundled fonts (Lora, Cormorant Garamond, Recursive, DM Sans) not yet added — falls back to system fonts
+- Apple Developer ID and EV Code Signing cert still needed before Day 13
 
-## Start with
+---
 
-Open `src/editor.js` and implement `saveFile()` that calls `window.api.writeFile()` with the current file path and document content. See `docs/features/AUTOSAVE.md` for the temp-then-rename strategy.
+## End of session
+Run docs/closing_instructions.md top to bottom. Generate NEXT_SESSION.md for Day 6 (Sprint 2, Day 1).

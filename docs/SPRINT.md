@@ -84,24 +84,30 @@
 ---
 
 ## Day 4 — Save, Auto-Save & Themes
-**Status:** [ ] Not started
+**Status:** [x] COMPLETE — 2026-03-30
 
 ### Tasks
-- [ ] `⌘S`: IPC `writeFile` with temp-then-rename strategy. `Saved ✓` indicator fades 1.5s.
-- [ ] `⌘⇧S`: `saveDialog()` → saves → updates tab title and file watcher
-- [ ] Auto-save: CM6 `onChange` → debounce 800ms → `writeFile` IPC
-- [ ] `●` unsaved indicator: CM6 state listener → prefix tab title
-- [ ] `fs.watch()` in main.js → debounce 200ms → `file-changed` IPC to renderer
-- [ ] `file-changed` banner: Reload / Keep Mine
-- [ ] Crash recovery: `setInterval` 30s → write to OS temp dir with UUID filename
-- [ ] Theme toggle: `<html>` class, `nativeTheme` listener, `electron-store` persistence
-- [ ] `prefs.js`: reads electron-store on load, applies theme, font size, line numbers
+- [x] `⌘S`: IPC `writeFile` with temp-then-rename strategy. `Saved ✓` indicator fades 1.5s.
+- [x] `⌘⇧S`: `saveDialog()` → saves → updates tab title and file watcher
+- [x] Auto-save: CM6 `onChange` → debounce 800ms → `writeFile` IPC
+- [x] `●` unsaved indicator: CM6 state listener → prefix tab title
+- [x] `fs.watch()` in main.js → debounce 200ms → `file-changed` IPC to renderer
+- [x] `file-changed` banner: Reload / Keep Mine
+- [x] Crash recovery: `setInterval` 30s → write to OS temp dir with UUID filename
+- [x] Theme toggle: `<html>` class, `nativeTheme` listener, `electron-store` persistence
+- [x] `prefs.js`: reads electron-store on load, applies theme, font size, line numbers
+- [x] `sandbox: true` re-enabled in webPreferences (DEC-015)
+- [x] `editor-save.js` split from editor.js to respect 400-line cap (DEC-017)
 
-### Gate
-- Edit → wait 1s → open file in Finder Quick Look → changes are there
-- Modify file externally → banner appears in Antigone within 1s
-- Kill process while editing → relaunch → recovery banner offers restore
-- Recovery file is in OS temp dir, NOT next to the source file
+### Gate ✅ PASSED
+- Edit → wait 1s → open file in Finder Quick Look → changes are there ✅
+- Modify file externally → banner appears in Antigone within 1s ✅
+- Kill process while editing → relaunch → recovery banner offers restore ✅
+- Recovery file is in OS temp dir, NOT next to the source file ✅
+
+### Notes
+- electron-store v11 is ESM-only — loaded via webpack externals + dynamic import() (DEC-016)
+- editor-save.js uses a `configure()` pattern to receive accessors from editor.js, avoiding circular requires
 
 ---
 

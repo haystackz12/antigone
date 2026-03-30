@@ -1210,3 +1210,73 @@ body.drag-over #editor-pane::after {
 }
 .cm-link-text   { color: #0969da; text-decoration: underline; }
 .cm-blockquote  { color: var(--fg-muted); border-left: 3px solid var(--accent); padding-left: 1em; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   §21  FILE-CHANGED / RECOVERY BANNERS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#file-changed-banner,
+#recovery-banner {
+  position: fixed;
+  top: var(--titlebar-height, 38px);
+  left: 0; right: 0;
+  background: var(--color-warning, #a06c2a);
+  background: #fff8e1;
+  color: #5c4000;
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 200;
+  font-size: 13px;
+  border-bottom: 1px solid #f0c040;
+}
+#file-changed-banner[hidden],
+#recovery-banner[hidden] { display: none; }
+
+#file-changed-banner button,
+#recovery-banner button {
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid #d4a017;
+  background: #fff;
+  color: #5c4000;
+  cursor: pointer;
+  font-size: 12px;
+}
+#file-changed-banner button:hover,
+#recovery-banner button:hover {
+  background: #fef3c7;
+}
+
+/* Dark theme banner overrides */
+[data-theme="dark"] #file-changed-banner,
+[data-theme="dark"] #recovery-banner,
+.dark #file-changed-banner,
+.dark #recovery-banner {
+  background: #3b2e00;
+  color: #fde68a;
+  border-bottom-color: #92700c;
+}
+[data-theme="dark"] #file-changed-banner button,
+[data-theme="dark"] #recovery-banner button,
+.dark #file-changed-banner button,
+.dark #recovery-banner button {
+  background: #4a3800;
+  color: #fde68a;
+  border-color: #92700c;
+}
+
+/* ── Saved indicator ────────────────────────────────────────────────────── */
+
+#saved-indicator {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  font-size: 12px;
+  color: var(--color-success, #4a7c59);
+}
+#saved-indicator.visible { opacity: 1; }
+
+/* ── Hide line numbers toggle ───────────────────────────────────────────── */
+
+.hide-line-numbers .cm-lineNumbers { display: none; }

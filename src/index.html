@@ -194,6 +194,20 @@
     <!-- ── Editor pane ─────────────────────────────────────────────────── -->
     <main id="editor-pane" role="main">
 
+      <!-- File changed externally banner -->
+      <div id="file-changed-banner" hidden>
+        <span>File changed externally.</span>
+        <button id="btn-reload-file">Reload</button>
+        <button id="btn-keep-mine">Keep Mine</button>
+      </div>
+
+      <!-- Recovery banner -->
+      <div id="recovery-banner" hidden>
+        <span>Unsaved work found from a previous session.</span>
+        <button id="btn-restore-recovery">Restore</button>
+        <button id="btn-dismiss-recovery">Dismiss</button>
+      </div>
+
       <!-- Empty state — shown when no file is open -->
       <div id="empty-state" aria-label="Welcome screen">
         <div class="empty-state-inner">
@@ -258,6 +272,7 @@
       <span class="status-sep" aria-hidden="true">·</span>
       <!-- Save indicator -->
       <span class="status-item status-save" id="status-save" data-state="saved">Saved ✓</span>
+      <span id="saved-indicator" class="saved-fade"></span>
     </div>
   </footer>
 

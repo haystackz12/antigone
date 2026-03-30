@@ -67,6 +67,21 @@
 **Why:** Line-level exclusion is the standard Typora-style behavior users expect. It reveals all raw syntax on the active line so the user can see and edit markers in context. Token-level exclusion would leave some markers hidden on the same line, creating a confusing mixed state.
 **Date:** 2026-03-29
 
+## DEC-015 — sandbox: true re-enabled (Day 4)
+**Decision:** Re-enabled `sandbox: true` in BrowserWindow webPreferences.
+**Why:** Day 1 removed it because style-loader v3 used Constructable Stylesheets incompatible with sandbox mode. Since Day 1 switched to mini-css-extract-plugin (CSS served as `<link>` via webpack), the sandbox restriction no longer applies. Tested Day 4 — app launches, three-panel layout renders, CSS loads, drag-and-drop works, inline rendering works.
+**Date:** 2026-03-30
+
+## DEC-016 — electron-store v11 as webpack external
+**Decision:** electron-store is loaded at runtime via webpack externals, not bundled.
+**Why:** electron-store v11 is ESM-only. Webpack's CJS bundling cannot process it. Adding `externals: { 'electron-store': 'commonjs2 electron-store' }` to webpack.main.config.js lets Node load it natively at runtime via dynamic `import()`.
+**Date:** 2026-03-30
+
+## DEC-017 — editor-save.js split from editor.js
+**Decision:** Save, auto-save, crash recovery, and external file-change detection logic lives in `editor-save.js`, separate from `editor.js`.
+**Why:** Adding these features would push editor.js past the 400-line cap. editor-save.js receives accessor functions via a `configure()` call to avoid circular requires. editor.js remains focused on CM6 init, keymaps, extensions, and file open.
+**Date:** 2026-03-30
+
 ## DEC-014 — preview.js deferred to Sprint 2
 **Decision:** The `preview.js` module (marked.js + DOMPurify pipeline) is not created in Sprint 1.
 **Why:** The preview pane is not wired for live updates until Sprint 2 (split-view, scroll sync). Installing marked.js and DOMPurify now would add unused dependencies. The `inline-render.js` decoration layer handles all visual rendering in Sprint 1.
