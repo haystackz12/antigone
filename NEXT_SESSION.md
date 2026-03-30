@@ -1,54 +1,46 @@
-# NEXT_SESSION.md — Day 5 Kick-off Prompt
+# NEXT_SESSION.md — Day 6 Kick-off Prompt
 
 We are working on the Antigone project — a cross-platform Markdown editor built on
 Electron + CodeMirror 6. Repo: haystackz12/antigone | Path: ~/Projects/antigone
 
-Today is Sprint 1, Day 5 — Focus Mode, Word Goal & Build.
+Today is Sprint 2, Day 6 — Toolbar + Image Paste.
 
 ## Step 0 — Read these files before touching any code
 1. docs/CLAUDE.md
 2. docs/SESSION_STATE.md
-3. docs/SPRINT.md
+3. docs/SPRINT.md (will need Sprint 2 content added)
 4. docs/DECISIONS.md
+5. docs/features/EDITOR.md (toolbar section)
 
 ---
 
-## Day 5 Tasks (from SPRINT.md)
+## Day 6 Tasks (from ROADMAP.md)
 
-### Task 1 — focus.js
-- `IntersectionObserver` tracks active paragraph
-- Non-active paragraphs get `dimmed` class (opacity 0.25, transition 150ms)
-- Toggle with `Cmd+Shift+F`
+### Task 1 — Toolbar formatting buttons
+Wire all 16 toolbar buttons to CM6 commands:
+- Bold (⌘B), Italic (⌘I), Strikethrough, Inline code
+- Link (⌘K), H1, H2, H3
+- Each button wraps/unwraps selected text with appropriate Markdown syntax
+- Create `src/toolbar.js` for button wiring logic
 
-### Task 2 — wordgoal.js
-- CM6 `onChange` dispatches word count to status bar
-- Goal ring: SVG `stroke-dashoffset` animation
-- `Cmd+Shift+G`: inline goal-set prompt in toolbar
+### Task 2 — Image paste from clipboard
+- ⌘V with image data on clipboard → save image to assets/ dir adjacent to file
+- Insert `![](./assets/image-TIMESTAMP.png)` at cursor
+- Requires new IPC: `save-image` in main.js (write buffer to disk)
+- Add `saveImage` to preload.js
 
-### Task 3 — Status bar wiring
-- Format: `342 / 500 words . 2 min . Ln 14, Col 8 . MD . Saved`
-- Wire cursor position from CM6 `EditorView.updateListener`
-
-### Task 4 — Empty state welcome screen
-- Already stubbed in index.html — verify it shows when no file open, hides on file load
-
-### Task 5 — Build configuration
-- `forge.config.js`: add icon assets, file associations for `.md .markdown .mdown`
-- `npm run make` to verify `.app` opens by double-click
-- Verify `.md` file association works
-
-### Task 6 — Tag and push
-- Tag `v0.1.0`
-- Push to haystackz12/antigone
+### Task 3 — Sprint 2 SPRINT.md
+- Replace Sprint 1 content in SPRINT.md with Sprint 2 day-by-day tasks
+- Move Sprint 1 summary to ROADMAP.md
 
 ---
 
-## Gate (v0.1.0 release criteria)
-- Built `.app` opens `.md` files by double-click
-- Inline rendering works in the built app
-- Focus mode dims non-active paragraphs
-- Word goal ring fills as word count increases
-- All app data (prefs, recovery) in `~/Library/Application Support/Antigone/` — nothing in source dirs
+## Gate
+- Click Bold button with text selected → wraps in `**`
+- Click Bold again → unwraps `**`
+- ⌘B keyboard shortcut works
+- Paste image from clipboard → image file saved, reference inserted
+- All 16 toolbar buttons functional
 
 ---
 
@@ -62,11 +54,12 @@ Today is Sprint 1, Day 5 — Focus Mode, Word Goal & Build.
 
 ---
 
-## Carry-over from Day 4
-- Bundled fonts (Lora, Cormorant Garamond, Recursive, DM Sans) not yet added — falls back to system fonts
-- Apple Developer ID and EV Code Signing cert still needed before Day 13
+## Carry-over
+- Bundled fonts not yet added — falls back to system fonts
+- No app icon yet — uses default Electron icon
+- Apple Developer ID and EV Code Signing cert needed before Day 13
 
 ---
 
 ## End of session
-Run docs/closing_instructions.md top to bottom. Generate NEXT_SESSION.md for Day 6 (Sprint 2, Day 1).
+Run docs/closing_instructions.md top to bottom. Generate NEXT_SESSION.md for Day 7.
