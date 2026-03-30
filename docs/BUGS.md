@@ -6,6 +6,28 @@ None.
 
 ---
 
+## Resolved — Day 8 (batch 3)
+
+### BUG-011B — App still launches in split view
+- **Found:** 2026-03-30, Day 8 of Sprint 2
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** App launches in split view despite the previous fix.
+- **Root cause:** `toolbar.setViewMode(prefs.viewMode || 'editor')` in renderer.js reads the stored preference. If the user previously switched to split, `prefs.viewMode` is `'split'` and overrides the `'editor'` default.
+- **Fix:** Hardcoded `toolbar.setViewMode('editor')` — never read viewMode from prefs at launch. Logged as DEC-024.
+- **Files involved:** `src/renderer.js`
+
+### BUG-013C — Scroll sync drifts between editor and preview
+- **Found:** 2026-03-30, Day 8 of Sprint 2
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Panes drift apart when scrolling — percentage-based sync doesn't account for differing content structures.
+- **Root cause:** Percentage-based ratio (`scrollTop / scrollHeight`) doesn't reflect actual content position because editor has line numbers, gutter padding, and empty lines that preview doesn't have.
+- **Fix:** Replaced with line-number based sync using CM6's `lineBlockAtHeight()` to find the top visible editor line, then mapping that line number as a ratio of total lines to the preview's scroll position. Preview-to-editor reverse sync uses `coordsAtPos()`. Falls back to simple ratio if CM6 APIs fail.
+- **Files involved:** `src/preview.js`, `src/renderer.js`
+
+---
+
 ## Resolved — Day 8 (batch 2)
 
 ### BUG-013B — Scroll sync drifts apart between editor and preview

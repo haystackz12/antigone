@@ -27,11 +27,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     getCurrentPath: require('./editor.js').getCurrentPath,
   });
   toolbar.init();
-  toolbar.setViewMode(prefs.viewMode || 'editor');
+  // Always launch to editor-only (DEC-024 — view mode resets on launch)
+  toolbar.setViewMode('editor');
   tags.configure({ getView: require('./editor.js').getView });
   tags.init();
   toc.configure({ getView: require('./editor.js').getView });
   toc.init();
+  preview.configure({ getView: require('./editor.js').getView });
   preview.init();
 
   // Always launch to empty state (DEC-023 — session restore is opt-in, not default)

@@ -98,6 +98,11 @@
 **Why:** Standard desktop app behavior. Without this, closing the window silently discards unsaved work, which is a data loss risk. The dialog is implemented via `win.on('close')` intercepting the close event and `dialog.showMessageBox` presenting the options.
 **Date:** 2026-03-30
 
+## DEC-024 — View mode always resets to editor-only on launch
+**Decision:** View mode always resets to editor-only on launch. The stored viewMode preference is not read at startup.
+**Why:** Launching in split view shows an empty preview pane which is confusing when no file is loaded. Editor-only is the cleanest initial state. Users switch to split or preview via toolbar buttons during their session.
+**Date:** 2026-03-30
+
 ## DEC-023 — Auto-restore last session disabled
 **Decision:** Auto-restore last session disabled — always launch to empty state.
 **Why:** Auto-restoring files on launch without asking is surprising behavior and can be slow if many files were open. Users open files explicitly via ⌘O, drag-drop, or file association. Session restore can be added as an opt-in preference in Sprint 3.
