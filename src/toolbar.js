@@ -143,7 +143,7 @@ function setupImagePaste() {
 function setupButtons() {
   const actions = {
     bold:   () => wrapSelection('**'),
-    italic: () => wrapSelection('_'),
+    italic: () => wrapSelection('*'),
     strike: () => wrapSelection('~~'),
     code:   () => wrapSelection('`'),
     link:   () => insertLink(),
@@ -170,8 +170,23 @@ function setupKeyboardShortcuts() {
     const mod = e.metaKey || e.ctrlKey;
     if (!mod) return;
     if (e.key === 'b') { e.preventDefault(); wrapSelection('**'); }
-    if (e.key === 'i') { e.preventDefault(); wrapSelection('_'); }
+    if (e.key === 'i') { e.preventDefault(); wrapSelection('*'); }
     if (e.key === 'k') { e.preventDefault(); insertLink(); }
+  });
+}
+
+// ─── View mode toggles ──────────────────────────────────────────────────────
+
+function setupViewToggles() {
+  const buttons = document.querySelectorAll('#toolbar-view-toggles .toolbar-btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.view; // 'editor', 'split', 'preview'
+      if (!mode) return;
+      document.documentElement.dataset.panel = mode;
+      // Update aria-pressed on all view toggle buttons
+      buttons.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    });
   });
 }
 
@@ -181,6 +196,7 @@ function init() {
   setupButtons();
   setupKeyboardShortcuts();
   setupImagePaste();
+  setupViewToggles();
 }
 
 module.exports = { configure, init, wrapSelection, toggleHeadingPrefix, insertLink };

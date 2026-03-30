@@ -8,7 +8,7 @@
 
 const { EditorState, Compartment }           = require('@codemirror/state');
 const { EditorView, keymap, lineNumbers,
-        drawSelection }                      = require('@codemirror/view');
+        drawSelection, highlightActiveLine }  = require('@codemirror/view');
 const { defaultKeymap, history,
         historyKeymap, indentWithTab }       = require('@codemirror/commands');
 const { markdown, markdownLanguage }         = require('@codemirror/lang-markdown');
@@ -54,6 +54,7 @@ function buildExtensions() {
     history(),
     lineNumbers(),
     drawSelection(),
+    highlightActiveLine(),
     markdown({ base: markdownLanguage, codeLanguages: languages }),
     EditorView.lineWrapping,
     // ⌘O wired into CM6 keymap — fires even when editor has focus
@@ -65,7 +66,7 @@ function buildExtensions() {
       { key: 'Mod-s',       run: () => { editorSave.saveFile(currentFilePath); return true; } },
       { key: 'Mod-Shift-s', run: () => { editorSave.saveFileAs(); return true; } },
       { key: 'Mod-b',       run: () => toolbar.wrapSelection('**') },
-      { key: 'Mod-i',       run: () => toolbar.wrapSelection('_') },
+      { key: 'Mod-i',       run: () => toolbar.wrapSelection('*') },
       { key: 'Mod-k',       run: () => toolbar.insertLink() },
     ]),
     inlineRenderPlugin,

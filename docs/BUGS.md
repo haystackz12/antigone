@@ -6,6 +6,37 @@ None.
 
 ---
 
+## Resolved — Day 6
+
+### BUG-005 — View mode toggles do nothing (stuck on split view)
+- **Found:** 2026-03-30, Day 6 of Sprint 2
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Clicking editor-only, split, or preview-only toolbar buttons has no effect. Layout stays on split view.
+- **Root cause:** No click handlers were wired to the view toggle buttons (`#btn-view-editor`, `#btn-view-split`, `#btn-view-preview`). The CSS rules for `[data-panel="editor"]` etc. existed but the `data-panel` attribute on `<html>` was never changed.
+- **Fix:** Added `setupViewToggles()` in toolbar.js — reads `data-view` attribute from each button, sets `document.documentElement.dataset.panel` on click, updates `aria-pressed`.
+- **Files involved:** `src/toolbar.js`
+
+### BUG-006 — Italic decoration not rendering after toolbar button applied
+- **Found:** 2026-03-30, Day 6 of Sprint 2
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Clicking the I button wraps text in underscores (`_text_`) but inline-render.js does not render italic styling.
+- **Root cause:** The italic toolbar action used `wrapSelection('_')` (underscores), but the Lezer Markdown parser recognizes `*text*` (asterisks) as `Emphasis` nodes. While underscores are valid Markdown emphasis, the parser treats them differently at word boundaries. Using `*` is consistent with the `**` bold pattern and matches inline-render.js expectations.
+- **Fix:** Changed italic marker from `'_'` to `'*'` in toolbar.js (button action + keyboard shortcut) and editor.js (CM6 keymap).
+- **Files involved:** `src/toolbar.js`, `src/editor.js`
+
+### BUG-007 — Focus mode dims entire page instead of non-active paragraphs
+- **Found:** 2026-03-30, Day 6 of Sprint 2
+- **Severity:** High
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Toggling focus mode dims all editor lines equally — the active line is not at full opacity.
+- **Root cause:** The CSS rule `body.focus-active .cm-line.cm-activeLine { opacity: 1 }` relies on CM6 adding the `.cm-activeLine` class, but this requires the `highlightActiveLine()` extension which was never included in the extensions array. Without it, `.cm-activeLine` is never added to any line, so the full-opacity rule never matches.
+- **Fix:** Added `highlightActiveLine()` import from `@codemirror/view` and included it in the `buildExtensions()` array in editor.js.
+- **Files involved:** `src/editor.js`
+
+---
+
 ## Resolved — Day 4
 
 ### BUG-002 — ⌘S crashes with ENOENT on write-file IPC
