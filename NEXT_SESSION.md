@@ -1,9 +1,9 @@
-# NEXT_SESSION.md — Day 8 Kick-off Prompt
+# NEXT_SESSION.md — Day 9 Kick-off Prompt
 
 We are working on the Antigone project — a cross-platform Markdown editor built on
 Electron + CodeMirror 6. Repo: haystackz12/antigone | Path: ~/Projects/antigone
 
-Today is Sprint 2, Day 8 — Multi-tab + TOC + Split View.
+Today is Sprint 2, Day 9 — Export + Page Breaks + Print.
 
 ## Step 0 — Read these files before touching any code
 1. docs/CLAUDE.md
@@ -13,41 +13,37 @@ Today is Sprint 2, Day 8 — Multi-tab + TOC + Split View.
 
 ---
 
-## Day 8 Tasks (from SPRINT.md)
+## Day 9 Tasks (from SPRINT.md)
 
-### Task 1 — Tab state management
-- Open, close, switch tabs
-- Each tab has its own document state, file path, dirty flag
-- + button opens a new tab (not replaces current)
-- Close tab button with unsaved guard
+### Task 1 — PDF silent export
+- Use Electron's `webContents.printToPDF()` via IPC
+- Render Markdown to HTML (reuse preview.js pipeline)
+- Export to user-selected path via save dialog
+- Add `export-pdf` IPC handler in main.js
+- Add `exportPdf` to preload.js
 
-### Task 2 — Session restore
-- Remember open tabs on quit (store in electron-store)
-- Restore tab state on relaunch
+### Task 2 — HTML self-contained export
+- Render Markdown to HTML with inline styles
+- Save as standalone .html file
+- Include CSS for proper formatting
 
-### Task 3 — TOC (Table of Contents)
-- Generate heading list from document
-- Populate the TOC sidebar section
-- Click heading in TOC to scroll editor to that position
-- Update on document change (debounced)
+### Task 3 — Print stylesheet
+- `@media print` CSS rules for clean printing
+- Hide UI elements (toolbar, sidebar, tabs, status bar)
+- Show only prose content
 
-### Task 4 — Split view with preview
-- Install marked.js + DOMPurify
-- Create preview.js — render Markdown to HTML in preview pane
-- Wire split view: editor changes update preview
-- Replace preview placeholder with live content
-
-### Task 5 — Enable preview-only toolbar button
-- Remove disabled attribute from preview-only button (DEC-021 revisit)
+### Task 4 — Page break detection
+- Detect `<!-- pagebreak -->` in Markdown
+- Inject `page-break-before: always` CSS at those points
+- Works for both PDF export and print
 
 ---
 
 ## Gate
-- Open 3 files in 3 tabs, switch between them
-- Close app, reopen — same tabs restored
-- TOC shows headings, clicking scrolls editor
-- Split view renders live Markdown preview
-- Preview-only mode shows rendered Markdown
+- Export to PDF produces readable output
+- Export to HTML produces standalone file
+- Cmd+P prints with correct formatting
+- `<!-- pagebreak -->` creates page breaks in PDF/print
 
 ---
 
@@ -60,4 +56,4 @@ Today is Sprint 2, Day 8 — Multi-tab + TOC + Split View.
 ---
 
 ## End of session
-Run docs/closing_instructions.md top to bottom. Generate NEXT_SESSION.md for Day 9.
+Run docs/closing_instructions.md top to bottom. Generate NEXT_SESSION.md for Day 10.

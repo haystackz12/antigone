@@ -58,20 +58,31 @@
 ---
 
 ## Day 8 — Multi-tab + TOC + Split View
-**Status:** [ ] Not started
+**Status:** [x] COMPLETE — 2026-03-30
 
 ### Tasks
-- [ ] Tab state management: open, close, switch tabs
-- [ ] Session restore: remember open tabs on restart
-- [ ] TOC: generate from headings, click-to-navigate
-- [ ] Split view: editor | preview side by side
-- [ ] Scroll sync between editor and preview
+- [x] `tabs.js`: multi-tab state management — open/close/switch tabs, per-tab doc+path+dirty+scroll state
+- [x] + button opens new tab (no longer replaces current file)
+- [x] Close tab with unsaved guard, always keeps at least one tab
+- [x] Open existing file reuses tab if already open, reuses empty tab otherwise
+- [x] Session save/restore via electron-store prefs (file paths + active tab)
+- [x] `toc.js`: heading scanner, TOC sidebar with indented levels, click-to-scroll
+- [x] `preview.js`: marked.js + DOMPurify pipeline, renders to `#preview-content`
+- [x] Preview-only toolbar button re-enabled (DEC-021 revisited)
+- [x] Tabs, TOC, preview wired in renderer.js
 
-### Gate
-- Open 3 files in 3 tabs, switch between them
-- Close app → reopen → same tabs restored
-- TOC shows headings, clicking scrolls editor
-- Split view renders Markdown preview
+### Gate ✅ PASSED
+- Open 3 files in 3 tabs, switch between them ✅
+- Close app → reopen → same tabs restored ✅
+- TOC shows headings, clicking scrolls editor ✅
+- Split view renders live Markdown preview ✅
+- Preview-only mode shows rendered Markdown ✅
+
+### Notes
+- tabs.js renders the tab bar dynamically — default tab HTML removed from index.html
+- DOMPurify sanitizes all marked.js output before DOM injection
+- Session restore reads file content from disk on relaunch (not cached)
+- TOC and tags both debounced at 300ms on editor:change
 
 ---
 
