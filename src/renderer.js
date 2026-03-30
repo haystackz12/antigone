@@ -34,8 +34,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   toc.init();
   preview.init();
 
-  // Restore session tabs (or open a blank tab if none saved)
-  await tabs.restoreSession();
+  // Always launch to empty state (DEC-023 — session restore is opt-in, not default)
+  tabs.openNewTab();
 
   // Apply CM6 theme to match
   const isDark = document.documentElement.classList.contains('dark');

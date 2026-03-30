@@ -6,6 +6,37 @@ None.
 
 ---
 
+## Resolved — Day 8 (batch 2)
+
+### BUG-013B — Scroll sync drifts apart between editor and preview
+- **Found:** 2026-03-30, Day 8 of Sprint 2
+- **Severity:** Low
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Scroll sync drifts — panes don't stay aligned. Can trigger division-by-zero when content fits without scrolling.
+- **Root cause:** No guard for when content fits entirely within the viewport (`scrollHeight <= clientHeight`), causing `0/0` ratio calculations that produce erratic scroll positions.
+- **Fix:** Added early-return guards in `syncScroll()`: if `sourceMax <= 0` or `targetMax <= 0`, skip sync entirely.
+- **Files involved:** `src/preview.js`
+
+### BUG-015 — App restores previous document on launch without asking
+- **Found:** 2026-03-30, Day 8 of Sprint 2
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Relaunching the app automatically reloads the last open file instead of showing the empty state.
+- **Root cause:** `tabs.restoreSession()` in renderer.js was called unconditionally on launch, reading saved file paths from electron-store and loading them.
+- **Fix:** Replaced `await tabs.restoreSession()` with `tabs.openNewTab()` — always launch to empty state. Session restore deferred as opt-in preference (DEC-023).
+- **Files involved:** `src/renderer.js`
+
+### BUG-014B — Orphan notification bar with X visible below find bar
+- **Found:** 2026-03-30, Day 8 of Sprint 2
+- **Severity:** Low
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** An extra bar with just an X button visible at the bottom of the editor pane, below the find bar.
+- **Root cause:** `#notification-bar` in index.html had `hidden` attribute, but its CSS rule `#notification-bar { display: flex }` has higher specificity than the browser's `[hidden] { display: none }`, so the bar was always visible despite the hidden attribute.
+- **Fix:** Removed the `#notification-bar` element from index.html entirely — it is not used by any module. The CSS rules remain harmless (target a nonexistent element).
+- **Files involved:** `src/index.html`
+
+---
+
 ## Resolved — Day 8
 
 ### BUG-013 — Scroll sync not working between editor and preview panes

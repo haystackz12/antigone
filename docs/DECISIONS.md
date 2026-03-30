@@ -98,6 +98,12 @@
 **Why:** Standard desktop app behavior. Without this, closing the window silently discards unsaved work, which is a data loss risk. The dialog is implemented via `win.on('close')` intercepting the close event and `dialog.showMessageBox` presenting the options.
 **Date:** 2026-03-30
 
+## DEC-023 — Auto-restore last session disabled
+**Decision:** Auto-restore last session disabled — always launch to empty state.
+**Why:** Auto-restoring files on launch without asking is surprising behavior and can be slow if many files were open. Users open files explicitly via ⌘O, drag-drop, or file association. Session restore can be added as an opt-in preference in Sprint 3.
+**Revisit trigger:** Sprint 3 — preferences UI can add a "Restore last session" toggle.
+**Date:** 2026-03-30
+
 ## DEC-022 — Find/replace remapped from ⌘H to ⌘⌥F
 **Decision:** ⌘H is not used for find/replace. ⌘⌥F (Cmd+Opt+F) is used instead.
 **Why:** ⌘H is reserved by macOS for Hide Window and cannot be overridden in Electron. CM6's default `searchKeymap` binds `Mod-h` to open the search panel with replace enabled. This binding is filtered out and replaced with `Mod-Alt-f`, which is the standard replace shortcut in many Mac editors (VS Code, Sublime Text).

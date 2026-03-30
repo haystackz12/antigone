@@ -213,17 +213,8 @@
       <!-- CodeMirror 6 mount point — editor.js attaches here -->
       <div id="cm-editor" aria-label="Markdown editor"></div>
 
-      <!-- Inline notifications (file changed, recovery available) -->
-      <div id="notification-bar" role="alert" aria-live="assertive" hidden>
-        <span id="notification-message"></span>
-        <div id="notification-actions"></div>
-        <button id="notification-dismiss" aria-label="Dismiss">
-          <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-            <line x1="1.5" y1="1.5" x2="10.5" y2="10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="10.5" y1="1.5" x2="1.5" y2="10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
+      <!-- Notification bar removed — was rendering despite hidden attr due to
+           CSS display:flex overriding [hidden]. Not currently used by any module. -->
     </main>
 
     <!-- ── Resize gutter between editor and preview ─────────────────────── -->

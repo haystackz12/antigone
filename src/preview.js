@@ -60,9 +60,15 @@ function syncScroll(source) {
   const sourceEl = source === 'editor' ? scroller : previewPane;
   const targetEl = source === 'editor' ? previewPane : scroller;
 
-  const maxScroll = sourceEl.scrollHeight - sourceEl.clientHeight;
-  const pct = maxScroll > 0 ? sourceEl.scrollTop / maxScroll : 0;
-  targetEl.scrollTop = pct * (targetEl.scrollHeight - targetEl.clientHeight);
+  // Skip sync if source content fits without scrolling
+  const sourceMax = sourceEl.scrollHeight - sourceEl.clientHeight;
+  if (sourceMax <= 0) { isSyncingScroll = false; return; }
+
+  const targetMax = targetEl.scrollHeight - targetEl.clientHeight;
+  if (targetMax <= 0) { isSyncingScroll = false; return; }
+
+  const pct = sourceEl.scrollTop / sourceMax;
+  targetEl.scrollTop = pct * targetMax;
 
   requestAnimationFrame(() => { isSyncingScroll = false; });
 }
