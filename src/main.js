@@ -178,10 +178,10 @@ ipcMain.handle('read-file', async (_event, filePath) => {
 
 ipcMain.handle('write-file', async (_event, filePath, content) => {
   if (!filePath || typeof filePath !== 'string') {
-    throw new Error('write-file: filePath must be a non-empty string');
+    return { ok: false, error: 'write-file: filePath must be a non-empty string' };
   }
   if (typeof content !== 'string') {
-    throw new Error('write-file: content must be a string');
+    return { ok: false, error: 'write-file: content must be a string' };
   }
   const resolved = path.resolve(filePath);
   const dir      = path.dirname(resolved);
@@ -193,7 +193,7 @@ ipcMain.handle('write-file', async (_event, filePath, content) => {
   } catch (err) {
     // Clean up temp file if rename failed
     fs.promises.unlink(tmpPath).catch(() => {});
-    throw err;
+    return { ok: false, error: err.message };
   }
   return { ok: true, path: resolved };
 });

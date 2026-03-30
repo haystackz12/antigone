@@ -83,8 +83,18 @@ function onDocChange(content) {
     isDirty = true;
     updateTabBar(fileNameFromPath(currentFilePath), true);
   }
+  updateWordCount(content);
   editorSave.scheduleAutoSave();
   window.dispatchEvent(new CustomEvent('editor:change', { detail: { content } }));
+}
+
+function updateWordCount(text) {
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  const minutes = Math.max(1, Math.ceil(words / 200));
+  const wordsEl = document.getElementById('status-words');
+  const timeEl  = document.getElementById('status-readtime');
+  if (wordsEl) wordsEl.textContent = `${words} words`;
+  if (timeEl)  timeEl.textContent = words === 0 ? '0 min' : `${minutes} min`;
 }
 
 // ─── Mount ────────────────────────────────────────────────────────────────────
@@ -105,6 +115,7 @@ function loadContent(content, filePath) {
   currentFilePath = filePath;
   isDirty = false;
   updateTabBar(fileNameFromPath(filePath), false);
+  updateWordCount(content);
   setEmptyState(false);
   // Start watching the new file for external changes
   if (filePath) window.api.startWatching(filePath);
@@ -131,9 +142,9 @@ async function openFilePath(filePath) {
 
 // ─── Tab bar ──────────────────────────────────────────────────────────────────
 function updateTabBar(filename, dirty) {
-  const tab = document.querySelector('.tab-item.active');
+  const tab = document.querySelector('.tab.tab--active');
   if (!tab) return;
-  const label = tab.querySelector('.tab-label') || tab;
+  const label = tab.querySelector('.tab-title') || tab;
   label.textContent = (dirty ? '● ' : '') + filename;
   tab.title = currentFilePath || filename;
 }

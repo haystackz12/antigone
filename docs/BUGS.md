@@ -6,6 +6,40 @@ None.
 
 ---
 
+## Resolved — Day 4
+
+### BUG-002 — ⌘S crashes with ENOENT on write-file IPC
+- **Found:** 2026-03-30, Day 4 of Sprint 1
+- **Severity:** Critical
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Saving a file throws "Error invoking remote method 'write-file': ENOENT" and crashes the save flow.
+- **Reproduction:** Open a file, edit it, press ⌘S.
+- **Root cause:** The `write-file` IPC handler in main.js used `throw err` on failure, which propagated as an unhandled remote method error instead of returning a graceful `{ ok: false }` result.
+- **Fix:** Replaced `throw err` with `return { ok: false, error: err.message }` in the catch block. Also changed validation errors from `throw` to `return { ok: false }`.
+- **Files involved:** `src/main.js`
+
+### BUG-003 — ● dirty indicator never appears in tab title
+- **Found:** 2026-03-30, Day 4 of Sprint 1
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Typing in editor does not show the ● unsaved prefix in the tab title.
+- **Reproduction:** Open a file, type any character, observe tab title — no ● prefix.
+- **Root cause:** `updateTabBar()` in editor.js used selectors `.tab-item.active` and `.tab-label` but the actual DOM uses `.tab.tab--active` and `.tab-title`.
+- **Fix:** Changed selectors to `.tab.tab--active` and `.tab-title` to match index.html.
+- **Files involved:** `src/editor.js`
+
+### BUG-004 — Word count stuck at 0 words
+- **Found:** 2026-03-30, Day 4 of Sprint 1
+- **Severity:** Low
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Status bar shows "0 words · 0 min" even with content loaded and after typing.
+- **Reproduction:** Open any .md file or type in editor. Status bar word count never updates.
+- **Root cause:** No word count update function existed — the status bar elements `#status-words` and `#status-readtime` were never written to.
+- **Fix:** Added `updateWordCount()` in editor.js that splits text on whitespace and computes read time. Called on both `onDocChange` and `loadContent`.
+- **Files involved:** `src/editor.js`
+
+---
+
 ## Bug template
 ```
 ### BUG-XXX — Short title
