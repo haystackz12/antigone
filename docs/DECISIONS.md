@@ -98,6 +98,12 @@
 **Why:** Standard desktop app behavior. Without this, closing the window silently discards unsaved work, which is a data loss risk. The dialog is implemented via `win.on('close')` intercepting the close event and `dialog.showMessageBox` presenting the options.
 **Date:** 2026-03-30
 
+## DEC-021 — Preview-only mode and + button deferred to Day 8
+**Decision:** Split view and preview-only mode show a placeholder until preview.js is wired on Day 8. The + button behaves as single-tab "New file" (with unsaved-changes guard) until multi-tab is implemented on Day 8. Preview-only toolbar button is disabled.
+**Why:** preview.js (marked.js + DOMPurify) is not yet implemented. Showing an empty pane or allowing preview-only mode without a preview renderer is confusing. The + button's multi-tab behavior requires tab state management which is a Day 8 deliverable.
+**Revisit trigger:** Day 8 (multi-tab + split view implementation).
+**Date:** 2026-03-30
+
 ## DEC-014 — preview.js deferred to Sprint 2
 **Decision:** The `preview.js` module (marked.js + DOMPurify pipeline) is not created in Sprint 1.
 **Why:** The preview pane is not wired for live updates until Sprint 2 (split-view, scroll sync). Installing marked.js and DOMPurify now would add unused dependencies. The `inline-render.js` decoration layer handles all visual rendering in Sprint 1.

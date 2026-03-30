@@ -367,6 +367,12 @@ body {
   background:       var(--color-surface-2);
 }
 
+.toolbar-btn:disabled {
+  opacity:          0.4;
+  cursor:           not-allowed;
+  pointer-events:   none;
+}
+
 .toolbar-btn[aria-pressed="true"],
 .toolbar-btn.is-active {
   background:       var(--color-accent-subtle);
@@ -952,6 +958,17 @@ kbd {
   overflow-y:       auto;
   overflow-x:       hidden;
   padding:          var(--space-10) 0;
+  position:         relative;
+}
+
+#preview-placeholder {
+  display:          flex;
+  align-items:      center;
+  justify-content:  center;
+  height:           100%;
+  color:            var(--color-text-tertiary);
+  font-size:        14px;
+  font-style:       italic;
 }
 
 #preview-content {
