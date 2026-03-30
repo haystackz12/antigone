@@ -178,20 +178,25 @@ function setupKeyboardShortcuts() {
 // ─── View mode toggles ──────────────────────────────────────────────────────
 
 function setViewMode(mode) {
-  const editor  = document.getElementById('editor-pane');
-  const preview = document.getElementById('preview-pane');
-  const resizer = document.getElementById('split-resize');
+  const workspace = document.getElementById('workspace');
+  const editor    = document.getElementById('editor-pane');
+  const preview   = document.getElementById('preview-pane');
+  const resizer   = document.getElementById('split-resize');
 
+  // Set inline grid-template-columns to override all CSS rules (including :has())
   if (mode === 'editor') {
+    if (workspace) workspace.style.gridTemplateColumns = '0 0 1fr 0 0';
     if (editor)  editor.style.display  = '';
     if (preview) preview.style.display = 'none';
     if (resizer) resizer.style.display = 'none';
   } else if (mode === 'preview') {
+    if (workspace) workspace.style.gridTemplateColumns = '0 0 0 0 1fr';
     if (editor)  editor.style.display  = 'none';
     if (preview) preview.style.display = '';
     if (resizer) resizer.style.display = 'none';
   } else {
-    // split (default)
+    // split (default) — clear inline override, let CSS handle it
+    if (workspace) workspace.style.gridTemplateColumns = '';
     if (editor)  editor.style.display  = '';
     if (preview) preview.style.display = '';
     if (resizer) resizer.style.display = '';

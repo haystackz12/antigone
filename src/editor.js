@@ -224,10 +224,17 @@ async function newFile() {
 }
 
 function setupNewFileButtons() {
-  const tabBtn  = document.getElementById('btn-new-tab');
+  // Clone + button to remove any existing handlers, then add a clean one
+  const tabBtn = document.getElementById('btn-new-tab');
+  if (tabBtn) {
+    const fresh = tabBtn.cloneNode(true);
+    tabBtn.parentNode.replaceChild(fresh, tabBtn);
+    fresh.addEventListener('click', () => newFile());
+  }
   const emptyBtn = document.getElementById('btn-new-file');
-  if (tabBtn)   tabBtn.addEventListener('click', () => newFile());
-  if (emptyBtn) emptyBtn.addEventListener('click', () => newFile());
+  if (emptyBtn) {
+    emptyBtn.addEventListener('click', () => newFile());
+  }
 }
 
 // ─── Init ─────────────────────────────────────────────────────────────────────

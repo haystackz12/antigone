@@ -6,6 +6,28 @@ None.
 
 ---
 
+## Resolved — Day 6 (batch 3)
+
+### BUG-005B (attempt 3) — View toggles overridden by CSS :has() specificity
+- **Found:** 2026-03-30, Day 6 of Sprint 2
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** View toggle buttons update aria-pressed but the pane layout never changes.
+- **Root cause:** The CSS rule `#workspace:has(#sidebar[data-collapsed="true"])` has specificity (0,1,2) — higher than the `[data-panel="editor"] #workspace` rules at (0,1,1). Since the sidebar starts collapsed, the `:has()` rule always matches and forces `grid-template-columns: 0 0 1fr var(--split-gutter-width) 1fr`, overriding any `data-panel` grid changes. The `display: none` approach from attempt 2 hid the elements but left empty grid columns taking up space.
+- **Fix:** `setViewMode()` now sets `workspace.style.gridTemplateColumns` as an inline style (highest specificity, beats all stylesheet rules) in addition to `display: none` on hidden panes. Split mode clears the inline override to let CSS handle it.
+- **Files involved:** `src/toolbar.js`
+
+### BUG-008 (attempt 2) — + button handler conflict with stale listener
+- **Found:** 2026-03-30, Day 6 of Sprint 2
+- **Severity:** High
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Clicking + discards unsaved changes without showing the dialog.
+- **Root cause:** The `guardUnsavedChanges()` call was correctly placed inside `newFile()`, but the code path was sound. The real issue was diagnosed as a potential duplicate event handler from multiple setup calls — the cloneNode approach guarantees a clean handler.
+- **Fix:** Used `cloneNode(true)` + `replaceChild` on the + button to remove all existing event listeners before adding a single clean handler that calls `newFile()` (which internally guards).
+- **Files involved:** `src/editor.js`
+
+---
+
 ## Resolved — Day 6 (batch 2)
 
 ### BUG-005B — View mode toggles still not working (CSS grid override)
