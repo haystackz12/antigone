@@ -200,42 +200,22 @@ Confirm:
 
 ---
 
-## Opening message for the NEXT day's chat session
+## Next Session Kick-off Prompt
 
-Copy and paste this template into a new Claude chat at the start of the next session.
-Fill in the bracketed fields before sending.
+At the end of every session, generate a ready-to-paste kick-off prompt for the next session and write it to a file called `NEXT_SESSION.md` in the project root.
 
----
+The kick-off prompt must include:
+1. The sprint and day number we are starting
+2. Instruction to read `CLAUDE.md`, `SESSION_STATE.md`, `SPRINT.md`, and `DECISIONS.md` before starting
+3. The full task list for that day copied from `SPRINT.md`
+4. The gate criteria for that day
+5. The constraints reminder:
+   - `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true` — never change these
+   - 400-line file cap per source file
+   - Show planned file changes before making them
+6. Any carry-over issues from `SESSION_STATE.md`
 
-**COPY FROM HERE:**
-
-```
-We are working on the Antigone project — a cross-platform Markdown and plain text
-editor built on Electron + CodeMirror 6, targeting macOS, Windows, and Linux.
-Repo: haystackz12/antigone  |  Local path: ~/Projects/antigone
-
-Please read the following files before we begin:
-1. docs/CLAUDE.md
-2. docs/SESSION_STATE.md
-3. docs/SPRINT.md
-4. docs/BUGS.md
-
-Today is Sprint [N], Day [N] — [Day title].
-
-[PASTE THE CONTENT OF docs/SESSION_STATE.md HERE]
-
-Today's goals from SPRINT.md:
-[PASTE TODAY'S DAY SECTION FROM SPRINT.md HERE]
-
-The gate we must pass before ending today:
-[PASTE THE GATE CONDITION FROM SPRINT.md HERE]
-
-Also read: docs/features/[FEATURE FILE RELEVANT TO TODAY].md
-
-Let's begin with: [PASTE THE "WHAT TO DO FIRST" LINE FROM SESSION_STATE.md HERE]
-```
-
-**END COPY**
+Commit `NEXT_SESSION.md` along with the other closing files so it is ready and waiting at the start of the next session.
 
 ---
 
