@@ -5,6 +5,8 @@
 
 'use strict';
 
+const { attachScrollSync } = require('./preview.js');
+
 let getView = null;
 let getCurrentPath = null;
 
@@ -200,6 +202,8 @@ function setViewMode(mode) {
     if (editor)  editor.style.display  = '';
     if (preview) preview.style.display = '';
     if (resizer) resizer.style.display = '';
+    // Attach scroll sync after panes are visible
+    requestAnimationFrame(() => attachScrollSync());
   }
 
   document.documentElement.dataset.panel = mode;

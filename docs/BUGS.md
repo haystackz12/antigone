@@ -6,6 +6,28 @@ None.
 
 ---
 
+## Resolved — Day 8
+
+### BUG-013 — Scroll sync not working between editor and preview panes
+- **Found:** 2026-03-30, Day 8 of Sprint 2
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Scrolling the editor does not scroll the preview pane and vice versa in split view.
+- **Root cause:** No scroll sync was implemented. preview.js only handled rendering, not scroll coordination.
+- **Fix:** Added percentage-based scroll sync in preview.js: `syncScroll()` calculates `scrollTop / (scrollHeight - clientHeight)` ratio from source and applies to target. Uses `isSyncingScroll` flag to prevent infinite feedback loops. `attachScrollSync()` binds scroll listeners with `{ passive: true }`. Called from `setViewMode('split')` in toolbar.js via `requestAnimationFrame` after panes are visible.
+- **Files involved:** `src/preview.js`, `src/toolbar.js`
+
+### BUG-014 — Find bar pushes editor content causing mismatched pane heights
+- **Found:** 2026-03-30, Day 8 of Sprint 2
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Opening ⌘F find bar in split view makes the editor pane shorter than the preview pane, breaking layout and scroll sync.
+- **Root cause:** CM6's `.cm-panels` renders as a block element inside the editor, reducing available height for `.cm-content`. The two panes become different heights.
+- **Fix:** Set `.cm-panels { position: absolute !important; bottom: 0; z-index: 50; }` so the find bar overlays the editor content instead of taking layout space. `#editor-pane` already has `position: relative` for correct absolute positioning scope.
+- **Files involved:** `src/styles.css`
+
+---
+
 ## Resolved — Day 7 (batch 2)
 
 ### BUG-012 — Dark mode editor content left-justified and full-width
