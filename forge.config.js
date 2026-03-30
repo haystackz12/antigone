@@ -4,6 +4,19 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 module.exports = {
   packagerConfig: {
     asar: true,
+    name: 'Antigone',
+    executableName: 'Antigone',
+    appBundleId: 'com.haystackz.antigone',
+    extendInfo: {
+      CFBundleDocumentTypes: [
+        {
+          CFBundleTypeName: 'Markdown Document',
+          CFBundleTypeRole: 'Editor',
+          LSHandlerRank: 'Default',
+          CFBundleTypeExtensions: ['md', 'markdown', 'mdown'],
+        },
+      ],
+    },
   },
   rebuildConfig: {},
   makers: [

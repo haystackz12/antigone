@@ -68,6 +68,7 @@ function buildExtensions() {
     themeCompartment.of(isDarkMode() ? oneDark : githubLightTheme),
     EditorView.updateListener.of(update => {
       if (update.docChanged) onDocChange(update.state.doc.toString());
+      if (update.selectionSet || update.docChanged) updateCursorPosition(update.state);
     }),
   ];
 }
@@ -95,6 +96,14 @@ function updateWordCount(text) {
   const timeEl  = document.getElementById('status-readtime');
   if (wordsEl) wordsEl.textContent = `${words} words`;
   if (timeEl)  timeEl.textContent = words === 0 ? '0 min' : `${minutes} min`;
+}
+
+function updateCursorPosition(state) {
+  const pos = state.selection.main.head;
+  const line = state.doc.lineAt(pos);
+  const col = pos - line.from + 1;
+  const el = document.getElementById('status-cursor');
+  if (el) el.textContent = `Ln ${line.number}, Col ${col}`;
 }
 
 // ─── Mount ────────────────────────────────────────────────────────────────────
