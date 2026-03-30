@@ -98,6 +98,11 @@
 **Why:** Standard desktop app behavior. Without this, closing the window silently discards unsaved work, which is a data loss risk. The dialog is implemented via `win.on('close')` intercepting the close event and `dialog.showMessageBox` presenting the options.
 **Date:** 2026-03-30
 
+## DEC-022 — Find/replace remapped from ⌘H to ⌘⌥F
+**Decision:** ⌘H is not used for find/replace. ⌘⌥F (Cmd+Opt+F) is used instead.
+**Why:** ⌘H is reserved by macOS for Hide Window and cannot be overridden in Electron. CM6's default `searchKeymap` binds `Mod-h` to open the search panel with replace enabled. This binding is filtered out and replaced with `Mod-Alt-f`, which is the standard replace shortcut in many Mac editors (VS Code, Sublime Text).
+**Date:** 2026-03-30
+
 ## DEC-021 — Preview-only mode and + button deferred to Day 8
 **Decision:** Split view and preview-only mode show a placeholder until preview.js is wired on Day 8. The + button behaves as single-tab "New file" (with unsaved-changes guard) until multi-tab is implemented on Day 8. Preview-only toolbar button is disabled.
 **Why:** preview.js (marked.js + DOMPurify) is not yet implemented. Showing an empty pane or allowing preview-only mode without a preview renderer is confusing. The + button's multi-tab behavior requires tab state management which is a Day 8 deliverable.

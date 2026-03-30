@@ -213,7 +213,9 @@ function setupViewToggles() {
   document.querySelectorAll('#toolbar-view-toggles .toolbar-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const mode = btn.dataset.view;
-      if (mode) setViewMode(mode);
+      if (!mode) return;
+      setViewMode(mode);
+      window.api.setPrefs({ viewMode: mode });
     });
   });
 }
@@ -227,4 +229,4 @@ function init() {
   setupViewToggles();
 }
 
-module.exports = { configure, init, wrapSelection, toggleHeadingPrefix, insertLink };
+module.exports = { configure, init, setViewMode, wrapSelection, toggleHeadingPrefix, insertLink };

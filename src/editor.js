@@ -14,7 +14,7 @@ const { defaultKeymap, history,
 const { markdown, markdownLanguage }         = require('@codemirror/lang-markdown');
 const { languages }                          = require('@codemirror/language-data');
 const { oneDark }                            = require('@codemirror/theme-one-dark');
-const { searchKeymap, highlightSelectionMatches } = require('@codemirror/search');
+const { searchKeymap, highlightSelectionMatches, openSearchPanel } = require('@codemirror/search');
 const { autocompletion }                     = require('@codemirror/autocomplete');
 const { inlineRenderPlugin }                 = require('./inline-render.js');
 const editorSave                             = require('./editor-save.js');
@@ -78,7 +78,9 @@ function buildExtensions() {
     keymap.of([
       ...defaultKeymap,
       ...historyKeymap,
-      ...searchKeymap,
+      // Filter Mod-h from searchKeymap — macOS reserves ⌘H for Hide Window
+      ...searchKeymap.filter(k => k.key !== 'Mod-h'),
+      { key: 'Mod-Alt-f',   run: openSearchPanel },
       indentWithTab,
       { key: 'Mod-o',       run: () => { openFileDialog(); return true; } },
       { key: 'Mod-s',       run: () => { editorSave.saveFile(currentFilePath); return true; } },

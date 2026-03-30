@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     getCurrentPath: require('./editor.js').getCurrentPath,
   });
   toolbar.init();
+  toolbar.setViewMode(prefs.viewMode || 'editor');
   tags.configure({ getView: require('./editor.js').getView });
   tags.init();
 

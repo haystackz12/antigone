@@ -6,6 +6,28 @@ None.
 
 ---
 
+## Resolved — Day 7
+
+### BUG-010 — ⌘H closes the app (macOS Hide Window conflict)
+- **Found:** 2026-03-30, Day 7 of Sprint 2
+- **Severity:** Critical
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Pressing ⌘H triggers macOS Hide Window instead of find/replace.
+- **Root cause:** ⌘H is reserved by macOS for Hide Window and cannot be overridden in Electron. CM6's default `searchKeymap` binds `Mod-h` to `openSearchPanel`.
+- **Fix:** Filtered `Mod-h` from `searchKeymap` array before spreading into CM6 keymap. Added `Mod-Alt-f` binding for `openSearchPanel` (standard replace shortcut in Mac editors). Logged as DEC-022.
+- **Files involved:** `src/editor.js`
+
+### BUG-011 — App launches in split view instead of editor-only
+- **Found:** 2026-03-30, Day 7 of Sprint 2
+- **Severity:** Low
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** App launches showing split view with empty preview pane.
+- **Root cause:** No default view mode was set on launch. The HTML starts with `data-panel="split"` and no code called `setViewMode('editor')` on init.
+- **Fix:** `renderer.js` now calls `toolbar.setViewMode(prefs.viewMode || 'editor')` after toolbar init. View mode changes are persisted to electron-store via `window.api.setPrefs({ viewMode })`.
+- **Files involved:** `src/toolbar.js`, `src/renderer.js`
+
+---
+
 ## Resolved — Day 6 (batch 3)
 
 ### BUG-005B (attempt 3) — View toggles overridden by CSS :has() specificity
