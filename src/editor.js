@@ -135,6 +135,8 @@ function loadContent(content, filePath) {
 // main.js open-dialog handler returns { canceled, path, content }
 // content is already read by main — no second readFile IPC call needed.
 async function openFileDialog() {
+  const ok = await editorSave.guardUnsavedChanges();
+  if (!ok) return;
   const result = await window.api.openDialog();
   if (!result || result.canceled) return;
   if (!result.path || result.content === undefined) return;
@@ -144,6 +146,8 @@ async function openFileDialog() {
 // Used by macOS open-file IPC and drag-and-drop
 async function openFilePath(filePath) {
   if (!filePath) return;
+  const ok = await editorSave.guardUnsavedChanges();
+  if (!ok) return;
   const content = await window.api.readFile(filePath);
   if (content === null || content === undefined) return;
   loadContent(content, filePath);
@@ -213,7 +217,9 @@ function setupOpenButton() {
 }
 
 // ─── New file ─────────────────────────────────────────────────────────────────
-function newFile() {
+async function newFile() {
+  const ok = await editorSave.guardUnsavedChanges();
+  if (!ok) return;
   loadContent('', null);
 }
 

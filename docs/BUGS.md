@@ -6,6 +6,37 @@ None.
 
 ---
 
+## Resolved — Day 6 (batch 2)
+
+### BUG-005B — View mode toggles still not working (CSS grid override)
+- **Found:** 2026-03-30, Day 6 of Sprint 2
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** View toggle buttons update aria-pressed but the layout never changes — app stays on split view.
+- **Root cause:** The CSS approach using `grid-template-columns: 0` to hide panes doesn't reliably collapse grid children — content still renders in 0-width columns, and a `:has()` rule for collapsed sidebar was overriding the `[data-panel]` grid rules.
+- **Fix:** Replaced CSS-only approach with direct DOM show/hide in `setViewMode()`: sets `display: none` on hidden panes and the split resizer. Keeps `data-panel` attribute for any CSS that references it.
+- **Files involved:** `src/toolbar.js`
+
+### BUG-008 — New file discards unsaved changes without dialog
+- **Found:** 2026-03-30, Day 6 of Sprint 2
+- **Severity:** High
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Clicking + (new file), ⌘N, ⌘O, or drag-dropping a file silently discards unsaved changes.
+- **Root cause:** The unsaved-changes dialog only existed for window close. No guard was called before `loadContent()` in newFile, openFileDialog, openFilePath, or drag-drop handlers.
+- **Fix:** Added `guardUnsavedChanges()` to editor-save.js — reuses `showUnsavedDialog()` IPC. Called before all five document-replacing code paths in editor.js: `newFile()`, `openFileDialog()`, `openFilePath()` (covers drag-drop and macOS open-file).
+- **Files involved:** `src/editor-save.js`, `src/editor.js`
+
+### BUG-009 — Word goal prompt crashes with "prompt() is not supported"
+- **Found:** 2026-03-30, Day 6 of Sprint 2
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Clicking the word goal ring or pressing ⌘⇧G calls `window.prompt()` which is blocked in Electron's sandboxed renderer.
+- **Root cause:** `window.prompt()` is not available when `sandbox: true` is set in webPreferences.
+- **Fix:** Replaced `promptGoal()` with `showGoalInput()` that creates an inline input element appended to the status bar. Input accepts Enter to confirm, Escape to cancel. Added CSS for `#goal-input-overlay`.
+- **Files involved:** `src/wordgoal.js`, `src/styles.css`
+
+---
+
 ## Resolved — Day 6
 
 ### BUG-005 — View mode toggles do nothing (stuck on split view)

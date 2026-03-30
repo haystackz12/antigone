@@ -177,15 +177,38 @@ function setupKeyboardShortcuts() {
 
 // ─── View mode toggles ──────────────────────────────────────────────────────
 
-function setupViewToggles() {
+function setViewMode(mode) {
+  const editor  = document.getElementById('editor-pane');
+  const preview = document.getElementById('preview-pane');
+  const resizer = document.getElementById('split-resize');
+
+  if (mode === 'editor') {
+    if (editor)  editor.style.display  = '';
+    if (preview) preview.style.display = 'none';
+    if (resizer) resizer.style.display = 'none';
+  } else if (mode === 'preview') {
+    if (editor)  editor.style.display  = 'none';
+    if (preview) preview.style.display = '';
+    if (resizer) resizer.style.display = 'none';
+  } else {
+    // split (default)
+    if (editor)  editor.style.display  = '';
+    if (preview) preview.style.display = '';
+    if (resizer) resizer.style.display = '';
+  }
+
+  document.documentElement.dataset.panel = mode;
+
+  // Update aria-pressed on view toggle buttons
   const buttons = document.querySelectorAll('#toolbar-view-toggles .toolbar-btn');
-  buttons.forEach(btn => {
+  buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === mode)));
+}
+
+function setupViewToggles() {
+  document.querySelectorAll('#toolbar-view-toggles .toolbar-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const mode = btn.dataset.view; // 'editor', 'split', 'preview'
-      if (!mode) return;
-      document.documentElement.dataset.panel = mode;
-      // Update aria-pressed on all view toggle buttons
-      buttons.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+      const mode = btn.dataset.view;
+      if (mode) setViewMode(mode);
     });
   });
 }

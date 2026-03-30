@@ -192,6 +192,20 @@ function setupBeforeClose() {
   });
 }
 
+// ─── Guard: check unsaved changes before replacing document ─────────────────
+
+async function guardUnsavedChanges() {
+  if (!getIsDirty()) return true;
+  const result = await window.api.showUnsavedDialog();
+  if (result === 'save') {
+    await saveFile(getCurrentPath());
+    return true;
+  } else if (result === 'dontsave') {
+    return true;
+  }
+  return false; // cancel
+}
+
 // ─── Exports ──────────────────────────────────────────────────────────────────
 
 module.exports = {
@@ -200,6 +214,7 @@ module.exports = {
   saveFile,
   saveFileAs,
   onDirtyChange,
+  guardUnsavedChanges,
   startRecovery,
   stopRecovery,
   checkRecovery,

@@ -1271,3 +1271,33 @@ body.drag-over #editor-pane::after {
 /* ── Hide line numbers toggle ───────────────────────────────────────────── */
 
 .hide-line-numbers .cm-lineNumbers { display: none; }
+
+/* ── Word goal inline input ─────────────────────────────────────────────── */
+
+#goal-input-overlay {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+}
+#goal-input-overlay input {
+  width: 80px;
+  padding: 2px 6px;
+  border: 1px solid var(--color-border, #d5d1c8);
+  border-radius: 3px;
+  background: var(--color-surface-0, #faf9f7);
+  color: var(--color-text-primary, #1f1d18);
+  font-size: 12px;
+}
+#goal-input-overlay button {
+  padding: 2px 8px;
+  border: 1px solid var(--color-border, #d5d1c8);
+  border-radius: 3px;
+  background: var(--color-surface-2, #e8e4dd);
+  color: var(--color-text-secondary, #4a4740);
+  cursor: pointer;
+  font-size: 12px;
+}
+#goal-input-overlay button:hover {
+  background: var(--color-surface-3, #dedbd3);
+}
