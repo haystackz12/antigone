@@ -42,31 +42,6 @@ async function getStore() {
 /** @type {BrowserWindow|null} */
 let mainWindow = null;
 
-// ── File watchers ────────────────────────────────────────────────────────────
-/** @type {Map<string, {watcher: fs.FSWatcher, timer: ReturnType<typeof setTimeout>|null}>} */
-const fileWatchers = new Map();
-
-function startWatching(win, filePath) {
-  stopWatching(filePath);
-  let debounceTimer = null;
-  const watcher = fs.watch(filePath, () => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
-      win.webContents.send('file-changed', filePath);
-    }, 200);
-  });
-  fileWatchers.set(filePath, { watcher, timer: debounceTimer });
-}
-
-function stopWatching(filePath) {
-  const entry = fileWatchers.get(filePath);
-  if (entry) {
-    entry.watcher.close();
-    clearTimeout(entry.timer);
-    fileWatchers.delete(filePath);
-  }
-}
-
 /**
  * File path queued by open-file event that fires before the window is ready.
  * Delivered to renderer once the window signals it is ready.
@@ -95,6 +70,32 @@ function createWindow() {
   });
 
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+
+  // ── Unsaved changes: intercept close ────────────────────────────────────
+  let allowClose = false;
+
+  mainWindow.on('close', (e) => {
+    if (allowClose) return;
+    e.preventDefault();
+    mainWindow.webContents.send('before-close');
+  });
+
+  ipcMain.handle('close-confirmed', () => {
+    allowClose = true;
+    mainWindow.close();
+  });
+
+  ipcMain.handle('show-unsaved-dialog', async () => {
+    const { response } = await dialog.showMessageBox(mainWindow, {
+      type: 'question',
+      buttons: ['Save', "Don't Save", 'Cancel'],
+      defaultId: 0,
+      cancelId: 2,
+      message: 'Do you want to save changes?',
+      detail: 'Your changes will be lost if you don\'t save them.',
+    });
+    return ['save', 'dontsave', 'cancel'][response];
+  });
 
   // Reveal only when painted to avoid white flash on launch
   mainWindow.once('ready-to-show', () => {
@@ -300,17 +301,6 @@ ipcMain.handle('get-app-paths', () => ({
   temp:     app.getPath('temp'),
   home:     app.getPath('home'),
 }));
-
-// ── IPC: File watchers ──────────────────────────────────────────────────────
-
-ipcMain.handle('start-watching', (_event, filePath) => {
-  if (!mainWindow) return;
-  startWatching(mainWindow, path.resolve(filePath));
-});
-
-ipcMain.handle('stop-watching', (_event, filePath) => {
-  stopWatching(path.resolve(filePath));
-});
 
 // ── IPC: List recovery files ────────────────────────────────────────────────
 

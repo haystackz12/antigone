@@ -82,6 +82,22 @@
 **Why:** Adding these features would push editor.js past the 400-line cap. editor-save.js receives accessor functions via a `configure()` call to avoid circular requires. editor.js remains focused on CM6 init, keymaps, extensions, and file open.
 **Date:** 2026-03-30
 
+## DEC-018 — Auto-save off by default
+**Decision:** Auto-save is disabled by default. Users can enable it via the `autoSave` preference in electron-store.
+**Why:** Auto-save-always creates UX problems: the file-changed banner fires on every save (self-watch loop), users lose the mental model of "saved vs unsaved," and silent overwrites can be surprising. Manual ⌘S is the default; auto-save is opt-in for power users who want it.
+**Date:** 2026-03-30
+
+## DEC-019 — File watcher / external-change banner removed Sprint 1
+**Decision:** Removed `fs.watch`, `startWatching`, `stopWatching`, `onFileChanged`, and the `#file-changed-banner` UI entirely from Sprint 1.
+**Why:** The self-watch loop (BUG-003B) where saves trigger fs.watch which shows the banner was a persistent UX problem. The timestamp-suppression workaround was fragile. External change detection adds complexity disproportionate to its benefit at this stage. Will revisit in Sprint 2 with proper ignore-own-writes logic (e.g., content hash comparison before showing the banner).
+**Revisit trigger:** Sprint 2, when multi-tab and collaborative workflows make external change detection genuinely useful.
+**Date:** 2026-03-30
+
+## DEC-020 — Unsaved-changes dialog on window close
+**Decision:** When the user closes the window with unsaved changes, a native dialog appears with Save / Don't Save / Cancel options.
+**Why:** Standard desktop app behavior. Without this, closing the window silently discards unsaved work, which is a data loss risk. The dialog is implemented via `win.on('close')` intercepting the close event and `dialog.showMessageBox` presenting the options.
+**Date:** 2026-03-30
+
 ## DEC-014 — preview.js deferred to Sprint 2
 **Decision:** The `preview.js` module (marked.js + DOMPurify pipeline) is not created in Sprint 1.
 **Why:** The preview pane is not wired for live updates until Sprint 2 (split-view, scroll sync). Installing marked.js and DOMPurify now would add unused dependencies. The `inline-render.js` decoration layer handles all visual rendering in Sprint 1.

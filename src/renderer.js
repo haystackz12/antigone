@@ -6,11 +6,13 @@
 require('./styles.css');
 const { init: initEditor, applyTheme: applyEditorTheme } = require('./editor.js');
 const { loadPrefs, toggleTheme, applyTheme } = require('./prefs.js');
+const editorSave = require('./editor-save.js');
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Apply stored theme before editor mounts to prevent flash
   const prefs = await loadPrefs();
   initEditor();
+  editorSave.initFromPrefs(prefs);
 
   // Apply CM6 theme to match
   const isDark = document.documentElement.classList.contains('dark');

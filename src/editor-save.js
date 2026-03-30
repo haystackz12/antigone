@@ -1,15 +1,15 @@
 // src/editor-save.js
-// Save, auto-save, crash recovery, and external file-change detection.
+// Save, crash recovery, and unsaved-changes dialog.
 // Split from editor.js to respect the 400-line cap.
 // Architecture: all file I/O via window.api (contextBridge) only.
 
 'use strict';
 
 // ─── Module state ─────────────────────────────────────────────────────────────
-let autoSaveTimer      = null;
-let recoveryId         = null;
-let recoveryTimer      = null;
-let suppressWatchUntil = 0;
+let autoSaveEnabled = false;
+let autoSaveTimer   = null;
+let recoveryId      = null;
+let recoveryTimer   = null;
 
 // ─── Accessors (set by editor.js via configure()) ─────────────────────────────
 let getView         = null;
@@ -32,6 +32,14 @@ function configure(opts) {
   updateTabBar   = opts.updateTabBar;
 }
 
+/**
+ * Called once from renderer.js after prefs are loaded.
+ * @param {{ autoSave?: boolean }} prefs
+ */
+function initFromPrefs(prefs) {
+  autoSaveEnabled = !!prefs.autoSave;
+}
+
 // ─── Save ─────────────────────────────────────────────────────────────────────
 
 async function saveFile(targetPath) {
@@ -42,12 +50,11 @@ async function saveFile(targetPath) {
   const content = view.state.doc.toString();
   const result  = await window.api.writeFile(targetPath, content);
   if (result.ok) {
-    suppressWatchUntil = Date.now() + 1000; // suppress self-triggered watch for 1s
     setCurrentPath(targetPath);
     setDirty(false);
     updateTabBar(fileNameFromPath(targetPath), false);
-    showSavedIndicator();
-    window.api.startWatching(targetPath);
+    updateSaveStatus(false);
+    showSavedFlash();
   }
 }
 
@@ -55,7 +62,6 @@ async function saveFileAs() {
   const currentPath = getCurrentPath();
   const result = await window.api.saveDialog(currentPath);
   if (!result || result.canceled) return;
-  if (currentPath) window.api.stopWatching(currentPath);
   await saveFile(result.path);
 }
 
@@ -64,30 +70,44 @@ function fileNameFromPath(filePath) {
   return filePath.split(/[/\\]/).pop();
 }
 
-// ─── Saved indicator ──────────────────────────────────────────────────────────
+// ─── Status bar save indicator ───────────────────────────────────────────────
 
-function showSavedIndicator() {
-  const el = document.getElementById('saved-indicator');
+function updateSaveStatus(dirty) {
   const statusSave = document.getElementById('status-save');
-  if (el) {
-    el.textContent = 'Saved \u2713';
-    el.classList.add('visible');
-    setTimeout(() => el.classList.remove('visible'), 1500);
-  }
-  if (statusSave) {
+  if (!statusSave) return;
+  if (dirty) {
+    statusSave.textContent = 'Unsaved';
+    statusSave.dataset.state = 'unsaved';
+  } else {
     statusSave.textContent = 'Saved \u2713';
     statusSave.dataset.state = 'saved';
   }
 }
 
-// ─── Auto-save (debounce on doc change) ───────────────────────────────────────
+function showSavedFlash() {
+  const el = document.getElementById('saved-indicator');
+  if (!el) return;
+  el.textContent = 'Saved \u2713';
+  el.classList.add('visible');
+  setTimeout(() => el.classList.remove('visible'), 1500);
+}
+
+// ─── Auto-save (opt-in via prefs) ────────────────────────────────────────────
 
 function scheduleAutoSave() {
+  if (!autoSaveEnabled) return;
   clearTimeout(autoSaveTimer);
   const currentPath = getCurrentPath();
   if (currentPath) {
     autoSaveTimer = setTimeout(() => saveFile(currentPath), 800);
   }
+}
+
+// ─── Doc changed hook (called from editor.js onDocChange) ────────────────────
+
+function onDirtyChange() {
+  updateSaveStatus(true);
+  scheduleAutoSave();
 }
 
 // ─── Crash recovery ───────────────────────────────────────────────────────────
@@ -133,9 +153,9 @@ async function checkRecovery() {
           });
           setDirty(true);
           updateTabBar('Recovered', true);
+          updateSaveStatus(true);
         }
       }
-      // Clean up all recovery files
       for (const f of files) {
         await window.api.deleteRecovery(f.tabId).catch(() => {});
       }
@@ -153,62 +173,36 @@ async function checkRecovery() {
   }
 }
 
-// ─── External file change detection ──────────────────────────────────────────
+// ─── Before-close unsaved check ──────────────────────────────────────────────
 
-function setupFileChangedListener() {
-  window.api.onFileChanged((changedPath) => {
-    const currentPath = getCurrentPath();
-    if (changedPath !== currentPath) return;
-    if (Date.now() < suppressWatchUntil) return; // ignore self-triggered watch
-    showFileChangedBanner();
+function setupBeforeClose() {
+  window.api.onBeforeClose(async () => {
+    if (!getIsDirty()) {
+      window.api.closeConfirmed();
+      return;
+    }
+    const result = await window.api.showUnsavedDialog();
+    if (result === 'save') {
+      await saveFile(getCurrentPath());
+      window.api.closeConfirmed();
+    } else if (result === 'dontsave') {
+      window.api.closeConfirmed();
+    }
+    // 'cancel' — do nothing, window stays open
   });
-}
-
-function showFileChangedBanner() {
-  const banner = document.getElementById('file-changed-banner');
-  if (!banner) return;
-  banner.hidden = false;
-
-  // Pause auto-save while banner is shown
-  clearTimeout(autoSaveTimer);
-
-  const reloadBtn = document.getElementById('btn-reload-file');
-  const keepBtn   = document.getElementById('btn-keep-mine');
-
-  if (reloadBtn) {
-    reloadBtn.onclick = async () => {
-      const currentPath = getCurrentPath();
-      if (!currentPath) return;
-      const content = await window.api.readFile(currentPath);
-      const view = getView();
-      if (view) {
-        view.dispatch({
-          changes: { from: 0, to: view.state.doc.length, insert: content },
-        });
-        setDirty(false);
-        updateTabBar(fileNameFromPath(currentPath), false);
-      }
-      banner.hidden = true;
-    };
-  }
-
-  if (keepBtn) {
-    keepBtn.onclick = () => {
-      banner.hidden = true;
-    };
-  }
 }
 
 // ─── Exports ──────────────────────────────────────────────────────────────────
 
 module.exports = {
   configure,
+  initFromPrefs,
   saveFile,
   saveFileAs,
-  scheduleAutoSave,
+  onDirtyChange,
   startRecovery,
   stopRecovery,
   checkRecovery,
-  setupFileChangedListener,
-  showSavedIndicator,
+  setupBeforeClose,
+  updateSaveStatus,
 };

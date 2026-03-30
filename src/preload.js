@@ -162,31 +162,27 @@ contextBridge.exposeInMainWorld('api', {
   getAppPaths: () =>
     ipcRenderer.invoke('get-app-paths'),
 
-  // ── File watching ──────────────────────────────────────────────────────────
+  // ── Unsaved changes dialog ─────────────────────────────────────────────────
 
   /**
-   * Start watching a file for external changes.
-   * @param {string} filePath  Absolute path.
+   * Show the native Save / Don't Save / Cancel dialog.
+   * @returns {Promise<'save'|'dontsave'|'cancel'>}
    */
-  startWatching: (filePath) =>
-    ipcRenderer.invoke('start-watching', requireString(filePath, 'filePath')),
+  showUnsavedDialog: () =>
+    ipcRenderer.invoke('show-unsaved-dialog'),
 
   /**
-   * Stop watching a file.
-   * @param {string} filePath  Absolute path.
+   * Confirm that the window can close (after handling unsaved changes).
    */
-  stopWatching: (filePath) =>
-    ipcRenderer.invoke('stop-watching', requireString(filePath, 'filePath')),
+  closeConfirmed: () =>
+    ipcRenderer.invoke('close-confirmed'),
 
   /**
-   * Subscribe to file-changed events from main (fs.watch debounced).
-   * @param {function(string): void} callback  Receives the changed file path.
-   * @returns {function(): void}  Unsubscribe.
+   * Subscribe to before-close events from main.
+   * @param {function(): void} callback
    */
-  onFileChanged: (callback) => {
-    const handler = (_event, filePath) => callback(filePath);
-    ipcRenderer.on('file-changed', handler);
-    return () => ipcRenderer.removeListener('file-changed', handler);
+  onBeforeClose: (callback) => {
+    ipcRenderer.on('before-close', () => callback());
   },
 
   // ── Preferences (electron-store) ──────────────────────────────────────────

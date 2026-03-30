@@ -83,8 +83,8 @@ function onDocChange(content) {
     isDirty = true;
     updateTabBar(fileNameFromPath(currentFilePath), true);
   }
+  editorSave.onDirtyChange();
   updateWordCount(content);
-  editorSave.scheduleAutoSave();
   window.dispatchEvent(new CustomEvent('editor:change', { detail: { content } }));
 }
 
@@ -107,18 +107,13 @@ function mount(container) {
 // ─── Load content ─────────────────────────────────────────────────────────────
 function loadContent(content, filePath) {
   if (!view) return;
-  // Stop watching previous file if switching
-  if (currentFilePath && currentFilePath !== filePath) {
-    window.api.stopWatching(currentFilePath);
-  }
   view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: content } });
   currentFilePath = filePath;
   isDirty = false;
   updateTabBar(fileNameFromPath(filePath), false);
+  editorSave.updateSaveStatus(false);
   updateWordCount(content);
   setEmptyState(false);
-  // Start watching the new file for external changes
-  if (filePath) window.api.startWatching(filePath);
   view.focus();
 }
 
@@ -239,7 +234,7 @@ function init() {
     updateTabBar,
   });
   editorSave.startRecovery();
-  editorSave.setupFileChangedListener();
+  editorSave.setupBeforeClose();
   editorSave.checkRecovery();
 
   console.log('[editor] CodeMirror 6 mounted ✓');
