@@ -6,6 +6,37 @@ None.
 
 ---
 
+## Resolved — Day 8 (batch 4)
+
+### BUG-011C — Welcome screen flashes then last file auto-loads
+- **Found:** 2026-03-30, Day 8 of Sprint 2
+- **Severity:** High
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Welcome screen appears briefly, then the last opened file loads automatically.
+- **Root cause:** Two sources: (1) `resolveCLIPath()` in main.js matched non-Markdown files in argv (Forge webpack dev server passes project paths that resolve to existing files like webpack configs). (2) Stale session data in electron-store from before session restore was disabled — `tabs.saveSession()` writes on every tab operation.
+- **Fix:** (1) Added file extension filter to `resolveCLIPath()` — only matches `.md .markdown .mdown .mkd .mdx .txt`. (2) renderer.js clears stale session data from electron-store on launch (`setPrefs({ session: null })`).
+- **Files involved:** `src/main.js`, `src/renderer.js`
+
+### BUG-013D — Scroll sync still drifting between panes
+- **Found:** 2026-03-30, Day 8 of Sprint 2
+- **Severity:** Low
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** Line-based scroll sync still drifts significantly.
+- **Root cause:** CM6 `lineBlockAtHeight` API produces imprecise results when editor has variable-height elements (inline images, headings). Perfect sync is inherently impossible between Markdown source and rendered HTML.
+- **Fix:** Replaced with simpler ratio-based sync with a timestamp deadband (50ms) to prevent feedback loops. Removed CM6 API dependency from scroll sync. Accepted "within 2-3 paragraphs" as target accuracy (matches iA Writer behavior).
+- **Files involved:** `src/preview.js`, `src/renderer.js`
+
+### BUG-016 — "null" showing in toolbar top-right
+- **Found:** 2026-03-30, Day 8 of Sprint 2
+- **Severity:** Low
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** The text "null" appears somewhere in the toolbar/tab area.
+- **Root cause:** Likely a null file path or filename being set as `textContent` without a guard. Multiple places in `updateTabBar` and `renderTabBar` could produce "null" as a string if JavaScript coerces a null value to text.
+- **Fix:** Added null guards to `updateTabBar()` in editor.js (`filename || 'Untitled'`) and `renderTabBar()` in tabs.js (`fileNameFromPath(...) || 'Untitled'`).
+- **Files involved:** `src/editor.js`, `src/tabs.js`
+
+---
+
 ## Resolved — Day 8 (batch 3)
 
 ### BUG-011B — App still launches in split view

@@ -69,7 +69,7 @@ function renderTabBar() {
 
     const title = document.createElement('span');
     title.className = 'tab-title';
-    title.textContent = fileNameFromPath(tab.filePath);
+    title.textContent = fileNameFromPath(tab.filePath) || 'Untitled';
     btn.appendChild(title);
 
     const dot = document.createElement('span');

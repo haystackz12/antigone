@@ -33,10 +33,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   tags.init();
   toc.configure({ getView: require('./editor.js').getView });
   toc.init();
-  preview.configure({ getView: require('./editor.js').getView });
   preview.init();
 
   // Always launch to empty state (DEC-023 — session restore is opt-in, not default)
+  // Clear any stale session data from electron-store
+  window.api.setPrefs({ session: null });
   tabs.openNewTab();
 
   // Apply CM6 theme to match

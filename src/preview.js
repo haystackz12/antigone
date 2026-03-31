@@ -1,7 +1,7 @@
 // src/preview.js
 // Markdown preview rendering: marked.js + DOMPurify pipeline.
 // Listens to editor:change events, renders HTML into #preview-content.
-// Scroll sync uses CM6 line-based positioning for accuracy.
+// Scroll sync uses ratio-based approach with deadband to prevent loops.
 
 'use strict';
 
@@ -9,13 +9,7 @@ const { marked } = require('marked');
 const DOMPurify  = require('dompurify');
 
 let debounceTimer = null;
-let isSyncingScroll = false;
 let scrollSyncAttached = false;
-let getView = null;
-
-function configure(opts) {
-  getView = opts.getView;
-}
 
 // ─── Configure marked ────────────────────────────────────────────────────────
 
@@ -37,7 +31,6 @@ function render(markdownText) {
   });
   el.innerHTML = cleanHtml;
 
-  // Hide placeholder when content is rendered
   const placeholder = document.getElementById('preview-placeholder');
   if (placeholder) placeholder.style.display = markdownText.trim() ? 'none' : '';
 }
@@ -53,62 +46,46 @@ function init() {
   });
 }
 
-// ─── Scroll sync (line-based) ────────────────────────────────────────────────
+// ─── Scroll sync (deadband-based) ────────────────────────────────────────────
 
-function syncScroll(source) {
-  if (isSyncingScroll) return;
-  isSyncingScroll = true;
+const SCROLL_DEADBAND_MS = 50;
+let lastScrollSource = null;
+let lastScrollTime = 0;
+
+function onEditorScroll() {
+  const now = Date.now();
+  if (lastScrollSource === 'preview' && now - lastScrollTime < SCROLL_DEADBAND_MS) return;
+  lastScrollSource = 'editor';
+  lastScrollTime = now;
 
   const scroller = document.querySelector('.cm-scroller');
   const preview = document.getElementById('preview-pane');
-  if (!scroller || !preview) { isSyncingScroll = false; return; }
+  if (!scroller || !preview) return;
 
-  try {
-    if (source === 'editor') {
-      const view = getView && getView();
-      if (view) {
-        // Get the top visible line number using CM6 API
-        const topBlock = view.lineBlockAtHeight(scroller.scrollTop);
-        const lineNum = view.state.doc.lineAt(topBlock.from).number;
-        const totalLines = view.state.doc.lines;
-        if (totalLines <= 1) { isSyncingScroll = false; return; }
-        const ratio = (lineNum - 1) / (totalLines - 1);
-        const previewMax = preview.scrollHeight - preview.clientHeight;
-        if (previewMax > 0) preview.scrollTop = ratio * previewMax;
-      }
-    } else {
-      const previewMax = preview.scrollHeight - preview.clientHeight;
-      if (previewMax <= 0) { isSyncingScroll = false; return; }
-      const view = getView && getView();
-      if (view) {
-        const ratio = preview.scrollTop / previewMax;
-        const totalLines = view.state.doc.lines;
-        const targetLine = Math.max(1, Math.min(
-          Math.round(ratio * (totalLines - 1)) + 1,
-          totalLines
-        ));
-        const lineInfo = view.state.doc.line(targetLine);
-        const coords = view.coordsAtPos(lineInfo.from);
-        if (coords) {
-          scroller.scrollTop = coords.top + scroller.scrollTop
-            - scroller.getBoundingClientRect().top;
-        }
-      }
-    }
-  } catch {
-    // Fallback to simple ratio if line-based fails
-    const sourceEl = source === 'editor' ? scroller : preview;
-    const targetEl = source === 'editor' ? preview : scroller;
-    const sourceMax = sourceEl.scrollHeight - sourceEl.clientHeight;
-    if (sourceMax > 0) {
-      const targetMax = targetEl.scrollHeight - targetEl.clientHeight;
-      if (targetMax > 0) {
-        targetEl.scrollTop = (sourceEl.scrollTop / sourceMax) * targetMax;
-      }
-    }
-  }
+  const scrollerMax = scroller.scrollHeight - scroller.clientHeight;
+  if (scrollerMax <= 0) return;
 
-  requestAnimationFrame(() => { isSyncingScroll = false; });
+  const ratio = scroller.scrollTop / scrollerMax;
+  const previewMax = preview.scrollHeight - preview.clientHeight;
+  preview.scrollTop = ratio * Math.max(0, previewMax);
+}
+
+function onPreviewScroll() {
+  const now = Date.now();
+  if (lastScrollSource === 'editor' && now - lastScrollTime < SCROLL_DEADBAND_MS) return;
+  lastScrollSource = 'preview';
+  lastScrollTime = now;
+
+  const scroller = document.querySelector('.cm-scroller');
+  const preview = document.getElementById('preview-pane');
+  if (!scroller || !preview) return;
+
+  const previewMax = preview.scrollHeight - preview.clientHeight;
+  if (previewMax <= 0) return;
+
+  const ratio = preview.scrollTop / previewMax;
+  const scrollerMax = scroller.scrollHeight - scroller.clientHeight;
+  scroller.scrollTop = ratio * Math.max(0, scrollerMax);
 }
 
 function attachScrollSync() {
@@ -116,9 +93,9 @@ function attachScrollSync() {
   const scroller = document.querySelector('.cm-scroller');
   const previewPane = document.getElementById('preview-pane');
   if (!scroller || !previewPane) return;
-  scroller.addEventListener('scroll', () => syncScroll('editor'), { passive: true });
-  previewPane.addEventListener('scroll', () => syncScroll('preview'), { passive: true });
+  scroller.addEventListener('scroll', onEditorScroll, { passive: true });
+  previewPane.addEventListener('scroll', onPreviewScroll, { passive: true });
   scrollSyncAttached = true;
 }
 
-module.exports = { configure, init, render, attachScrollSync };
+module.exports = { init, render, attachScrollSync };

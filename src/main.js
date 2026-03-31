@@ -129,10 +129,12 @@ function resolveCLIPath() {
   // In development argv = [electron, ., ...rest]
   // In production argv = [antigone, ...rest]
   const args = process.argv.slice(app.isPackaged ? 1 : 2);
+  const validExts = ['.md', '.markdown', '.mdown', '.mkd', '.mdx', '.txt'];
   for (const arg of args) {
     if (arg.startsWith('-')) continue;
     const resolved = path.resolve(arg);
-    if (fs.existsSync(resolved) && fs.statSync(resolved).isFile()) {
+    const ext = path.extname(resolved).toLowerCase();
+    if (validExts.includes(ext) && fs.existsSync(resolved) && fs.statSync(resolved).isFile()) {
       return resolved;
     }
   }
