@@ -85,7 +85,17 @@ function render(markdownText) {
   const renderer = createRenderer();
 
   const rawHtml = marked.parse(processed, { renderer });
-  const cleanHtml = DOMPurify.sanitize(rawHtml, {
+
+  // Post-process: catch any raw Markdown inline syntax that the custom
+  // renderer passed through without rendering (heading/paragraph overrides
+  // use token.text which may contain unprocessed inline markup)
+  const postProcessed = rawHtml
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/~~(.+?)~~/g, '<del>$1</del>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  const cleanHtml = DOMPurify.sanitize(postProcessed, {
     USE_PROFILES: { html: true },
     ADD_ATTR: ['target', 'data-line'],
     ADD_TAGS: ['div'],
