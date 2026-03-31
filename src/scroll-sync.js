@@ -13,6 +13,7 @@ let lastEditorLine = -1;
 let lastPreviewScroll = -1;
 let userScrollingPreview = false;
 let previewScrollTimeout = null;
+let validationInterval = null;
 
 // ─── Init / Destroy ──────────────────────────────────────────────────────────
 
@@ -25,10 +26,14 @@ function initScrollSync(view) {
   lastEditorLine = -1;
   lastPreviewScroll = -1;
   startSyncLoop();
+  clearInterval(validationInterval);
+  validationInterval = setInterval(validateSync, 2000);
 }
 
 function destroyScrollSync() {
   stopSyncLoop();
+  clearInterval(validationInterval);
+  validationInterval = null;
   editorView = null;
   scrollerEl = null;
   previewEl = null;
@@ -156,6 +161,35 @@ function findClosestLineElement(lineNum) {
   }
 
   return closest;
+}
+
+// ─── Drift validation (runs every 2s) ────────────────────────────────────────
+
+function validateSync() {
+  if (!editorView || !scrollerEl || !previewEl) return;
+  if (userScrollingPreview) return;
+
+  const topPos = scrollerEl.scrollTop;
+  const lineBlock = editorView.lineBlockAtHeight(topPos);
+  const currentLine = editorView.state.doc.lineAt(lineBlock.from).number;
+
+  const target = findClosestLineElement(currentLine);
+  if (!target) return;
+
+  const expectedY = target.offsetTop;
+  const drift = Math.abs(expectedY - previewEl.scrollTop);
+
+  if (drift > 100) {
+    previewEl.scrollTop = expectedY;
+    lastEditorLine = -1;
+
+    const indicator = document.getElementById('sync-indicator');
+    if (indicator) {
+      indicator.textContent = '\u27F3 Synced';
+      indicator.style.opacity = '1';
+      setTimeout(() => { indicator.style.opacity = '0'; }, 1000);
+    }
+  }
 }
 
 // ─── API compatibility stubs ─────────────────────────────────────────────────
