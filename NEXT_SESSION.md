@@ -1,55 +1,48 @@
-# NEXT_SESSION.md — Day 11 Kick-off Prompt
+# NEXT_SESSION.md — Day 12 Kick-off Prompt
 
 We are working on the Antigone project — a cross-platform Markdown editor built on
 Electron + CodeMirror 6. Repo: haystackz12/antigone | Path: ~/Projects/antigone
 
-Today is Sprint 3, Day 11 — Preprocessors (Pro) + Tag Enhancements.
+Today is Sprint 3, Day 12 — Performance + Accessibility.
 
 ## Step 0 — Read these files before touching any code
 1. docs/CLAUDE.md
 2. docs/SESSION_STATE.md
-3. docs/SPRINT.md (will need Sprint 3 content added)
+3. docs/SPRINT.md
 4. docs/DECISIONS.md
 
 ---
 
-## Day 11 Tasks (from ROADMAP.md)
+## Day 12 Tasks (from SPRINT.md)
 
-### Task 1 — Preprocessors (Pro feature)
-- Shell pipe: user configures a command, editor pipes Markdown through it
-- Output replaces or augments the preview
-- Sandboxed child_process with 5s hard timeout
-- Pro feature gate (stub — always allow in dev)
+### Task 1 — Large file handling (150K char cap)
+- Detect files over 150K characters on open
+- Show warning banner: "Large file — inline rendering disabled"
+- Disable inline-render.js for large files (performance)
+- Editor still works, just without decorations
 
-### Task 2 — YAML frontmatter tag indexing
-- Parse YAML frontmatter for `tags:` field
-- Include frontmatter tags in the tag sidebar alongside inline #tags
+### Task 2 — Keyboard navigation audit
+- Tab through all interactive elements
+- Ensure logical tab order
+- Add tabindex where needed
 
-### Task 3 — Tag rename
-- Right-click tag in sidebar → rename
-- Updates all occurrences in the document
+### Task 3 — ARIA labels
+- All buttons, regions, landmarks properly labeled
+- Screen reader can announce all UI elements
 
-### Task 4 — Sprint 3 SPRINT.md
-- Replace Sprint 2 content in SPRINT.md with Sprint 3 tasks
-- Move Sprint 2 summary to ROADMAP.md
+### Task 4 — Reduce motion support
+- @media (prefers-reduced-motion: reduce) already exists in styles.css
+- Verify all animations respect it
+- Test with System Preferences → Accessibility → Reduce Motion
 
 ---
 
 ## Gate
-- Configure a preprocessor command → preview shows processed output
-- YAML frontmatter tags appear in sidebar
-- Rename tag → all occurrences updated
-
----
-
-## Hard constraints (never change these)
-- `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true` — permanent
-- 400-line file cap — split files if they go over
-- Show planned file changes before making them
-- All app data to `~/Library/Application Support/Antigone/` — never to source dirs
-- Preprocessors: sandboxed child_process, 5s hard timeout, user-configured only
+- Open 150K+ file → warning, no crash, inline rendering off
+- Tab through all UI → logical order, nothing skipped
+- VoiceOver announces buttons correctly
 
 ---
 
 ## End of session
-Run docs/closing_instructions.md top to bottom. Generate NEXT_SESSION.md for Day 12.
+Run docs/closing_instructions.md top to bottom. Generate NEXT_SESSION.md for Day 13.
