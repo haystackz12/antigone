@@ -107,22 +107,22 @@ function syncEditorToPreview() {
 function syncPreviewToEditor() {
   if (!editorView || !scrollerEl || !previewEl) return;
 
-  const previewTop = previewEl.scrollTop;
+  const previewScrollMid = previewEl.scrollTop + previewEl.clientHeight / 3;
   const elements = Array.from(previewEl.querySelectorAll('[data-line]'));
   if (!elements.length) return;
 
   // Sort by visual position (offsetTop) to handle out-of-order DOM
   elements.sort((a, b) => getOffsetTop(a) - getOffsetTop(b));
 
-  // Find last element whose offsetTop <= current scroll midpoint
-  const midpoint = previewTop + previewEl.clientHeight / 2;
+  // Find last element whose visual position <= scroll upper-third
   let closest = elements[0];
   for (const el of elements) {
-    if (getOffsetTop(el) <= midpoint) {
+    if (getOffsetTop(el) <= previewScrollMid) {
       closest = el;
     }
   }
 
+  if (!closest) return;
   const targetLine = parseInt(closest.dataset.line, 10);
   if (!targetLine || targetLine < 1) return;
 
@@ -135,7 +135,7 @@ function syncPreviewToEditor() {
       const newScroll = coords.top + scrollerEl.scrollTop - scrollerRect.top;
       if (Math.abs(scrollerEl.scrollTop - newScroll) > 5) {
         scrollerEl.scrollTop = newScroll;
-        lastEditorLine = -1; // allow re-sync on next frame
+        lastEditorLine = -1;
       }
     }
   } catch {}
