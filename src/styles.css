@@ -994,7 +994,7 @@ kbd {
   border-left:      1px solid var(--color-border-subtle);
   overflow-y:       auto;
   overflow-x:       hidden;
-  padding:          var(--space-10) 0;
+  padding:          0;
   position:         relative;
 }
 
@@ -1011,12 +1011,15 @@ kbd {
 #preview-content {
   max-width:        var(--preview-max-width);
   margin:           0 auto;
-  padding:          20px var(--space-8) 0;  /* top padding matches .cm-content 20px */
+  /* Top padding = scroller 40px + cm-content 20px = 60px to match editor */
+  padding:          60px var(--space-8) 40px;
   font-family:      var(--font-prose);
   font-size:        var(--preview-font-size);
   line-height:      var(--preview-line-height);
   color:            var(--preview-text);
 }
+/* Remove top margin from first element to prevent extra offset */
+#preview-content > :first-child { margin-top: 0; }
 
 /* ── Prose styles (rendered markdown) ──────────────────────────────────── */
 
