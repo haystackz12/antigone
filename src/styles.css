@@ -724,6 +724,7 @@ body {
   flex-direction:   column;
   overflow:         hidden;
   position:         relative;
+  min-width:        0;               /* allow grid to shrink below content */
 }
 
 /* CodeMirror mount — fills available height */
@@ -1107,15 +1108,19 @@ kbd {
 }
 
 .prose table {
-  width:            100%;
   border-collapse:  collapse;
   margin-bottom:    1.1em;
   font-size:        0.9em;
+  display:          block;
+  overflow-x:       auto;
+  white-space:      nowrap;
+  max-width:        100%;
 }
 .prose th, .prose td {
   border:           1px solid var(--preview-table-border);
   padding:          var(--space-2) var(--space-3);
   text-align:       left;
+  white-space:      nowrap;
 }
 .prose th {
   background:       var(--preview-table-header-bg);
