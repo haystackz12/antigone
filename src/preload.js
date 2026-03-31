@@ -240,6 +240,16 @@ contextBridge.exposeInMainWorld('api', {
   setNativeTheme: (source) =>
     ipcRenderer.invoke('set-native-theme', requireString(source, 'source')),
 
+  // ── Menu triggers (inbound from native menu) ───────────────────────────────
+
+  onExportPDF:  (cb) => { ipcRenderer.on('export-pdf-trigger', () => cb()); },
+  onExportHTML: (cb) => { ipcRenderer.on('export-html-trigger', () => cb()); },
+  onPrint:      (cb) => { ipcRenderer.on('print-doc', () => cb()); },
+  onMenuNewFile:  (cb) => { ipcRenderer.on('menu-new-file', () => cb()); },
+  onMenuOpenFile: (cb) => { ipcRenderer.on('menu-open-file', () => cb()); },
+  onMenuSave:     (cb) => { ipcRenderer.on('menu-save', () => cb()); },
+  onMenuSaveAs:   (cb) => { ipcRenderer.on('menu-save-as', () => cb()); },
+
   // ── Inbound from main ──────────────────────────────────────────────────────
 
   /**

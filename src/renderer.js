@@ -46,6 +46,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.api.setPrefs({ session: null });
   tabs.openNewTab();
 
+  // Wire native menu file commands
+  const editor = require('./editor.js');
+  window.api.onMenuNewFile(() => editor.newFile());
+  window.api.onMenuOpenFile(() => editor.openFileDialog());
+  window.api.onMenuSave(() => editorSave.saveFile(editor.getCurrentPath()));
+  window.api.onMenuSaveAs(() => editorSave.saveFileAs());
+
   // Apply CM6 theme to match
   const isDark = document.documentElement.classList.contains('dark');
   applyEditorTheme(isDark);

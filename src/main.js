@@ -161,9 +161,15 @@ app.on('open-file', (event, filePath) => {
   }
 });
 
+// ── Native menu ─────────────────────────────────────────────────────────────
+const { setupMenu } = require('./main-menu.js');
+
 // ── App lifecycle ────────────────────────────────────────────────────────────
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+  setupMenu(() => mainWindow);
+});
 
 app.on('window-all-closed', () => {
   // macOS: keep process alive until explicit Cmd+Q

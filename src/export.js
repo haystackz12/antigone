@@ -135,18 +135,26 @@ function fileNameFromPath(p) {
   return p.split(/[/\\]/).pop().replace(/\.[^.]+$/, '');
 }
 
-// ─── Init (keyboard shortcuts) ───────────────────────────────────────────────
+// ─── Print ───────────────────────────────────────────────────────────────────
+
+function printDocument() {
+  window.print();
+}
+
+// ─── Init (keyboard shortcuts + menu handlers) ──────────────────────────────
 
 function init() {
+  // Menu triggers from native menu
+  window.api.onExportPDF(() => exportPdf());
+  window.api.onExportHTML(() => exportHtml());
+  window.api.onPrint(() => printDocument());
+
+  // Keyboard shortcuts (fallback for when menu accelerators don't fire)
   document.addEventListener('keydown', (e) => {
     const mod = e.metaKey || e.ctrlKey;
     if (mod && e.shiftKey && e.key === 'e') {
       e.preventDefault();
       exportPdf();
-    }
-    if (mod && e.shiftKey && e.key === 'h') {
-      e.preventDefault();
-      exportHtml();
     }
   });
 }
