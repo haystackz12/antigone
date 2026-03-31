@@ -21,7 +21,7 @@ function applyTheme(source) {
 }
 
 function applyFontSize(size) {
-  document.documentElement.style.setProperty('--font-size-editor', `${size}px`);
+  document.documentElement.style.setProperty('--editor-font-size', `${size}px`);
 }
 
 function applyLineNumbers(show) {

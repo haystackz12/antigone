@@ -6,6 +6,28 @@ None.
 
 ---
 
+## Resolved — Day 10 (batch 2)
+
+### BUG-020 — App crashes when opening new file while another is loaded
+- **Found:** 2026-03-31, Day 10 of Sprint 2
+- **Severity:** Critical
+- **Status:** Resolved — 2026-03-31
+- **Symptom:** Clicking + or ⌘N while a file is loaded causes error "content must be a non-empty string" at saveFile().
+- **Root cause:** Two issues: (1) `guardUnsavedChanges()` prompted to save an empty untitled document, which called `saveFile()`. (2) `writeFile` in preload.js uses `requireString()` which rejects empty strings — so saving a document with empty content throws.
+- **Fix:** (1) `guardUnsavedChanges()` now skips the save prompt for empty untitled documents (no content and no file path). (2) `saveFile()` passes `content || '\n'` to `writeFile` to ensure non-empty content for empty documents.
+- **Files involved:** `src/editor-save.js`
+
+### BUG-021 — Font size slider in preferences has no visible effect
+- **Found:** 2026-03-31, Day 10 of Sprint 2
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-31
+- **Symptom:** Dragging the font size slider changes the label value but the editor text size doesn't change.
+- **Root cause:** `applyFontSize()` in prefs.js set the CSS variable `--font-size-editor`, but the CM6 editor's CSS rule (`.cm-editor`) reads `--editor-font-size`. The variable names didn't match.
+- **Fix:** Changed `applyFontSize()` to set `--editor-font-size` (matching the CSS token defined at line 168 of styles.css and used at line 703).
+- **Files involved:** `src/prefs.js`
+
+---
+
 ## Resolved — Day 10
 
 ### BUG-018 — Recovery banner appears on every launch even with no crash

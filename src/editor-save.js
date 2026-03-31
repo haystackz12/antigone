@@ -48,7 +48,8 @@ async function saveFile(targetPath) {
   if (!targetPath) return saveFileAs();
 
   const content = view.state.doc.toString();
-  const result  = await window.api.writeFile(targetPath, content);
+  // writeFile IPC requires non-empty content — write a newline for empty docs
+  const result  = await window.api.writeFile(targetPath, content || '\n');
   if (result.ok) {
     setCurrentPath(targetPath);
     setDirty(false);
@@ -201,6 +202,11 @@ function setupBeforeClose() {
 
 async function guardUnsavedChanges() {
   if (!getIsDirty()) return true;
+
+  // Don't prompt to save an empty untitled document
+  const view = getView();
+  if (view && !view.state.doc.toString().trim() && !getCurrentPath()) return true;
+
   const result = await window.api.showUnsavedDialog();
   if (result === 'save') {
     await saveFile(getCurrentPath());
