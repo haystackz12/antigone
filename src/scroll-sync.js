@@ -61,6 +61,8 @@ function buildSyncMap() {
 
   const doc = editorView.state.doc;
   const headingRe = /^(#{1,6})\s+(.+)$/;
+
+  // Collect preview headings with their scroll positions
   const previewHeadings = previewContent.querySelectorAll('h1, h2, h3, h4, h5, h6');
   const previewMap = [];
   for (const el of previewHeadings) {
@@ -68,6 +70,18 @@ function buildSyncMap() {
       text: el.textContent.trim().toLowerCase(),
       y: el.offsetTop,
     });
+  }
+
+  // Strip markdown inline markers for text comparison
+  function stripMarkdown(text) {
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '$1')   // bold
+      .replace(/\*(.+?)\*/g, '$1')        // italic
+      .replace(/_(.+?)_/g, '$1')          // italic alt
+      .replace(/~~(.+?)~~/g, '$1')        // strikethrough
+      .replace(/`(.+?)`/g, '$1')          // code
+      .replace(/\[(.+?)\]\(.*?\)/g, '$1') // links
+      .trim().toLowerCase();
   }
 
   let previewIdx = 0;
@@ -78,7 +92,7 @@ function buildSyncMap() {
     const match = line.text.match(headingRe);
     if (!match) continue;
 
-    const headingText = match[2].trim().toLowerCase();
+    const headingText = stripMarkdown(match[2]);
 
     // Get editor Y position
     const coords = editorView.coordsAtPos(line.from);
@@ -90,7 +104,7 @@ function buildSyncMap() {
     for (let j = previewIdx; j < previewMap.length; j++) {
       if (previewMap[j].text === headingText) {
         previewY = previewMap[j].y;
-        previewIdx = j + 1; // advance past this match for next heading
+        previewIdx = j + 1;
         break;
       }
     }
@@ -106,6 +120,9 @@ function buildSyncMap() {
   if (editorMax > 0 && previewMax > 0) {
     syncMap.push({ editorY: editorMax, previewY: previewMax });
   }
+
+  // Sort by editorY ascending to ensure correct interpolation
+  syncMap.sort((a, b) => a.editorY - b.editorY);
 }
 
 // ─── Interpolation ───────────────────────────────────────────────────────────
