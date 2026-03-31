@@ -1327,7 +1327,10 @@ body.drag-over #editor-pane::after {
 
 /* ── Hide line numbers toggle ───────────────────────────────────────────── */
 
-.hide-line-numbers .cm-lineNumbers { display: none; }
+.hide-line-numbers .cm-lineNumbers,
+.hide-line-numbers .cm-gutters {
+  display: none !important;
+}
 
 /* ── Word goal inline input ─────────────────────────────────────────────── */
 

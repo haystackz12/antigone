@@ -6,6 +6,28 @@ None.
 
 ---
 
+## Resolved — Day 10
+
+### BUG-018 — Recovery banner appears on every launch even with no crash
+- **Found:** 2026-03-31, Day 10 of Sprint 2
+- **Severity:** High
+- **Status:** Resolved — 2026-03-31
+- **Symptom:** "Unsaved work found from a previous session" banner shows on every launch, even after a clean exit.
+- **Root cause:** The 30s recovery interval writes recovery files during normal sessions, but `stopRecovery()` (which deletes the file) was never called in the before-close handler. On next launch, the leftover file triggered the recovery banner.
+- **Fix:** Added `stopRecovery()` calls in the before-close handler — called after user confirms Save, Don't Save, or when not dirty. Also filtered current session's recovery file from `checkRecovery()` results.
+- **Files involved:** `src/editor-save.js`
+
+### BUG-019 — Line numbers toggle in preferences has no effect
+- **Found:** 2026-03-31, Day 10 of Sprint 2
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-31
+- **Symptom:** Toggling line numbers off in preferences does not hide line numbers in the editor.
+- **Root cause:** The CSS rule `.hide-line-numbers .cm-lineNumbers { display: none }` only hid the line number elements but (1) lacked `!important` so CM6's own styles overrode it, and (2) didn't hide the gutter container (`.cm-gutters`) which left a blank column.
+- **Fix:** Strengthened the CSS rule to target both `.cm-lineNumbers` and `.cm-gutters` with `!important`.
+- **Files involved:** `src/styles.css`
+
+---
+
 ## Resolved — Day 9
 
 ### BUG-017 — Pagebreak comment has no effect in PDF export or print

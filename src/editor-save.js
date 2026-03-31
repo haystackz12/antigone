@@ -131,8 +131,10 @@ function stopRecovery() {
 }
 
 async function checkRecovery() {
-  const files = await window.api.listRecovery();
-  if (!files || files.length === 0) return;
+  const allFiles = await window.api.listRecovery();
+  // Filter out current session's recovery file
+  const files = (allFiles || []).filter(f => f.tabId !== recoveryId);
+  if (files.length === 0) return;
 
   const banner = document.getElementById('recovery-banner');
   if (!banner) return;
@@ -178,14 +180,17 @@ async function checkRecovery() {
 function setupBeforeClose() {
   window.api.onBeforeClose(async () => {
     if (!getIsDirty()) {
+      stopRecovery(); // clean up recovery file on normal exit
       window.api.closeConfirmed();
       return;
     }
     const result = await window.api.showUnsavedDialog();
     if (result === 'save') {
       await saveFile(getCurrentPath());
+      stopRecovery();
       window.api.closeConfirmed();
     } else if (result === 'dontsave') {
+      stopRecovery();
       window.api.closeConfirmed();
     }
     // 'cancel' — do nothing, window stays open
