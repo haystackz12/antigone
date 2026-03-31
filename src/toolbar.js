@@ -5,7 +5,7 @@
 
 'use strict';
 
-const { attachScrollSync } = require('./preview.js');
+const { initScrollSync, destroyScrollSync } = require('./scroll-sync.js');
 
 let getView = null;
 let getCurrentPath = null;
@@ -202,9 +202,15 @@ function setViewMode(mode) {
     if (editor)  editor.style.display  = '';
     if (preview) preview.style.display = '';
     if (resizer) resizer.style.display = '';
-    // Attach scroll sync after panes are visible
-    requestAnimationFrame(() => attachScrollSync());
+    // Init anchor-based scroll sync after panes are visible
+    requestAnimationFrame(() => {
+      const view = getView && getView();
+      if (view) initScrollSync(view);
+    });
   }
+
+  // Destroy scroll sync when leaving split view
+  if (mode !== 'split') destroyScrollSync();
 
   document.documentElement.dataset.panel = mode;
 
