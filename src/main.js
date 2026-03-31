@@ -100,12 +100,15 @@ function createWindow() {
   // Reveal only when painted to avoid white flash on launch
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
-    // Deliver any file that was opened before the window existed
+    // Deliver any file that was opened before the window existed (macOS open-file)
     if (pendingOpenPath) {
-      mainWindow.webContents.send('open-file', pendingOpenPath);
+      const ext = path.extname(pendingOpenPath).toLowerCase();
+      if (VALID_FILE_EXTS.includes(ext)) {
+        mainWindow.webContents.send('open-file', pendingOpenPath);
+      }
       pendingOpenPath = null;
     }
-    // CLI argument: antigone path/to/file.md
+    // CLI argument: antigone path/to/file.md (already filtered by extension)
     const cliPath = resolveCLIPath();
     if (cliPath) mainWindow.webContents.send('open-file', cliPath);
   });
@@ -142,13 +145,18 @@ function resolveCLIPath() {
 }
 
 // ── macOS open-file (double-click / "Open With") ─────────────────────────────
+// Only accept Markdown/text files — prevents macOS Resume from auto-opening
+// the last non-Markdown file (e.g., project directories or config files).
+
+const VALID_FILE_EXTS = ['.md', '.markdown', '.mdown', '.mkd', '.mdx', '.txt'];
 
 app.on('open-file', (event, filePath) => {
   event.preventDefault();
+  const ext = path.extname(filePath).toLowerCase();
+  if (!VALID_FILE_EXTS.includes(ext)) return;
   if (mainWindow) {
     mainWindow.webContents.send('open-file', filePath);
   } else {
-    // App not ready yet — queue for delivery after window creates
     pendingOpenPath = filePath;
   }
 });
