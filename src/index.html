@@ -15,7 +15,7 @@
                  style-src 'self' 'unsafe-inline';
                  font-src 'self';
                  img-src 'self' data: blob:;
-                 connect-src 'none';" />
+                 connect-src 'self' ws://localhost:*;" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Antigone</title>
 </head>
@@ -24,7 +24,7 @@
 
   <!-- ── Traffic-light drag region (macOS hiddenInset titleBarStyle) ───────── -->
   <!-- This bar is -webkit-app-region: drag. Interactive children must opt out. -->
-  <div id="titlebar" aria-hidden="true">
+  <div id="titlebar">
     <!-- Traffic light gutter: 72px reserved for macOS buttons -->
     <div id="titlebar-traffic-gutter"></div>
 

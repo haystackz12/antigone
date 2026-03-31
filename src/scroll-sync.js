@@ -129,12 +129,25 @@ function buildSyncMap() {
     if (!coords) continue;
     const editorY = coords.top - scrollerRect.top + scrollerEl.scrollTop;
 
+    // Try exact match first, then fuzzy (startsWith) from current position
     let previewY = null;
     for (let j = previewIdx; j < previewMap.length; j++) {
-      if (previewMap[j].text === headingText) {
+      if (previewMap[j].text === headingText ||
+          previewMap[j].text.startsWith(headingText) ||
+          headingText.startsWith(previewMap[j].text)) {
         previewY = previewMap[j].y;
         previewIdx = j + 1;
         break;
+      }
+    }
+
+    // If sequential search missed, try full scan (handles reordering)
+    if (previewY === null) {
+      for (let j = 0; j < previewMap.length; j++) {
+        if (previewMap[j].text === headingText) {
+          previewY = previewMap[j].y;
+          break;
+        }
       }
     }
 
@@ -167,7 +180,7 @@ function buildSyncMap() {
   }
 
   // Diagnostic log — remove after verifying map is correct
-  console.log('[sync] map built:', syncMap.length, 'entries');
+  console.log('[sync] map built:', syncMap.length, 'entries, editor height:', editorMax, 'preview height:', previewMax);
   syncMap.forEach((e, i) =>
     console.log(`  [${i}] editorY:${Math.round(e.editorY)} previewY:${Math.round(e.previewY)}`)
   );
