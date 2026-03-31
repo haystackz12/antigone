@@ -90,7 +90,16 @@ function showGoalInput() {
   overlay.appendChild(confirmBtn);
   overlay.appendChild(cancelBtn);
 
-  document.getElementById('statusbar').appendChild(overlay);
+  // Position near the word goal button, appended to body to avoid layout issues
+  document.body.appendChild(overlay);
+  const ring = document.getElementById('word-goal-ring');
+  if (ring) {
+    const rect = ring.getBoundingClientRect();
+    overlay.style.position = 'fixed';
+    overlay.style.top = (rect.bottom + 4) + 'px';
+    overlay.style.right = (window.innerWidth - rect.right) + 'px';
+    overlay.style.zIndex = '600';
+  }
   input.focus();
   input.select();
 

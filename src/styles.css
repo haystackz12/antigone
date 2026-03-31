@@ -290,6 +290,8 @@ body {
 #titlebar {
   grid-area:        titlebar;
   height:           var(--titlebar-height);
+  min-height:       var(--titlebar-height);
+  flex-shrink:      0;
   background:       var(--color-surface-1);
   border-bottom:    1px solid var(--color-border-subtle);
   display:          flex;
@@ -1340,7 +1342,11 @@ body.drag-over #editor-pane::after {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 0 8px;
+  padding: 6px 12px;
+  background: var(--color-surface-1, #f0ede8);
+  border: 1px solid var(--color-border, #d5d1c8);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 #goal-input-overlay input {
   width: 80px;

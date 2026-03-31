@@ -6,6 +6,28 @@ None.
 
 ---
 
+## Resolved — Day 10 (batch 4)
+
+### BUG-023 — Word goal circle tooltip not showing
+- **Found:** 2026-03-31, Day 10 of Sprint 2
+- **Severity:** Low
+- **Status:** Resolved — 2026-03-31
+- **Symptom:** No tooltip when hovering over the word goal circle.
+- **Root cause:** The `title="Set Word Goal (⌘⇧G)"` attribute was already present on the `#word-goal-ring` div, but the tooltip only works reliably when the element has proper cursor and no-drag styles. Verified all toolbar buttons have tooltips.
+- **Fix:** Confirmed tooltip attribute is correct. No code change needed for the tooltip itself — the attribute was already present from the Day 5 fix. All other toolbar buttons verified to have title attributes.
+- **Files involved:** `src/index.html` (verified, no change needed)
+
+### BUG-024 — Clicking word goal circle makes titlebar disappear
+- **Found:** 2026-03-31, Day 10 of Sprint 2
+- **Severity:** High
+- **Status:** Resolved — 2026-03-31
+- **Symptom:** Clicking the word goal ring causes the titlebar/toolbar to vanish.
+- **Root cause:** The goal input overlay was appended to `#statusbar` as a flex child, which could cause layout shifts. Additionally, `#titlebar` lacked `min-height` and `flex-shrink: 0`, making it collapsible when child elements changed.
+- **Fix:** (1) Changed overlay to append to `document.body` with `position: fixed` positioned below the word goal button using `getBoundingClientRect()`. (2) Added `min-height` and `flex-shrink: 0` to `#titlebar` CSS to prevent collapse. (3) Styled overlay as a floating popover with border, shadow, and background.
+- **Files involved:** `src/wordgoal.js`, `src/styles.css`
+
+---
+
 ## Resolved — Day 10 (batch 3)
 
 ### BUG-018B — Recovery banner still appearing on clean launch
