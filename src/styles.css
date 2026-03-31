@@ -1319,6 +1319,11 @@ body.drag-over #editor-pane::after {
 }
 .cm-link-text   { color: #0969da; text-decoration: underline; }
 .cm-blockquote  { color: var(--fg-muted); border-left: 3px solid var(--accent); padding-left: 1em; }
+.cm-frontmatter {
+  color: var(--color-text-tertiary, #7a7670);
+  font-size: 0.85em;
+  opacity: 0.7;
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    §21  RECOVERY BANNER

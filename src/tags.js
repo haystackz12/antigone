@@ -79,9 +79,14 @@ function updateSidebar(tags) {
     return;
   }
 
-  // Auto-show tags section when tags are found
+  // Expand sidebar if collapsed and show tags section
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar && sidebar.dataset.collapsed === 'true') {
+    sidebar.dataset.collapsed = 'false';
+  }
+
+  // Auto-show tags section
   section.classList.remove('sidebar-section--hidden');
-  // Activate the tags tab
   const tagsTab = document.querySelector('.sidebar-tab[data-section="tags"]');
   if (tagsTab) {
     document.querySelectorAll('.sidebar-tab').forEach(t => {

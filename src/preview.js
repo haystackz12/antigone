@@ -44,18 +44,19 @@ function createRenderer() {
   let paraIndex = 0;
 
   renderer.heading = function({ text, depth }) {
-    const cleanText = text.replace(/<[^>]+>/g, '').trim();
+    const cleanText = text.replace(/<[^>]+>/g, '').replace(/\n/g, ' ').trim();
     const lineNum = lineMap.get(cleanText) || 0;
     return `<h${depth} data-line="${lineNum}">${text}</h${depth}>\n`;
   };
 
   renderer.paragraph = function({ text }) {
-    // Find the next paragraph line number
     const keys = [...lineMap.keys()].filter(k => k.startsWith('__para_'));
     const key = keys[paraIndex];
     const lineNum = key ? lineMap.get(key) : 0;
     paraIndex++;
-    return `<p data-line="${lineNum}">${text}</p>\n`;
+    // Replace \n with <br> since custom renderer bypasses marked's breaks processing
+    const withBreaks = text.replace(/\n/g, '<br>');
+    return `<p data-line="${lineNum}">${withBreaks}</p>\n`;
   };
 
   return renderer;

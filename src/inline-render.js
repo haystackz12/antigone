@@ -88,6 +88,20 @@ function buildDecorations(view) {
   const cursorLine = doc.lineAt(cursorHead).number;
   const decos = [];
 
+  // Frontmatter: mute lines between opening and closing ---
+  const docText = doc.toString();
+  if (docText.startsWith('---')) {
+    const fmEnd = docText.indexOf('\n---', 3);
+    if (fmEnd !== -1) {
+      const fmLastPos = fmEnd + 4; // includes the closing ---\n
+      decos.push({
+        from: 0,
+        to: Math.min(fmLastPos, doc.length),
+        deco: Decoration.mark({ class: 'cm-frontmatter' }),
+      });
+    }
+  }
+
   for (const { from, to } of view.visibleRanges) {
     syntaxTree(state).iterate({ from, to, enter(node) {
       // Skip nodes on the cursor line — reveal raw syntax for editing
