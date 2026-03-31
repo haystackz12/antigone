@@ -150,6 +150,27 @@ function buildSyncMap() {
   }
 
   syncMap.sort((a, b) => a.editorY - b.editorY);
+
+  // Validate: remove entries where previewY didn't increase
+  const validated = syncMap.filter((e, i) =>
+    i === 0 || e.previewY > syncMap[i - 1].previewY
+  );
+
+  if (validated.length < 2) {
+    // Map is bad — fall back to simple start+end ratio
+    syncMap = [
+      { editorY: 0, previewY: 0 },
+      { editorY: Math.max(1, editorMax), previewY: Math.max(1, previewMax) },
+    ];
+  } else {
+    syncMap = validated;
+  }
+
+  // Diagnostic log — remove after verifying map is correct
+  console.log('[sync] map built:', syncMap.length, 'entries');
+  syncMap.forEach((e, i) =>
+    console.log(`  [${i}] editorY:${Math.round(e.editorY)} previewY:${Math.round(e.previewY)}`)
+  );
 }
 
 // ─── Interpolation ───────────────────────────────────────────────────────────

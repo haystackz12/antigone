@@ -40,8 +40,13 @@ function render(markdownText) {
   const placeholder = document.getElementById('preview-placeholder');
   if (placeholder) placeholder.style.display = markdownText.trim() ? 'none' : '';
 
-  // Rebuild sync map after preview content updates
-  buildSyncMap();
+  // Defer sync map build until after browser completes layout
+  // Double rAF ensures style calculation + layout are both done
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      buildSyncMap();
+    });
+  });
 }
 
 // ─── Init ────────────────────────────────────────────────────────────────────
