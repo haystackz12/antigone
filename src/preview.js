@@ -1,7 +1,7 @@
 // src/preview.js
 // Markdown preview rendering: marked.js + DOMPurify pipeline.
 // Injects data-line attributes on block elements for line-based scroll sync.
-// Scroll sync delegated to scroll-sync.js.
+// Split view panes scroll independently (no scroll sync).
 
 'use strict';
 

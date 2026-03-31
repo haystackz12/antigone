@@ -5,8 +5,6 @@
 
 'use strict';
 
-const { initScrollSync, destroyScrollSync } = require('./scroll-sync.js');
-
 let getView = null;
 let getCurrentPath = null;
 
@@ -197,20 +195,12 @@ function setViewMode(mode) {
     if (preview) preview.style.display = '';
     if (resizer) resizer.style.display = 'none';
   } else {
-    // split (default) — clear inline override, let CSS handle it
+    // split — two independent panes, no scroll sync
     if (workspace) workspace.style.gridTemplateColumns = '';
     if (editor)  editor.style.display  = '';
     if (preview) preview.style.display = '';
     if (resizer) resizer.style.display = '';
-    // Init anchor-based scroll sync after panes are visible
-    requestAnimationFrame(() => {
-      const view = getView && getView();
-      if (view) initScrollSync(view);
-    });
   }
-
-  // Destroy scroll sync when leaving split view
-  if (mode !== 'split') destroyScrollSync();
 
   document.documentElement.dataset.panel = mode;
 

@@ -98,6 +98,12 @@
 **Why:** Standard desktop app behavior. Without this, closing the window silently discards unsaved work, which is a data loss risk. The dialog is implemented via `win.on('close')` intercepting the close event and `dialog.showMessageBox` presenting the options.
 **Date:** 2026-03-30
 
+## DEC-025 — Scroll sync removed from split view
+**Decision:** Scroll sync removed entirely. Split view has two independent panes that scroll independently.
+**Why:** Scroll sync requires identical content height between editor and rendered HTML, which is not achievable with complex documents containing tables, lists, and code blocks. The height ratio between raw Markdown and rendered HTML can be 6:1 or higher, making any sync approach produce jarring jumps or feedback loops. Multiple approaches were attempted (percentage-based, anchor-based, heading-map, line-number/data-line injection, polling loops, timestamp deadbands, drift validators) — all produced worse UX than independent scrolling.
+**Revisit trigger:** Post-v1.0, consider a dedicated line-marker approach scoped to simple documents only, or a "click heading to sync" button instead of continuous sync.
+**Date:** 2026-03-31
+
 ## DEC-024 — View mode always resets to editor-only on launch
 **Decision:** View mode always resets to editor-only on launch. The stored viewMode preference is not read at startup.
 **Why:** Launching in split view shows an empty preview pane which is confusing when no file is loaded. Editor-only is the cleanest initial state. Users switch to split or preview via toolbar buttons during their session.
