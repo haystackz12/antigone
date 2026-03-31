@@ -6,6 +6,28 @@ None.
 
 ---
 
+## Resolved — Day 10 (batch 3)
+
+### BUG-018B — Recovery banner still appearing on clean launch
+- **Found:** 2026-03-31, Day 10 of Sprint 2
+- **Severity:** High
+- **Status:** Resolved — 2026-03-31
+- **Symptom:** Recovery banner shows on every launch despite stopRecovery() being called.
+- **Root cause:** `stopRecovery()` called `deleteRecovery()` without awaiting it, then `closeConfirmed()` closed the window immediately — the delete IPC never completed before the process exited. The recovery file survived on disk.
+- **Fix:** Made `stopRecovery()` async and `await`ed it in the before-close handler before calling `closeConfirmed()`. Also added content verification in `checkRecovery()`: reads each recovery file and silently deletes empty/whitespace-only ones.
+- **Files involved:** `src/editor-save.js`
+
+### BUG-022 — App title "Antigone" not centered in titlebar
+- **Found:** 2026-03-31, Day 10 of Sprint 2
+- **Severity:** Low
+- **Status:** Resolved — 2026-03-31
+- **Symptom:** Title text shifts left in dark mode and appears off-center in light mode.
+- **Root cause:** `.titlebar-title` used `flex: 1; text-align: center` which centers within its flex-allocated space, but the traffic light gutter (left) and toolbar (right) take unequal space, shifting the visual center.
+- **Fix:** Changed to `position: absolute; left: 50%; transform: translateX(-50%)` which centers relative to the full titlebar width regardless of sibling sizes. Added `position: relative` to `#titlebar` for correct positioning context.
+- **Files involved:** `src/styles.css`
+
+---
+
 ## Resolved — Day 10 (batch 2)
 
 ### BUG-020 — App crashes when opening new file while another is loaded

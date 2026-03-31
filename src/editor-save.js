@@ -123,10 +123,10 @@ function startRecovery() {
   }, 30_000);
 }
 
-function stopRecovery() {
+async function stopRecovery() {
   clearInterval(recoveryTimer);
   if (recoveryId) {
-    window.api.deleteRecovery(recoveryId).catch(() => {});
+    try { await window.api.deleteRecovery(recoveryId); } catch {}
     recoveryId = null;
   }
 }
@@ -134,7 +134,18 @@ function stopRecovery() {
 async function checkRecovery() {
   const allFiles = await window.api.listRecovery();
   // Filter out current session's recovery file
-  const files = (allFiles || []).filter(f => f.tabId !== recoveryId);
+  const candidates = (allFiles || []).filter(f => f.tabId !== recoveryId);
+
+  // Verify each recovery file has actual content; delete empty ones
+  const files = [];
+  for (const f of candidates) {
+    const recovery = await window.api.readRecovery(f.tabId);
+    if (recovery.found && recovery.content && recovery.content.trim()) {
+      files.push(f);
+    } else {
+      await window.api.deleteRecovery(f.tabId).catch(() => {});
+    }
+  }
   if (files.length === 0) return;
 
   const banner = document.getElementById('recovery-banner');
@@ -181,17 +192,17 @@ async function checkRecovery() {
 function setupBeforeClose() {
   window.api.onBeforeClose(async () => {
     if (!getIsDirty()) {
-      stopRecovery(); // clean up recovery file on normal exit
+      await stopRecovery(); // must complete before window closes
       window.api.closeConfirmed();
       return;
     }
     const result = await window.api.showUnsavedDialog();
     if (result === 'save') {
       await saveFile(getCurrentPath());
-      stopRecovery();
+      await stopRecovery();
       window.api.closeConfirmed();
     } else if (result === 'dontsave') {
-      stopRecovery();
+      await stopRecovery();
       window.api.closeConfirmed();
     }
     // 'cancel' — do nothing, window stays open
