@@ -396,6 +396,39 @@ body {
 .toolbar-btn s  { font-family: var(--font-prose); font-size: 13px; }
 .toolbar-btn code { font-family: var(--font-mono); font-size: 12px; }
 
+/* ── Custom tooltips (data-tooltip) ──────────────────────────────────────── */
+
+[data-tooltip] {
+  position:         relative;
+}
+[data-tooltip]::after {
+  content:          attr(data-tooltip);
+  position:         absolute;
+  bottom:           calc(100% + 8px);
+  left:             50%;
+  transform:        translateX(-50%);
+  background:       var(--color-tooltip-bg, #1a1a1a);
+  color:            var(--color-tooltip-text, #fff);
+  font-size:        11px;
+  font-family:      var(--font-ui, system-ui);
+  font-weight:      400;
+  white-space:      nowrap;
+  padding:          4px 8px;
+  border-radius:    4px;
+  pointer-events:   none;
+  opacity:          0;
+  transition:       opacity 0.15s ease;
+  z-index:          1000;
+}
+[data-tooltip]:hover::after {
+  opacity:          1;
+}
+/* Show tooltip below for buttons near the top of the screen */
+.tooltip-below[data-tooltip]::after {
+  bottom:           auto;
+  top:              calc(100% + 8px);
+}
+
 /* Word goal ring */
 #word-goal-ring {
   width:            28px;
