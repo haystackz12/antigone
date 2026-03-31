@@ -1,9 +1,9 @@
-# NEXT_SESSION.md — Day 9 Kick-off Prompt
+# NEXT_SESSION.md — Day 10 Kick-off Prompt
 
 We are working on the Antigone project — a cross-platform Markdown editor built on
 Electron + CodeMirror 6. Repo: haystackz12/antigone | Path: ~/Projects/antigone
 
-Today is Sprint 2, Day 9 — Export + Page Breaks + Print.
+Today is Sprint 2, Day 10 — Preferences UI + Vim/Emacs (Pro) + Windows Build.
 
 ## Step 0 — Read these files before touching any code
 1. docs/CLAUDE.md
@@ -13,37 +13,35 @@ Today is Sprint 2, Day 9 — Export + Page Breaks + Print.
 
 ---
 
-## Day 9 Tasks (from SPRINT.md)
+## Day 10 Tasks (from SPRINT.md)
 
-### Task 1 — PDF silent export
-- Use Electron's `webContents.printToPDF()` via IPC
-- Render Markdown to HTML (reuse preview.js pipeline)
-- Export to user-selected path via save dialog
-- Add `export-pdf` IPC handler in main.js
-- Add `exportPdf` to preload.js
+### Task 1 — Preferences UI
+- Create a preferences panel/modal accessible from toolbar or menu
+- Wire all existing prefs: theme, font size, line numbers, auto-save, view mode
+- Changes persist immediately to electron-store
+- UI updates in real-time as prefs change
 
-### Task 2 — HTML self-contained export
-- Render Markdown to HTML with inline styles
-- Save as standalone .html file
-- Include CSS for proper formatting
+### Task 2 — Vim/Emacs keybindings (Pro feature stub)
+- Install @codemirror/vim
+- Add a "Keybindings" pref: Normal / Vim / Emacs
+- Vim toggle loads/unloads the vim() extension via Compartment
+- Gate behind a Pro flag (stub for now — always allow in dev)
 
-### Task 3 — Print stylesheet
-- `@media print` CSS rules for clean printing
-- Hide UI elements (toolbar, sidebar, tabs, status bar)
-- Show only prose content
+### Task 3 — Windows build
+- Run npm run make on Windows (or cross-compile if on macOS)
+- Verify .exe file association for .md files
+- Test basic functionality on Windows
 
-### Task 4 — Page break detection
-- Detect `<!-- pagebreak -->` in Markdown
-- Inject `page-break-before: always` CSS at those points
-- Works for both PDF export and print
+### Task 4 — Tag v0.3.0
+- Tag and push v0.3.0
 
 ---
 
 ## Gate
-- Export to PDF produces readable output
-- Export to HTML produces standalone file
-- Cmd+P prints with correct formatting
-- `<!-- pagebreak -->` creates page breaks in PDF/print
+- Preferences UI opens, changes persist across relaunch
+- Vim mode toggle works
+- Windows build produces working .exe (if testable)
+- Tag v0.3.0
 
 ---
 
@@ -56,4 +54,4 @@ Today is Sprint 2, Day 9 — Export + Page Breaks + Print.
 ---
 
 ## End of session
-Run docs/closing_instructions.md top to bottom. Generate NEXT_SESSION.md for Day 10.
+Run docs/closing_instructions.md top to bottom. Generate NEXT_SESSION.md for Day 11 (Sprint 3).

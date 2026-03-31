@@ -87,18 +87,27 @@
 ---
 
 ## Day 9 — Export + Page Breaks + Print
-**Status:** [ ] Not started
+**Status:** [x] COMPLETE — 2026-03-30
 
 ### Tasks
-- [ ] PDF silent export
-- [ ] HTML self-contained export
-- [ ] Print stylesheet
-- [ ] `<!-- pagebreak -->` detection + print CSS injection
+- [x] `export.js`: `exportPdf()` via hidden BrowserWindow + `printToPDF()`, `exportHtml()` writes standalone file
+- [x] `main-export.js`: split from main.js — `export-pdf` and `export-html` IPC handlers with save dialog
+- [x] Standalone HTML template with inline CSS (prose styling, code blocks, tables, blockquotes)
+- [x] `<!-- pagebreak -->` detection → `<div style="page-break-before: always">` in rendered output
+- [x] Print stylesheet enhanced: hides all UI, shows only preview content, pagebreak CSS
+- [x] Keyboard shortcuts: `⌘⇧E` → PDF export, `⌘⇧H` → HTML export
+- [x] `exportPdf` and `exportHtml` added to preload.js API
 
-### Gate
-- Export to PDF produces readable output
-- Export to HTML produces standalone file
-- ⌘P prints with correct formatting
+### Gate ✅ PASSED
+- Export to PDF produces readable output ✅
+- Export to HTML produces standalone file ✅
+- ⌘P prints with correct formatting ✅
+- `<!-- pagebreak -->` creates page breaks in PDF/print ✅
+
+### Notes
+- PDF export uses a hidden BrowserWindow to render HTML then printToPDF — avoids needing puppeteer/headless Chrome
+- main.js split to main-export.js to stay under 400-line cap
+- Print CSS hides editor pane, shows only preview content at full width
 
 ---
 
