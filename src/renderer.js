@@ -11,6 +11,7 @@ const focus      = require('./focus.js');
 const wordgoal   = require('./wordgoal.js');
 const toolbar    = require('./toolbar.js');
 const tags       = require('./tags.js');
+const exportMod  = require('./export.js');
 const toc        = require('./toc.js');
 const preview    = require('./preview.js');
 const tabs       = require('./tabs.js');
@@ -34,6 +35,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   toc.configure({ getView: require('./editor.js').getView });
   toc.init();
   preview.init();
+  exportMod.configure({
+    getView: require('./editor.js').getView,
+    getCurrentPath: require('./editor.js').getCurrentPath,
+  });
+  exportMod.init();
 
   // Always launch to empty state (DEC-023 — session restore is opt-in, not default)
   // Clear any stale session data from electron-store

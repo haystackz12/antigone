@@ -136,6 +136,24 @@ contextBridge.exposeInMainWorld('api', {
   openExternal: (url) =>
     ipcRenderer.invoke('open-external', requireString(url, 'url')),
 
+  // ── Export ─────────────────────────────────────────────────────────────────
+
+  /**
+   * Export rendered HTML as PDF via save dialog.
+   * @param {string} html         Standalone HTML content.
+   * @param {string} defaultPath  Suggested filename.
+   */
+  exportPdf: (html, defaultPath) =>
+    ipcRenderer.invoke('export-pdf', html, defaultPath),
+
+  /**
+   * Export rendered HTML as standalone .html file via save dialog.
+   * @param {string} html         Standalone HTML content.
+   * @param {string} defaultPath  Suggested filename.
+   */
+  exportHtml: (html, defaultPath) =>
+    ipcRenderer.invoke('export-html', html, defaultPath),
+
   // ── File path resolution ───────────────────────────────────────────────────
 
   /**

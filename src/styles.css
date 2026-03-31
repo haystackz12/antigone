@@ -1179,20 +1179,31 @@ body.drag-over #editor-pane::after {
 
 @media print {
   #titlebar, #tabbar, #sidebar, #split-resize,
-  #statusbar, #notification-bar, #toolbar,
-  #empty-state { display: none !important; }
+  #statusbar, #toolbar, #focus-overlay,
+  #empty-state, #recovery-banner { display: none !important; }
 
   #workspace {
-    display:        block;
+    display:        block !important;
+    overflow:       visible !important;
+  }
+  #editor-pane {
+    display:        none !important;
   }
   #preview-pane {
-    overflow:       visible;
-    border:         none;
+    display:        block !important;
+    overflow:       visible !important;
+    border:         none !important;
+    padding:        0 !important;
+    grid-column:    1 / -1 !important;
   }
   #preview-content {
     max-width:      none;
     padding:        0;
+    font-size:      12pt;
+    line-height:    1.6;
   }
+  #preview-placeholder { display: none !important; }
+  .pagebreak { page-break-before: always; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

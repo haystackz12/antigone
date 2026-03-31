@@ -302,6 +302,10 @@ ipcMain.handle('save-image', async (_event, filePath, filename, dataArray) => {
   }
 });
 
+// ── IPC: Export (PDF + HTML) — split to main-export.js ──────────────────────
+const { registerExportHandlers } = require('./main-export.js');
+registerExportHandlers(() => mainWindow);
+
 // ── IPC: External link ───────────────────────────────────────────────────────
 // Renderer sends all external URL clicks here. Never navigates the editor pane.
 
