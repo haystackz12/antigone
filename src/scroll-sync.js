@@ -6,12 +6,16 @@
 'use strict';
 
 let syncMap = [];   // Array of { editorY, previewY }
-let isSyncing = false;
 let editorView = null;
 let scrollerEl = null;
 let previewEl  = null;
 let attached = false;
 let rebuildTimer = null;
+
+// Timestamp-based ignore window to prevent feedback loops
+const SYNC_IGNORE_MS = 100;
+let editorScrolledAt = 0;
+let previewScrolledAt = 0;
 
 // ─── Init / Destroy ──────────────────────────────────────────────────────────
 
@@ -127,15 +131,15 @@ function buildSyncMap() {
 
 // ─── Interpolation ───────────────────────────────────────────────────────────
 
-function interpolate(value, fromKey, toKey) {
+function interpolate(scrollTop, fromKey, toKey) {
   if (syncMap.length < 2) {
     // Fallback to ratio
     if (!scrollerEl || !previewEl) return 0;
     const sMax = scrollerEl.scrollHeight - scrollerEl.clientHeight;
     const pMax = previewEl.scrollHeight - previewEl.clientHeight;
     if (sMax <= 0 || pMax <= 0) return 0;
-    if (fromKey === 'editorY') return (value / sMax) * pMax;
-    return (value / pMax) * sMax;
+    if (fromKey === 'editorY') return (scrollTop / sMax) * pMax;
+    return (scrollTop / pMax) * sMax;
   }
 
   // Find surrounding pair
@@ -143,7 +147,7 @@ function interpolate(value, fromKey, toKey) {
   let after = syncMap[syncMap.length - 1];
 
   for (let i = 0; i < syncMap.length - 1; i++) {
-    if (syncMap[i][fromKey] <= value && syncMap[i + 1][fromKey] >= value) {
+    if (syncMap[i][fromKey] <= scrollTop && syncMap[i + 1][fromKey] >= scrollTop) {
       before = syncMap[i];
       after = syncMap[i + 1];
       break;
@@ -153,28 +157,27 @@ function interpolate(value, fromKey, toKey) {
   const range = after[fromKey] - before[fromKey];
   if (range === 0) return before[toKey];
 
-  const t = (value - before[fromKey]) / range;
+  // Clamp t to [0,1] to prevent overshoot
+  const t = Math.max(0, Math.min(1, (scrollTop - before[fromKey]) / range));
   return before[toKey] + t * (after[toKey] - before[toKey]);
 }
 
-// ─── Scroll handlers ─────────────────────────────────────────────────────────
+// ─── Scroll handlers (timestamp-based ignore window) ─────────────────────────
 
 function onEditorScroll() {
-  if (isSyncing) return;
-  isSyncing = true;
+  if (Date.now() - previewScrolledAt < SYNC_IGNORE_MS) return;
+  editorScrolledAt = Date.now();
   if (scrollerEl && previewEl) {
     previewEl.scrollTop = interpolate(scrollerEl.scrollTop, 'editorY', 'previewY');
   }
-  requestAnimationFrame(() => { isSyncing = false; });
 }
 
 function onPreviewScroll() {
-  if (isSyncing) return;
-  isSyncing = true;
+  if (Date.now() - editorScrolledAt < SYNC_IGNORE_MS) return;
+  previewScrolledAt = Date.now();
   if (scrollerEl && previewEl) {
     scrollerEl.scrollTop = interpolate(previewEl.scrollTop, 'previewY', 'editorY');
   }
-  requestAnimationFrame(() => { isSyncing = false; });
 }
 
 // ─── Rebuild on content change (debounced) ───────────────────────────────────
