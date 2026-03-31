@@ -43,8 +43,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   exportMod.init();
 
   // Always launch to empty state (DEC-023 — session restore is opt-in, not default)
-  // Clear any stale session data from electron-store
   window.api.setPrefs({ session: null });
+
+  // Clean up ALL stale recovery files from previous sessions on launch
+  const staleRecovery = await window.api.listRecovery();
+  if (staleRecovery && staleRecovery.length > 0) {
+    for (const f of staleRecovery) {
+      await window.api.deleteRecovery(f.tabId).catch(() => {});
+    }
+  }
+
   tabs.openNewTab();
 
   // Wire native menu commands

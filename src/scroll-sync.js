@@ -2,6 +2,7 @@
 // Anchor-based scroll sync for split view.
 // Builds a sync map from heading positions in editor (CM6) and preview (DOM),
 // then interpolates scroll position between anchor pairs.
+// Uses a polling loop (not scroll events) to prevent feedback loops.
 
 'use strict';
 
@@ -9,13 +10,12 @@ let syncMap = [];   // Array of { editorY, previewY }
 let editorView = null;
 let scrollerEl = null;
 let previewEl  = null;
-let attached = false;
 let rebuildTimer = null;
 
-// Timestamp-based ignore window to prevent feedback loops
-const SYNC_IGNORE_MS = 100;
-let editorScrolledAt = 0;
-let previewScrolledAt = 0;
+// Polling loop state
+let animFrameId = null;
+let lastEditorScroll = 0;
+let lastPreviewScroll = 0;
 
 // ─── Init / Destroy ──────────────────────────────────────────────────────────
 
@@ -26,30 +26,61 @@ function initScrollSync(view) {
   if (!scrollerEl || !previewEl) return;
 
   buildSyncMap();
-
-  if (!attached) {
-    scrollerEl.addEventListener('scroll', onEditorScroll, { passive: true });
-    previewEl.addEventListener('scroll', onPreviewScroll, { passive: true });
-    attached = true;
-  }
+  lastEditorScroll = scrollerEl.scrollTop;
+  lastPreviewScroll = previewEl.scrollTop;
+  startSyncLoop();
 }
 
 function destroyScrollSync() {
-  if (scrollerEl) scrollerEl.removeEventListener('scroll', onEditorScroll);
-  if (previewEl)  previewEl.removeEventListener('scroll', onPreviewScroll);
-  attached = false;
+  stopSyncLoop();
   syncMap = [];
   editorView = null;
 }
 
+// ─── Polling loop ────────────────────────────────────────────────────────────
+
+function startSyncLoop() {
+  stopSyncLoop();
+  function loop() {
+    if (!scrollerEl || !previewEl) return;
+
+    const editorScroll = scrollerEl.scrollTop;
+    const previewScroll = previewEl.scrollTop;
+
+    if (editorScroll !== lastEditorScroll) {
+      // Editor moved — sync to preview
+      const targetY = interpolate(editorScroll, 'editorY', 'previewY');
+      if (Math.abs(previewEl.scrollTop - targetY) > 2) {
+        previewEl.scrollTop = targetY;
+      }
+      lastEditorScroll = editorScroll;
+      lastPreviewScroll = previewEl.scrollTop;
+    } else if (previewScroll !== lastPreviewScroll) {
+      // Preview moved — sync to editor
+      const targetY = interpolate(previewScroll, 'previewY', 'editorY');
+      if (Math.abs(scrollerEl.scrollTop - targetY) > 2) {
+        scrollerEl.scrollTop = targetY;
+      }
+      lastPreviewScroll = previewScroll;
+      lastEditorScroll = scrollerEl.scrollTop;
+    }
+
+    animFrameId = requestAnimationFrame(loop);
+  }
+  animFrameId = requestAnimationFrame(loop);
+}
+
+function stopSyncLoop() {
+  if (animFrameId) cancelAnimationFrame(animFrameId);
+  animFrameId = null;
+}
+
 // ─── Build sync map ──────────────────────────────────────────────────────────
-// Matches headings by text content between editor and preview.
 
 function buildSyncMap() {
   if (!editorView || !scrollerEl || !previewEl) return;
   syncMap = [];
 
-  // Calculate actual first-content positions for origin
   const scrollerRect = scrollerEl.getBoundingClientRect();
   const firstCoords = editorView.coordsAtPos(0);
   const editorOriginY = firstCoords
@@ -66,7 +97,6 @@ function buildSyncMap() {
   const doc = editorView.state.doc;
   const headingRe = /^(#{1,6})\s+(.+)$/;
 
-  // Collect preview headings with their scroll positions
   const previewHeadings = previewContent.querySelectorAll('h1, h2, h3, h4, h5, h6');
   const previewMap = [];
   for (const el of previewHeadings) {
@@ -76,34 +106,29 @@ function buildSyncMap() {
     });
   }
 
-  // Strip markdown inline markers for text comparison
   function stripMarkdown(text) {
     return text
-      .replace(/\*\*(.+?)\*\*/g, '$1')   // bold
-      .replace(/\*(.+?)\*/g, '$1')        // italic
-      .replace(/_(.+?)_/g, '$1')          // italic alt
-      .replace(/~~(.+?)~~/g, '$1')        // strikethrough
-      .replace(/`(.+?)`/g, '$1')          // code
-      .replace(/\[(.+?)\]\(.*?\)/g, '$1') // links
+      .replace(/\*\*(.+?)\*\*/g, '$1')
+      .replace(/\*(.+?)\*/g, '$1')
+      .replace(/_(.+?)_/g, '$1')
+      .replace(/~~(.+?)~~/g, '$1')
+      .replace(/`(.+?)`/g, '$1')
+      .replace(/\[(.+?)\]\(.*?\)/g, '$1')
       .trim().toLowerCase();
   }
 
   let previewIdx = 0;
 
-  // Walk document lines looking for headings
   for (let i = 1; i <= doc.lines; i++) {
     const line = doc.line(i);
     const match = line.text.match(headingRe);
     if (!match) continue;
 
     const headingText = stripMarkdown(match[2]);
-
-    // Get editor Y position
     const coords = editorView.coordsAtPos(line.from);
     if (!coords) continue;
     const editorY = coords.top - scrollerRect.top + scrollerEl.scrollTop;
 
-    // Find matching heading in preview by text (sequential search)
     let previewY = null;
     for (let j = previewIdx; j < previewMap.length; j++) {
       if (previewMap[j].text === headingText) {
@@ -118,14 +143,12 @@ function buildSyncMap() {
     }
   }
 
-  // Always add end point
   const editorMax = scrollerEl.scrollHeight - scrollerEl.clientHeight;
   const previewMax = previewEl.scrollHeight - previewEl.clientHeight;
   if (editorMax > 0 && previewMax > 0) {
     syncMap.push({ editorY: editorMax, previewY: previewMax });
   }
 
-  // Sort by editorY ascending to ensure correct interpolation
   syncMap.sort((a, b) => a.editorY - b.editorY);
 }
 
@@ -133,7 +156,6 @@ function buildSyncMap() {
 
 function interpolate(scrollTop, fromKey, toKey) {
   if (syncMap.length < 2) {
-    // Fallback to ratio
     if (!scrollerEl || !previewEl) return 0;
     const sMax = scrollerEl.scrollHeight - scrollerEl.clientHeight;
     const pMax = previewEl.scrollHeight - previewEl.clientHeight;
@@ -142,7 +164,6 @@ function interpolate(scrollTop, fromKey, toKey) {
     return (scrollTop / pMax) * sMax;
   }
 
-  // Find surrounding pair
   let before = syncMap[0];
   let after = syncMap[syncMap.length - 1];
 
@@ -157,27 +178,8 @@ function interpolate(scrollTop, fromKey, toKey) {
   const range = after[fromKey] - before[fromKey];
   if (range === 0) return before[toKey];
 
-  // Clamp t to [0,1] to prevent overshoot
   const t = Math.max(0, Math.min(1, (scrollTop - before[fromKey]) / range));
   return before[toKey] + t * (after[toKey] - before[toKey]);
-}
-
-// ─── Scroll handlers (timestamp-based ignore window) ─────────────────────────
-
-function onEditorScroll() {
-  if (Date.now() - previewScrolledAt < SYNC_IGNORE_MS) return;
-  editorScrolledAt = Date.now();
-  if (scrollerEl && previewEl) {
-    previewEl.scrollTop = interpolate(scrollerEl.scrollTop, 'editorY', 'previewY');
-  }
-}
-
-function onPreviewScroll() {
-  if (Date.now() - editorScrolledAt < SYNC_IGNORE_MS) return;
-  previewScrolledAt = Date.now();
-  if (scrollerEl && previewEl) {
-    scrollerEl.scrollTop = interpolate(previewEl.scrollTop, 'previewY', 'editorY');
-  }
 }
 
 // ─── Rebuild on content change (debounced) ───────────────────────────────────

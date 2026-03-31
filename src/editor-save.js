@@ -133,16 +133,20 @@ async function stopRecovery() {
 
 async function checkRecovery() {
   const allFiles = await window.api.listRecovery();
-  // Filter out current session's recovery file
-  const candidates = (allFiles || []).filter(f => f.tabId !== recoveryId);
+  if (!allFiles || allFiles.length === 0) return;
 
-  // Verify each recovery file has actual content; delete empty ones
+  // Filter out current session and verify content is non-empty
   const files = [];
-  for (const f of candidates) {
-    const recovery = await window.api.readRecovery(f.tabId);
-    if (recovery.found && recovery.content && recovery.content.trim()) {
-      files.push(f);
-    } else {
+  for (const f of allFiles) {
+    if (f.tabId === recoveryId) continue;
+    try {
+      const recovery = await window.api.readRecovery(f.tabId);
+      if (recovery.found && recovery.content && recovery.content.trim()) {
+        files.push(f);
+      } else {
+        await window.api.deleteRecovery(f.tabId).catch(() => {});
+      }
+    } catch {
       await window.api.deleteRecovery(f.tabId).catch(() => {});
     }
   }
