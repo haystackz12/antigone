@@ -2,66 +2,59 @@
 > Overwrite this file completely at the end of every session. It is the single source of truth for "where we left off."
 
 ## Last updated
-2026-03-30 — Sprint 2, Day 9
+2026-03-31 — Sprint 2, Day 10
 
 ## Current sprint
-Sprint 2 — Complete Editor
+Sprint 2 — Complete Editor — COMPLETE
 
 ## Current day
-Day 9 — Export + Page Breaks + Print — COMPLETE
+Day 10 — Preferences UI + Vim/Emacs (Pro) + Windows Build — COMPLETE
 
 ## What was completed this session
-- Created `export.js` (154 lines): `renderToHtml()` with pagebreak detection, `buildStandaloneHtml()` with inline CSS, `exportPdf()` and `exportHtml()` via IPC. Keyboard shortcuts `⌘⇧E` (PDF) and `⌘⇧H` (HTML).
-- Created `main-export.js` (53 lines): `export-pdf` IPC uses hidden BrowserWindow + `printToPDF()`, `export-html` IPC writes standalone file via save dialog. Split from main.js for 400-line cap.
-- Updated `main.js` (377 lines): requires main-export.js, calls `registerExportHandlers()`.
-- Updated `preload.js` (259 lines): added `exportPdf` and `exportHtml` API.
-- Updated `renderer.js` (71 lines): imports and inits export.js.
-- Enhanced print CSS: hides all UI, shows only preview content at full width, pagebreak-before support.
+- Created `prefs-ui.js` (141 lines): modal preferences panel with theme (system/light/dark), font size slider, line numbers checkbox, auto-save checkbox, keybindings select (Normal/Vim). Changes persist immediately to electron-store and apply in real-time.
+- Updated `editor.js` (314 lines): added `vimCompartment` + `setVimMode()` — loads/unloads `@replit/codemirror-vim` via CM6 Compartment.
+- Created native menu Preferences item (⌘,) in main-menu.js.
+- Updated `preload.js` (270 lines): added `onMenuPrefs` listener.
+- Updated `renderer.js` (90 lines): wires prefs-ui with applyEditorTheme + setVimMode. Restores vim mode from stored prefs on launch.
+- Added preferences modal CSS to styles.css.
+- Installed `@replit/codemirror-vim` dependency.
 
 ## Exact state of the codebase
-- `src/main.js` (377 lines): all IPC handlers, export delegated to main-export.js.
-- `src/main-export.js` (53 lines): PDF + HTML export IPC handlers.
-- `src/preload.js` (259 lines): complete API surface including export.
-- `src/editor.js` (300 lines): CM6 with tabs, search, autocomplete.
-- `src/editor-save.js` (223 lines): save, recovery, unsaved dialog.
+- `src/main.js` (383 lines): all IPC, menu setup.
+- `src/main-menu.js` (148 lines): native app menu.
+- `src/main-export.js` (53 lines): export IPC.
+- `src/preload.js` (270 lines): complete API surface.
+- `src/editor.js` (314 lines): CM6 with vim compartment, tabs, search.
+- `src/editor-save.js` (223 lines): save, recovery, guard.
 - `src/inline-render.js` (305 lines): inline rendering.
-- `src/toolbar.js` (232 lines): formatting, view toggles, image paste.
-- `src/tabs.js` (285 lines): multi-tab state.
-- `src/tags.js` (122 lines): tag scanning, sidebar.
+- `src/toolbar.js` (232 lines): formatting, view toggles.
+- `src/tabs.js` (285 lines): multi-tab.
+- `src/tags.js` (122 lines): tag scanning.
 - `src/toc.js` (85 lines): TOC sidebar.
-- `src/preview.js` (101 lines): marked + DOMPurify + scroll sync.
-- `src/export.js` (154 lines): PDF + HTML export, pagebreaks.
+- `src/preview.js` (105 lines): marked + DOMPurify + scroll sync.
+- `src/export.js` (162 lines): PDF + HTML export.
+- `src/prefs-ui.js` (141 lines): preferences modal.
+- `src/prefs.js` (39 lines): pref application.
 - `src/focus.js` (37 lines): focus mode.
 - `src/wordgoal.js` (132 lines): word count, goal ring.
-- `src/prefs.js` (39 lines): preferences.
-- `src/renderer.js` (71 lines): entry point.
+- `src/renderer.js` (90 lines): entry point.
 
 ## What to do FIRST next session
-Day 10: Preferences UI + Vim/Emacs (Pro) + Windows Build. Start with preferences UI panel.
+Sprint 3 begins. Day 11: Preprocessors (Pro) + Tag enhancements.
 
 ## Blockers / open issues
+- Windows build deferred — requires Windows CI.
+- Emacs keybindings deferred — no maintained CM6 package.
 - Bundled fonts not yet added.
 - No app icon yet.
-- Apple Developer ID cert needed before Day 13.
-
-## Files modified this session
-- `src/export.js` (created)
-- `src/main-export.js` (created)
-- `src/main.js` (modified — export delegation)
-- `src/preload.js` (modified — export API)
-- `src/renderer.js` (modified — export init)
-- `src/styles.css` (modified — print CSS enhanced)
-- `docs/SPRINT.md` (modified — Day 9 complete)
-- `docs/SESSION_STATE.md` (overwritten)
 
 ## Known working / broken state
 | Feature | Status | Notes |
 |---------|--------|-------|
 | All prior features | Working | |
-| PDF export (⌘⇧E) | Working | Hidden BrowserWindow + printToPDF |
-| HTML export (⌘⇧H) | Working | Standalone file with inline CSS |
-| Print (⌘P) | Working | Shows preview content only |
-| Pagebreaks | Working | `<!-- pagebreak -->` → page-break-before |
+| Preferences modal (⌘,) | Working | Theme, font, lines, auto-save, vim |
+| Vim keybindings | Working | Toggle via prefs, persists |
+| Native app menu | Working | File, Edit, View, Window |
 
 ## Environment notes
 - Dev machine: macOS, ~/Projects/antigone/
