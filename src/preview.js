@@ -24,10 +24,16 @@ function render(markdownText) {
   const el = document.getElementById('preview-content');
   if (!el) return;
 
-  const rawHtml = marked.parse(markdownText);
+  // Preprocess pagebreaks before marked — comments get stripped by DOMPurify
+  const processed = markdownText.replace(
+    /<!--\s*pagebreak\s*-->/gi,
+    '\n<div class="page-break"></div>\n'
+  );
+  const rawHtml = marked.parse(processed);
   const cleanHtml = DOMPurify.sanitize(rawHtml, {
     USE_PROFILES: { html: true },
     ADD_ATTR: ['target'],
+    ADD_TAGS: ['div'],
   });
   el.innerHTML = cleanHtml;
 

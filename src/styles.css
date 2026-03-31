@@ -1203,7 +1203,36 @@ body.drag-over #editor-pane::after {
     line-height:    1.6;
   }
   #preview-placeholder { display: none !important; }
-  .pagebreak { page-break-before: always; }
+  .page-break {
+    page-break-after: always;
+    break-after: always;
+    border: none !important;
+    margin: 0 !important;
+  }
+  .page-break::after { display: none !important; }
+}
+
+/* ── Page break indicator (visible in preview pane) ──────────────────────── */
+
+.page-break {
+  page-break-after: always;
+  break-after: always;
+  border-top: 2px dashed var(--color-border, #d5d1c8);
+  margin: 24px 0;
+  position: relative;
+  height: 0;
+}
+.page-break::after {
+  content: 'Page Break';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--preview-bg, #faf9f7);
+  padding: 0 8px;
+  font-size: 11px;
+  color: var(--color-text-tertiary, #7a7670);
+  font-family: var(--font-ui, system-ui);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

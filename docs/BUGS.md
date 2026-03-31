@@ -6,6 +6,19 @@ None.
 
 ---
 
+## Resolved — Day 9
+
+### BUG-017 — Pagebreak comment has no effect in PDF export or print
+- **Found:** 2026-03-30, Day 9 of Sprint 2
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-30
+- **Symptom:** `<!-- pagebreak -->` in Markdown source has no effect in exported PDF, HTML, or print output. No visual indicator in split-view preview either.
+- **Root cause:** Two issues: (1) `processPagebreaks()` in export.js ran *after* `DOMPurify.sanitize()`, but DOMPurify strips HTML comments — the `<!-- pagebreak -->` was already gone before the regex could match it. (2) preview.js had no pagebreak processing at all.
+- **Fix:** Moved pagebreak replacement to *before* marked/DOMPurify: `preprocessPagebreaks()` converts `<!-- pagebreak -->` to `<div class="page-break"></div>` in the Markdown source, which survives both marked parsing and DOMPurify sanitization (with `ADD_TAGS: ['div']`). Added same preprocessing to preview.js render(). Added `.page-break` CSS with visual indicator (dashed line + "Page Break" label) for preview, and `page-break-after: always; break-after: always` for print/PDF. Updated standalone HTML template CSS to match.
+- **Files involved:** `src/export.js`, `src/preview.js`, `src/styles.css`
+
+---
+
 ## Resolved — Day 8 (batch 4)
 
 ### BUG-011C — Welcome screen flashes then last file auto-loads

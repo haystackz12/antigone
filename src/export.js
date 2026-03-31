@@ -17,24 +17,27 @@ function configure(opts) {
 }
 
 // ─── Pagebreak processing ────────────────────────────────────────────────────
+// Replace <!-- pagebreak --> BEFORE marked/DOMPurify — comments get stripped
+// by DOMPurify, so we convert to a <div> that survives sanitization.
 
-function processPagebreaks(html) {
-  return html.replace(
+function preprocessPagebreaks(markdownText) {
+  return markdownText.replace(
     /<!--\s*pagebreak\s*-->/gi,
-    '<div class="pagebreak" style="page-break-before: always;"></div>'
+    '\n<div class="page-break"></div>\n'
   );
 }
 
 // ─── Render to standalone HTML ───────────────────────────────────────────────
 
 function renderToHtml(markdownText) {
-  const rawHtml = marked.parse(markdownText);
+  const processed = preprocessPagebreaks(markdownText);
+  const rawHtml = marked.parse(processed);
   const cleanHtml = DOMPurify.sanitize(rawHtml, {
     USE_PROFILES: { html: true },
     ADD_ATTR: ['target'],
     ADD_TAGS: ['div'],
   });
-  return processPagebreaks(cleanHtml);
+  return cleanHtml;
 }
 
 function buildStandaloneHtml(markdownText, title) {
@@ -79,10 +82,16 @@ function buildStandaloneHtml(markdownText, title) {
     th, td { border: 1px solid #d5d1c8; padding: 8px 12px; text-align: left; }
     th { background: #f0ede8; }
     hr { border: none; border-top: 1px solid #d5d1c8; margin: 2em 0; }
-    .pagebreak { page-break-before: always; }
+    .page-break {
+      page-break-after: always;
+      break-after: always;
+      border-top: 2px dashed #ccc;
+      margin: 24px 0;
+      height: 0;
+    }
     @media print {
       body { max-width: none; padding: 0; }
-      .pagebreak { page-break-before: always; }
+      .page-break { border: none; margin: 0; page-break-after: always; break-after: always; }
     }
   </style>
 </head>
