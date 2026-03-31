@@ -164,12 +164,14 @@ app.on('open-file', (event, filePath) => {
 
 // ── Native menu ─────────────────────────────────────────────────────────────
 const { setupMenu, addRecentFile } = require('./main-menu.js');
+const { registerPreprocessorHandler } = require('./main-export.js');
 
 // ── App lifecycle ────────────────────────────────────────────────────────────
 
 app.whenReady().then(async () => {
   createWindow();
   await setupMenu(() => mainWindow, getStore);
+  registerPreprocessorHandler();
 });
 
 app.on('window-all-closed', () => {

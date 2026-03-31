@@ -50,4 +50,33 @@ function registerExportHandlers(getMainWindow) {
   });
 }
 
-module.exports = { registerExportHandlers };
+// ── IPC: Preprocessor (Pro) ─────────────────────────────────────────────────
+
+function registerPreprocessorHandler() {
+  const path = require('node:path');
+
+  ipcMain.handle('run-preprocessor', async (_event, cmd, content, filePath) => {
+    if (!cmd || typeof cmd !== 'string') return { ok: false, error: 'No command' };
+    const { execFile } = require('node:child_process');
+    const dir = filePath ? path.dirname(path.resolve(filePath)) : process.cwd();
+
+    return new Promise((resolve) => {
+      const parts = cmd.split(/\s+/);
+      const proc = execFile(parts[0], parts.slice(1), {
+        cwd: dir,
+        timeout: 5000,
+        maxBuffer: 1024 * 1024,
+        env: { ...process.env, ANTIGONE_FILE: filePath || '' },
+      }, (err, stdout, stderr) => {
+        if (err) return resolve({ ok: false, error: err.message || stderr });
+        resolve({ ok: true, output: stdout });
+      });
+      if (proc.stdin) {
+        proc.stdin.write(content);
+        proc.stdin.end();
+      }
+    });
+  });
+}
+
+module.exports = { registerExportHandlers, registerPreprocessorHandler };

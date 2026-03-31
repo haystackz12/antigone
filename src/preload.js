@@ -127,6 +127,18 @@ contextBridge.exposeInMainWorld('api', {
 
   // ── Shell ──────────────────────────────────────────────────────────────────
 
+  // ── Preprocessor (Pro) ─────────────────────────────────────────────────────
+
+  /**
+   * Run a preprocessor shell command with document content piped to stdin.
+   * @param {string} cmd       Shell command to run.
+   * @param {string} content   Document content to pipe.
+   * @param {string} filePath  Current file path for cwd context.
+   * @returns {Promise<{ok: boolean, output?: string, error?: string}>}
+   */
+  runPreprocessor: (cmd, content, filePath) =>
+    ipcRenderer.invoke('run-preprocessor', cmd, content, filePath || ''),
+
   /**
    * Open a URL in the user's default browser.
    * This is the ONLY way links leave the app — never navigate the editor pane.

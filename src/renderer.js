@@ -16,6 +16,7 @@ const toc        = require('./toc.js');
 const preview    = require('./preview.js');
 const tabs       = require('./tabs.js');
 const prefsUi    = require('./prefs-ui.js');
+const preprocessor = require('./preprocessor.js');
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Apply stored theme before editor mounts to prevent flash
@@ -41,6 +42,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     getCurrentPath: require('./editor.js').getCurrentPath,
   });
   exportMod.init();
+  preprocessor.configure({
+    getView: require('./editor.js').getView,
+    getCurrentPath: require('./editor.js').getCurrentPath,
+  });
+  preprocessor.init();
 
   // Always launch to empty state (DEC-023 — session restore is opt-in, not default)
   window.api.setPrefs({ session: null });
