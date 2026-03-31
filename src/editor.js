@@ -27,6 +27,7 @@ let view            = null;
 let currentFilePath = null;
 let isDirty         = false;
 const themeCompartment = new Compartment();
+const vimCompartment   = new Compartment();
 
 // ─── Base editor theme (layout + typography, always applied in both themes) ──
 const baseEditorTheme = EditorView.theme({
@@ -94,6 +95,7 @@ function buildExtensions() {
     inlineRenderPlugin,
     baseEditorTheme,
     themeCompartment.of(isDarkMode() ? oneDark : githubLightTheme),
+    vimCompartment.of([]),
     EditorView.updateListener.of(update => {
       if (update.docChanged) onDocChange(update.state.doc.toString());
       if (update.selectionSet || update.docChanged) updateCursorPosition(update.state);
@@ -228,6 +230,17 @@ function applyTheme(dark) {
   view.dispatch({ effects: themeCompartment.reconfigure(dark ? oneDark : githubLightTheme) });
 }
 
+// ─── Vim mode toggle ─────────────────────────────────────────────────────────
+function setVimMode(enabled) {
+  if (!view) return;
+  if (enabled) {
+    const { vim } = require('@replit/codemirror-vim');
+    view.dispatch({ effects: vimCompartment.reconfigure(vim()) });
+  } else {
+    view.dispatch({ effects: vimCompartment.reconfigure([]) });
+  }
+}
+
 // ─── Open button (injected into toolbar for reliable access) ─────────────────
 function setupOpenButton() {
   const btn = document.getElementById('btn-open-file');
@@ -293,6 +306,7 @@ module.exports = {
   openFileDialog,
   openFilePath,
   applyTheme,
+  setVimMode,
   getView:        () => view,
   getCurrentPath: () => currentFilePath,
   getIsDirty:     () => isDirty,

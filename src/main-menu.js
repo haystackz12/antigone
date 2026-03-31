@@ -16,6 +16,12 @@ function buildMenu(getMainWindow) {
       submenu: [
         { role: 'about' },
         { type: 'separator' },
+        {
+          label: 'Preferences...',
+          accelerator: 'CmdOrCtrl+,',
+          click: () => getMainWindow()?.webContents.send('menu-preferences'),
+        },
+        { type: 'separator' },
         { role: 'services' },
         { type: 'separator' },
         { role: 'hide' },

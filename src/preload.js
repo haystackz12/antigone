@@ -249,6 +249,7 @@ contextBridge.exposeInMainWorld('api', {
   onMenuOpenFile: (cb) => { ipcRenderer.on('menu-open-file', () => cb()); },
   onMenuSave:     (cb) => { ipcRenderer.on('menu-save', () => cb()); },
   onMenuSaveAs:   (cb) => { ipcRenderer.on('menu-save-as', () => cb()); },
+  onMenuPrefs:    (cb) => { ipcRenderer.on('menu-preferences', () => cb()); },
 
   // ── Inbound from main ──────────────────────────────────────────────────────
 

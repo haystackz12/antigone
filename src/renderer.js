@@ -15,6 +15,7 @@ const exportMod  = require('./export.js');
 const toc        = require('./toc.js');
 const preview    = require('./preview.js');
 const tabs       = require('./tabs.js');
+const prefsUi    = require('./prefs-ui.js');
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Apply stored theme before editor mounts to prevent flash
@@ -46,12 +47,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.api.setPrefs({ session: null });
   tabs.openNewTab();
 
-  // Wire native menu file commands
+  // Wire native menu commands
   const editor = require('./editor.js');
   window.api.onMenuNewFile(() => editor.newFile());
   window.api.onMenuOpenFile(() => editor.openFileDialog());
   window.api.onMenuSave(() => editorSave.saveFile(editor.getCurrentPath()));
   window.api.onMenuSaveAs(() => editorSave.saveFileAs());
+
+  // Preferences UI
+  prefsUi.configure({
+    applyEditorTheme: applyEditorTheme,
+    setVimMode: editor.setVimMode,
+  });
+  window.api.onMenuPrefs(() => prefsUi.toggle());
+
+  // Apply vim mode from stored prefs
+  const storedPrefs = await window.api.getPrefs();
+  if (storedPrefs.keybindings === 'vim') editor.setVimMode(true);
 
   // Apply CM6 theme to match
   const isDark = document.documentElement.classList.contains('dark');
