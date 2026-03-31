@@ -323,6 +323,7 @@ body {
   display:          flex;
   align-items:      center;
   gap:              var(--space-1);
+  margin-left:      auto;            /* push toolbar to right side of titlebar */
   -webkit-app-region: no-drag;       /* toolbar buttons are clickable */
 }
 

@@ -250,6 +250,9 @@ contextBridge.exposeInMainWorld('api', {
   onMenuSave:     (cb) => { ipcRenderer.on('menu-save', () => cb()); },
   onMenuSaveAs:   (cb) => { ipcRenderer.on('menu-save-as', () => cb()); },
   onMenuPrefs:    (cb) => { ipcRenderer.on('menu-preferences', () => cb()); },
+  onMenuViewMode: (cb) => { ipcRenderer.on('menu-view-mode', (_e, mode) => cb(mode)); },
+  onMenuToggleFocus: (cb) => { ipcRenderer.on('menu-toggle-focus', () => cb()); },
+  onMenuToggleLineNumbers: (cb) => { ipcRenderer.on('menu-toggle-line-numbers', () => cb()); },
 
   // ── Inbound from main ──────────────────────────────────────────────────────
 

@@ -154,6 +154,7 @@ app.on('open-file', (event, filePath) => {
   event.preventDefault();
   const ext = path.extname(filePath).toLowerCase();
   if (!VALID_FILE_EXTS.includes(ext)) return;
+  addRecentFile(filePath);
   if (mainWindow) {
     mainWindow.webContents.send('open-file', filePath);
   } else {
@@ -162,13 +163,13 @@ app.on('open-file', (event, filePath) => {
 });
 
 // ── Native menu ─────────────────────────────────────────────────────────────
-const { setupMenu } = require('./main-menu.js');
+const { setupMenu, addRecentFile } = require('./main-menu.js');
 
 // ── App lifecycle ────────────────────────────────────────────────────────────
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   createWindow();
-  setupMenu(() => mainWindow);
+  await setupMenu(() => mainWindow, getStore);
 });
 
 app.on('window-all-closed', () => {
@@ -231,6 +232,7 @@ ipcMain.handle('open-dialog', async () => {
   if (result.canceled || result.filePaths.length === 0) return { canceled: true };
   const filePath = result.filePaths[0];
   const content  = await fs.promises.readFile(filePath, 'utf8');
+  addRecentFile(filePath);
   return { canceled: false, path: filePath, content };
 });
 

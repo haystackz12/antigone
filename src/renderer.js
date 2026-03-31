@@ -61,6 +61,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   window.api.onMenuPrefs(() => prefsUi.toggle());
 
+  // Wire View menu commands
+  window.api.onMenuViewMode((mode) => toolbar.setViewMode(mode));
+  window.api.onMenuToggleFocus(() => focus.toggle());
+  window.api.onMenuToggleLineNumbers(async () => {
+    const current = !document.documentElement.classList.contains('hide-line-numbers');
+    const { applyLineNumbers } = require('./prefs.js');
+    applyLineNumbers(!current);
+    await window.api.setPrefs({ lineNumbers: !current });
+  });
+
   // Apply vim mode from stored prefs
   const storedPrefs = await window.api.getPrefs();
   if (storedPrefs.keybindings === 'vim') editor.setVimMode(true);

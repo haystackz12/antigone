@@ -1,13 +1,37 @@
 // src/main-menu.js
 // Native application menu for macOS/Windows/Linux.
-// Split from main.js to respect the 400-line cap.
+// Includes Recent Files submenu backed by electron-store.
 
 'use strict';
 
 const { Menu, app } = require('electron');
+const path = require('node:path');
 
-function buildMenu(getMainWindow) {
+let getMainWindow = null;
+let getStore = null;
+
+function buildMenu(recentFiles) {
   const isMac = process.platform === 'darwin';
+  const win = () => getMainWindow();
+
+  // Recent Files submenu
+  const recentSubmenu = recentFiles.length === 0
+    ? [{ label: 'No Recent Files', enabled: false }]
+    : [
+        ...recentFiles.map(fp => ({
+          label: path.basename(fp),
+          click: () => win()?.webContents.send('open-file', fp),
+        })),
+        { type: 'separator' },
+        {
+          label: 'Clear Recent Files',
+          click: async () => {
+            const s = await getStore();
+            s.set('recentFiles', []);
+            rebuildMenu();
+          },
+        },
+      ];
 
   const template = [
     // macOS app menu
@@ -19,7 +43,7 @@ function buildMenu(getMainWindow) {
         {
           label: 'Preferences...',
           accelerator: 'CmdOrCtrl+,',
-          click: () => getMainWindow()?.webContents.send('menu-preferences'),
+          click: () => win()?.webContents.send('menu-preferences'),
         },
         { type: 'separator' },
         { role: 'services' },
@@ -36,48 +60,17 @@ function buildMenu(getMainWindow) {
     {
       label: 'File',
       submenu: [
-        {
-          label: 'New File',
-          accelerator: 'CmdOrCtrl+N',
-          click: () => getMainWindow()?.webContents.send('menu-new-file'),
-        },
-        {
-          label: 'Open...',
-          accelerator: 'CmdOrCtrl+O',
-          click: () => getMainWindow()?.webContents.send('menu-open-file'),
-        },
+        { label: 'New File', accelerator: 'CmdOrCtrl+N', click: () => win()?.webContents.send('menu-new-file') },
+        { label: 'Open...', accelerator: 'CmdOrCtrl+O', click: () => win()?.webContents.send('menu-open-file') },
+        { label: 'Recent Files', submenu: recentSubmenu },
         { type: 'separator' },
-        {
-          label: 'Save',
-          accelerator: 'CmdOrCtrl+S',
-          click: () => getMainWindow()?.webContents.send('menu-save'),
-        },
-        {
-          label: 'Save As...',
-          accelerator: 'CmdOrCtrl+Shift+S',
-          click: () => getMainWindow()?.webContents.send('menu-save-as'),
-        },
+        { label: 'Save', accelerator: 'CmdOrCtrl+S', click: () => win()?.webContents.send('menu-save') },
+        { label: 'Save As...', accelerator: 'CmdOrCtrl+Shift+S', click: () => win()?.webContents.send('menu-save-as') },
         { type: 'separator' },
-        {
-          label: 'Export',
-          submenu: [
-            {
-              label: 'Export as PDF...',
-              accelerator: 'CmdOrCtrl+Shift+E',
-              click: () => getMainWindow()?.webContents.send('export-pdf-trigger'),
-            },
-            {
-              label: 'Export as HTML...',
-              click: () => getMainWindow()?.webContents.send('export-html-trigger'),
-            },
-          ],
-        },
+        { label: 'Export as PDF...', accelerator: 'CmdOrCtrl+Shift+E', click: () => win()?.webContents.send('export-pdf-trigger') },
+        { label: 'Export as HTML...', click: () => win()?.webContents.send('export-html-trigger') },
         { type: 'separator' },
-        {
-          label: 'Print...',
-          accelerator: 'CmdOrCtrl+P',
-          click: () => getMainWindow()?.webContents.send('print-doc'),
-        },
+        { label: 'Print...', accelerator: 'CmdOrCtrl+P', click: () => win()?.webContents.send('print-doc') },
         { type: 'separator' },
         isMac ? { role: 'close' } : { role: 'quit' },
       ],
@@ -95,16 +88,8 @@ function buildMenu(getMainWindow) {
         { role: 'paste' },
         { role: 'selectAll' },
         { type: 'separator' },
-        {
-          label: 'Find...',
-          accelerator: 'CmdOrCtrl+F',
-          click: () => getMainWindow()?.webContents.send('menu-find'),
-        },
-        {
-          label: 'Find and Replace...',
-          accelerator: 'CmdOrCtrl+Alt+F',
-          click: () => getMainWindow()?.webContents.send('menu-replace'),
-        },
+        { label: 'Find...', accelerator: 'CmdOrCtrl+F', click: () => win()?.webContents.send('menu-find') },
+        { label: 'Find and Replace...', accelerator: 'CmdOrCtrl+Alt+F', click: () => win()?.webContents.send('menu-replace') },
       ],
     },
 
@@ -112,12 +97,18 @@ function buildMenu(getMainWindow) {
     {
       label: 'View',
       submenu: [
-        { role: 'togglefullscreen' },
+        { label: 'Editor Only', click: () => win()?.webContents.send('menu-view-mode', 'editor') },
+        { label: 'Split View', click: () => win()?.webContents.send('menu-view-mode', 'split') },
+        { label: 'Preview Only', click: () => win()?.webContents.send('menu-view-mode', 'preview') },
+        { type: 'separator' },
+        { label: 'Toggle Focus Mode', accelerator: 'CmdOrCtrl+Shift+F', click: () => win()?.webContents.send('menu-toggle-focus') },
+        { label: 'Toggle Line Numbers', click: () => win()?.webContents.send('menu-toggle-line-numbers') },
         { type: 'separator' },
         { role: 'zoomIn' },
         { role: 'zoomOut' },
         { role: 'resetZoom' },
         { type: 'separator' },
+        { role: 'togglefullscreen' },
         { role: 'toggleDevTools' },
       ],
     },
@@ -127,12 +118,7 @@ function buildMenu(getMainWindow) {
       label: 'Window',
       submenu: [
         { role: 'minimize' },
-        ...(isMac ? [
-          { type: 'separator' },
-          { role: 'front' },
-        ] : [
-          { role: 'close' },
-        ]),
+        ...(isMac ? [{ type: 'separator' }, { role: 'front' }] : [{ role: 'close' }]),
       ],
     },
   ];
@@ -140,9 +126,25 @@ function buildMenu(getMainWindow) {
   return Menu.buildFromTemplate(template);
 }
 
-function setupMenu(getMainWindow) {
-  const menu = buildMenu(getMainWindow);
+async function rebuildMenu() {
+  const s = await getStore();
+  const recents = s.get('recentFiles', []);
+  const menu = buildMenu(recents);
   Menu.setApplicationMenu(menu);
 }
 
-module.exports = { setupMenu };
+async function addRecentFile(filePath) {
+  const s = await getStore();
+  const recents = s.get('recentFiles', []);
+  const updated = [filePath, ...recents.filter(f => f !== filePath)].slice(0, 5);
+  s.set('recentFiles', updated);
+  await rebuildMenu();
+}
+
+async function setupMenu(getMainWindowFn, getStoreFn) {
+  getMainWindow = getMainWindowFn;
+  getStore = getStoreFn;
+  await rebuildMenu();
+}
+
+module.exports = { setupMenu, addRecentFile, rebuildMenu };
