@@ -79,6 +79,20 @@ function updateSidebar(tags) {
     return;
   }
 
+  // Auto-show tags section when tags are found
+  section.classList.remove('sidebar-section--hidden');
+  // Activate the tags tab
+  const tagsTab = document.querySelector('.sidebar-tab[data-section="tags"]');
+  if (tagsTab) {
+    document.querySelectorAll('.sidebar-tab').forEach(t => {
+      t.classList.toggle('sidebar-tab--active', t === tagsTab);
+      t.setAttribute('aria-selected', String(t === tagsTab));
+    });
+    document.querySelectorAll('#sidebar-content .sidebar-section').forEach(s => {
+      s.classList.toggle('sidebar-section--hidden', s.dataset.section !== 'tags');
+    });
+  }
+
   const list = document.createElement('ul');
   list.className = 'tag-list';
 

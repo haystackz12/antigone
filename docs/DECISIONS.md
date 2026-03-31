@@ -98,6 +98,11 @@
 **Why:** Standard desktop app behavior. Without this, closing the window silently discards unsaved work, which is a data loss risk. The dialog is implemented via `win.on('close')` intercepting the close event and `dialog.showMessageBox` presenting the options.
 **Date:** 2026-03-30
 
+## DEC-026 — GFM breaks enabled (single newline = line break)
+**Decision:** `breaks: true` in marked.js configuration. Single newlines produce `<br>` in the preview.
+**Why:** Antigone is a writing app, not a code documentation tool. Writers expect Enter to create a visible line break, not to be collapsed into a space. This matches the behavior of Typora, iA Writer, and most Markdown writing apps.
+**Date:** 2026-03-31
+
 ## DEC-025 — Scroll sync removed from split view
 **Decision:** Scroll sync removed entirely. Split view has two independent panes that scroll independently.
 **Why:** Scroll sync requires identical content height between editor and rendered HTML, which is not achievable with complex documents containing tables, lists, and code blocks. The height ratio between raw Markdown and rendered HTML can be 6:1 or higher, making any sync approach produce jarring jumps or feedback loops. Multiple approaches were attempted (percentage-based, anchor-based, heading-map, line-number/data-line injection, polling loops, timestamp deadbands, drift validators) — all produced worse UX than independent scrolling.

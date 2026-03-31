@@ -65,8 +65,17 @@ function createRenderer() {
 
 marked.setOptions({
   gfm: true,
-  breaks: false,
+  breaks: true,  // Single \n → <br> (DEC-026: matches writing app expectations)
 });
+
+// ─── Strip YAML frontmatter ──────────────────────────────────────────────────
+
+function stripFrontmatter(markdown) {
+  if (!markdown.startsWith('---')) return markdown;
+  const end = markdown.indexOf('\n---', 3);
+  if (end === -1) return markdown;
+  return markdown.slice(end + 4).trimStart();
+}
 
 // ─── Render ──────────────────────────────────────────────────────────────────
 
@@ -74,8 +83,11 @@ function render(markdownText) {
   const el = document.getElementById('preview-content');
   if (!el) return;
 
+  // Strip frontmatter before rendering — tags are parsed by tags.js
+  const withoutFrontmatter = stripFrontmatter(markdownText);
+
   // Preprocess pagebreaks before marked
-  const processed = markdownText.replace(
+  const processed = withoutFrontmatter.replace(
     /<!--\s*pagebreak\s*-->/gi,
     '\n<div class="page-break"></div>\n'
   );

@@ -6,6 +6,37 @@ None.
 
 ---
 
+## Resolved — Day 11
+
+### BUG-026 — YAML frontmatter renders as raw text in preview
+- **Found:** 2026-03-31, Day 11 of Sprint 3
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-31
+- **Symptom:** Preview shows raw `---` delimiters and `tags:` line instead of stripping frontmatter.
+- **Root cause:** No frontmatter stripping in the render pipeline — the full document including frontmatter was passed to `marked.parse()`.
+- **Fix:** Added `stripFrontmatter()` in preview.js that removes content between opening and closing `---` delimiters before passing to marked.
+- **Files involved:** `src/preview.js`
+
+### BUG-027 — Tag sidebar not visible when tags present
+- **Found:** 2026-03-31, Day 11 of Sprint 3
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-31
+- **Symptom:** Tags section in sidebar stays hidden even when document has tags.
+- **Root cause:** The tags `sidebar-section` starts with `sidebar-section--hidden` class. `updateSidebar()` populated it but never removed the hidden class or activated the tags tab.
+- **Fix:** When tags are found, `updateSidebar()` now removes `sidebar-section--hidden` from the tags section and activates the Tags tab (toggling sidebar-tab--active).
+- **Files involved:** `src/tags.js`
+
+### BUG-028 — Single line breaks not preserved in preview
+- **Found:** 2026-03-31, Day 11 of Sprint 3
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-31
+- **Symptom:** Single newlines collapsed into spaces in preview — user expects Enter = visible line break.
+- **Root cause:** `marked.setOptions({ breaks: false })` — standard Markdown behavior where single newlines are ignored.
+- **Fix:** Changed to `breaks: true` — single `\n` now produces `<br>` in preview. Matches writing app conventions (Typora, iA Writer). Logged as DEC-026.
+- **Files involved:** `src/preview.js`
+
+---
+
 ## Resolved — Day 10 (batch 4)
 
 ### BUG-023 — Word goal circle tooltip not showing
