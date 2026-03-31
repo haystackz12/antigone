@@ -154,26 +154,34 @@ function buildSyncMap() {
 
 // ─── Interpolation ───────────────────────────────────────────────────────────
 
+function fallbackRatio(scrollTop, fromKey, toKey) {
+  const fromMax = fromKey === 'editorY'
+    ? scrollerEl.scrollHeight - scrollerEl.clientHeight
+    : previewEl.scrollHeight - previewEl.clientHeight;
+  const toMax = toKey === 'editorY'
+    ? scrollerEl.scrollHeight - scrollerEl.clientHeight
+    : previewEl.scrollHeight - previewEl.clientHeight;
+  return (scrollTop / Math.max(1, fromMax)) * toMax;
+}
+
 function interpolate(scrollTop, fromKey, toKey) {
   if (syncMap.length < 2) {
     if (!scrollerEl || !previewEl) return 0;
-    const sMax = scrollerEl.scrollHeight - scrollerEl.clientHeight;
-    const pMax = previewEl.scrollHeight - previewEl.clientHeight;
-    if (sMax <= 0 || pMax <= 0) return 0;
-    if (fromKey === 'editorY') return (scrollTop / sMax) * pMax;
-    return (scrollTop / pMax) * sMax;
+    return fallbackRatio(scrollTop, fromKey, toKey);
   }
 
-  let before = syncMap[0];
-  let after = syncMap[syncMap.length - 1];
-
-  for (let i = 0; i < syncMap.length - 1; i++) {
-    if (syncMap[i][fromKey] <= scrollTop && syncMap[i + 1][fromKey] >= scrollTop) {
-      before = syncMap[i];
-      after = syncMap[i + 1];
-      break;
+  // Find the last heading anchor we've scrolled past
+  let activeIndex = 0;
+  for (let i = 0; i < syncMap.length; i++) {
+    if (syncMap[i][fromKey] <= scrollTop) {
+      activeIndex = i;
     }
   }
+
+  const before = syncMap[activeIndex];
+  const after = syncMap[Math.min(activeIndex + 1, syncMap.length - 1)];
+
+  if (before === after) return before[toKey];
 
   const range = after[fromKey] - before[fromKey];
   if (range === 0) return before[toKey];

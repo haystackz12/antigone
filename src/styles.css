@@ -755,6 +755,13 @@ body {
   caret-color:      var(--color-accent);
 }
 
+/* Reduce empty line height to bring editor height closer to preview */
+.cm-line br:only-child {
+  display: block;
+  content: '';
+  height: calc(var(--editor-line-height, 1.75) * 0.5em);
+}
+
 /* Cursor */
 .cm-cursor { border-left-color: var(--color-accent) !important; }
 
