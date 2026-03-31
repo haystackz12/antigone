@@ -1,15 +1,65 @@
 // src/preview.js
 // Markdown preview rendering: marked.js + DOMPurify pipeline.
-// Listens to editor:change events, renders HTML into #preview-content.
+// Injects data-line attributes on block elements for line-based scroll sync.
 // Scroll sync delegated to scroll-sync.js.
 
 'use strict';
 
 const { marked } = require('marked');
 const DOMPurify  = require('dompurify');
-const { buildSyncMap, scheduleRebuild } = require('./scroll-sync.js');
 
 let debounceTimer = null;
+
+// ─── Line-number tracking for data-line injection ────────────────────────────
+
+let lineMap = new Map(); // heading/block text → source line number
+
+function buildLineMap(markdown) {
+  lineMap = new Map();
+  const lines = markdown.split('\n');
+  let lineNum = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const headingMatch = line.match(/^#{1,6}\s+(.+)$/);
+    if (headingMatch) {
+      lineMap.set(headingMatch[1].trim(), i + 1);
+    }
+  }
+  // Track paragraph start lines by finding non-empty lines after blank lines
+  let afterBlank = true;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].trim() === '') {
+      afterBlank = true;
+    } else if (afterBlank && !lines[i].match(/^[#|>-]|\s*```/)) {
+      lineMap.set('__para_' + i, i + 1);
+      afterBlank = false;
+    }
+  }
+}
+
+// ─── Custom renderer with data-line attributes ──────────────────────────────
+
+function createRenderer() {
+  const renderer = new marked.Renderer();
+  let paraIndex = 0;
+
+  renderer.heading = function({ text, depth }) {
+    const cleanText = text.replace(/<[^>]+>/g, '').trim();
+    const lineNum = lineMap.get(cleanText) || 0;
+    return `<h${depth} data-line="${lineNum}">${text}</h${depth}>\n`;
+  };
+
+  renderer.paragraph = function({ text }) {
+    // Find the next paragraph line number
+    const keys = [...lineMap.keys()].filter(k => k.startsWith('__para_'));
+    const key = keys[paraIndex];
+    const lineNum = key ? lineMap.get(key) : 0;
+    paraIndex++;
+    return `<p data-line="${lineNum}">${text}</p>\n`;
+  };
+
+  return renderer;
+}
 
 // ─── Configure marked ────────────────────────────────────────────────────────
 
@@ -24,29 +74,26 @@ function render(markdownText) {
   const el = document.getElementById('preview-content');
   if (!el) return;
 
-  // Preprocess pagebreaks before marked — comments get stripped by DOMPurify
+  // Preprocess pagebreaks before marked
   const processed = markdownText.replace(
     /<!--\s*pagebreak\s*-->/gi,
     '\n<div class="page-break"></div>\n'
   );
-  const rawHtml = marked.parse(processed);
+
+  // Build line map and create renderer with data-line injection
+  buildLineMap(processed);
+  const renderer = createRenderer();
+
+  const rawHtml = marked.parse(processed, { renderer });
   const cleanHtml = DOMPurify.sanitize(rawHtml, {
     USE_PROFILES: { html: true },
-    ADD_ATTR: ['target'],
+    ADD_ATTR: ['target', 'data-line'],
     ADD_TAGS: ['div'],
   });
   el.innerHTML = cleanHtml;
 
   const placeholder = document.getElementById('preview-placeholder');
   if (placeholder) placeholder.style.display = markdownText.trim() ? 'none' : '';
-
-  // Defer sync map build until after browser completes layout
-  // Double rAF ensures style calculation + layout are both done
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      buildSyncMap();
-    });
-  });
 }
 
 // ─── Init ────────────────────────────────────────────────────────────────────
@@ -56,7 +103,6 @@ function init() {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
       render(e.detail.content);
-      scheduleRebuild();
     }, 150);
   });
 }
