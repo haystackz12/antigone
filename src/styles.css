@@ -171,8 +171,8 @@
   --editor-max-width:    680px;     /* measure — comfortable reading line */
 
   /* ── Preview-specific type scale ───────────────────────────────────────── */
-  --preview-font-size:   16px;
-  --preview-line-height: 1.8;
+  --preview-font-size:   var(--editor-font-size);
+  --preview-line-height: var(--editor-line-height);
   --preview-max-width:   660px;
 
   /* ── Heading scale (editor + preview) ─────────────────────────────────── */
@@ -1011,7 +1011,7 @@ kbd {
 #preview-content {
   max-width:        var(--preview-max-width);
   margin:           0 auto;
-  padding:          0 var(--space-8);
+  padding:          20px var(--space-8) 0;  /* top padding matches .cm-content 20px */
   font-family:      var(--font-prose);
   font-size:        var(--preview-font-size);
   line-height:      var(--preview-line-height);

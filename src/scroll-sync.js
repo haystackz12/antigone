@@ -45,15 +45,22 @@ function buildSyncMap() {
   if (!editorView || !scrollerEl || !previewEl) return;
   syncMap = [];
 
-  // Always add origin
-  syncMap.push({ editorY: 0, previewY: 0 });
+  // Calculate actual first-content positions for origin
+  const scrollerRect = scrollerEl.getBoundingClientRect();
+  const firstCoords = editorView.coordsAtPos(0);
+  const editorOriginY = firstCoords
+    ? firstCoords.top - scrollerRect.top + scrollerEl.scrollTop
+    : 0;
+
+  const previewContent = previewEl.querySelector('#preview-content');
+  if (!previewContent) return;
+  const firstPreviewEl = previewContent.firstElementChild;
+  const previewOriginY = firstPreviewEl ? firstPreviewEl.offsetTop : 0;
+
+  syncMap.push({ editorY: editorOriginY, previewY: previewOriginY });
 
   const doc = editorView.state.doc;
   const headingRe = /^(#{1,6})\s+(.+)$/;
-
-  // Collect all heading elements in the preview pane
-  const previewContent = previewEl.querySelector('#preview-content');
-  if (!previewContent) return;
   const previewHeadings = previewContent.querySelectorAll('h1, h2, h3, h4, h5, h6');
   const previewMap = [];
   for (const el of previewHeadings) {
@@ -76,7 +83,6 @@ function buildSyncMap() {
     // Get editor Y position
     const coords = editorView.coordsAtPos(line.from);
     if (!coords) continue;
-    const scrollerRect = scrollerEl.getBoundingClientRect();
     const editorY = coords.top - scrollerRect.top + scrollerEl.scrollTop;
 
     // Find matching heading in preview by text (sequential search)
