@@ -2,8 +2,7 @@
 // Line-number based scroll sync (VS Code approach).
 // Preview elements have data-line attributes injected by preview.js.
 // Syncs by mapping editor line numbers to preview DOM positions.
-// Elements are sorted by data-line value, not DOM order, to handle
-// out-of-order rendering by marked.js.
+// Sync is deferred until the user's first scroll interaction.
 
 'use strict';
 
@@ -14,7 +13,9 @@ let animFrameId = null;
 let lastEditorLine = -1;
 let userScrollingPreview = false;
 let previewScrollTimeout = null;
-let validationInterval = null;
+
+// Sync is disabled until user scrolls for the first time
+let syncEnabled = false;
 
 // ─── Init / Destroy ──────────────────────────────────────────────────────────
 
@@ -25,15 +26,23 @@ function initScrollSync(view) {
   if (!scrollerEl || !previewEl) return;
 
   lastEditorLine = -1;
+  syncEnabled = false;
+
+  // Enable sync only after user's first scroll in either pane
+  function enableSync() {
+    syncEnabled = true;
+    scrollerEl.removeEventListener('scroll', enableSync);
+    previewEl.removeEventListener('scroll', enableSync);
+  }
+  scrollerEl.addEventListener('scroll', enableSync, { passive: true, once: true });
+  previewEl.addEventListener('scroll', enableSync, { passive: true, once: true });
+
   startSyncLoop();
-  clearInterval(validationInterval);
-  validationInterval = setInterval(validateSync, 2000);
 }
 
 function destroyScrollSync() {
   stopSyncLoop();
-  clearInterval(validationInterval);
-  validationInterval = null;
+  syncEnabled = false;
   editorView = null;
   scrollerEl = null;
   previewEl = null;
@@ -63,14 +72,13 @@ function onPreviewScroll() {
   clearTimeout(previewScrollTimeout);
   previewScrollTimeout = setTimeout(() => {
     userScrollingPreview = false;
-  }, 150);
+  }, 300);
   syncPreviewToEditor();
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function getOffsetTop(el) {
-  // Calculate offsetTop relative to the preview scroll container
   let top = 0;
   let current = el;
   while (current && current !== previewEl) {
@@ -83,6 +91,7 @@ function getOffsetTop(el) {
 // ─── Editor → Preview sync ──────────────────────────────────────────────────
 
 function syncEditorToPreview() {
+  if (!syncEnabled) return;
   if (userScrollingPreview) return;
   if (!editorView || !scrollerEl || !previewEl) return;
 
@@ -105,16 +114,15 @@ function syncEditorToPreview() {
 // ─── Preview → Editor sync ──────────────────────────────────────────────────
 
 function syncPreviewToEditor() {
+  if (!syncEnabled) return;
   if (!editorView || !scrollerEl || !previewEl) return;
 
   const previewScrollMid = previewEl.scrollTop + previewEl.clientHeight / 3;
   const elements = Array.from(previewEl.querySelectorAll('[data-line]'));
   if (!elements.length) return;
 
-  // Sort by visual position (offsetTop) to handle out-of-order DOM
   elements.sort((a, b) => getOffsetTop(a) - getOffsetTop(b));
 
-  // Find last element whose visual position <= scroll upper-third
   let closest = elements[0];
   for (const el of elements) {
     if (getOffsetTop(el) <= previewScrollMid) {
@@ -148,12 +156,10 @@ function findClosestLineElement(targetLine) {
   const elements = Array.from(previewEl.querySelectorAll('[data-line]'));
   if (!elements.length) return null;
 
-  // Sort by data-line value ascending
   elements.sort((a, b) =>
     parseInt(a.dataset.line, 10) - parseInt(b.dataset.line, 10)
   );
 
-  // Find last element whose line number <= targetLine
   let best = elements[0];
   for (const el of elements) {
     const elLine = parseInt(el.dataset.line, 10);
@@ -163,35 +169,6 @@ function findClosestLineElement(targetLine) {
     }
   }
   return best;
-}
-
-// ─── Drift validation (runs every 2s) ────────────────────────────────────────
-
-function validateSync() {
-  if (!editorView || !scrollerEl || !previewEl) return;
-  if (userScrollingPreview) return;
-
-  const topPos = scrollerEl.scrollTop;
-  const lineBlock = editorView.lineBlockAtHeight(topPos);
-  const currentLine = editorView.state.doc.lineAt(lineBlock.from).number;
-
-  const target = findClosestLineElement(currentLine);
-  if (!target) return;
-
-  const expectedY = getOffsetTop(target);
-  const drift = Math.abs(expectedY - previewEl.scrollTop);
-
-  if (drift > 100) {
-    previewEl.scrollTop = expectedY;
-    lastEditorLine = -1;
-
-    const indicator = document.getElementById('sync-indicator');
-    if (indicator) {
-      indicator.textContent = '\u27F3 Synced';
-      indicator.style.opacity = '1';
-      setTimeout(() => { indicator.style.opacity = '0'; }, 1000);
-    }
-  }
 }
 
 // ─── API compatibility stubs ─────────────────────────────────────────────────
