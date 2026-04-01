@@ -66,11 +66,11 @@ async function open() {
     <div class="prefs-group prefs-group--full">
       <label class="prefs-label">Editor Theme</label>
       <div id="theme-picker">
-        <div class="theme-card" data-theme="default"><div class="theme-preview tp-default">Aa</div><div class="theme-name">Default</div></div>
-        <div class="theme-card" data-theme="academic"><div class="theme-preview tp-academic">Aa</div><div class="theme-name">Academic</div></div>
-        <div class="theme-card" data-theme="minimal"><div class="theme-preview tp-minimal">Aa</div><div class="theme-name">Minimal</div></div>
-        <div class="theme-card" data-theme="night"><div class="theme-preview tp-night">Aa</div><div class="theme-name">Night</div></div>
-        <div class="theme-card" data-theme="typewriter"><div class="theme-preview tp-typewriter">Aa</div><div class="theme-name">Typewriter</div></div>
+        <div class="theme-card" data-theme="light"><div class="theme-preview" style="background:#fff;color:#1a1a1a">Aa</div><div class="theme-name">Light</div><div class="theme-tier">Free</div></div>
+        <div class="theme-card" data-theme="dark"><div class="theme-preview" style="background:#0d0d0d;color:#e8e8e8">Aa</div><div class="theme-name">Dark</div><div class="theme-tier">Free</div></div>
+        <div class="theme-card" data-theme="typewriter"><div class="theme-preview" style="background:#f5f0e8;color:#3d2b1f;font-family:'Courier New',monospace">Aa</div><div class="theme-name">Typewriter</div><div class="theme-tier pro">Pro</div></div>
+        <div class="theme-card" data-theme="sepia"><div class="theme-preview" style="background:#f4ecd8;color:#3c2a1e">Aa</div><div class="theme-name">Sepia</div><div class="theme-tier pro">Pro</div></div>
+        <div class="theme-card" data-theme="forest"><div class="theme-preview" style="background:#0d1a0f;color:#a8c5a0">Aa</div><div class="theme-name">Forest</div><div class="theme-tier pro">Pro</div></div>
       </div>
     </div>
     <button id="pref-close" class="prefs-close-btn">Done</button>

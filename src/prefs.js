@@ -42,29 +42,18 @@ let editorThemeLink = null;
 
 async function applyEditorTheme(themeName) {
   if (editorThemeLink) { editorThemeLink.remove(); editorThemeLink = null; }
-  // Remove custom theme data attributes (keep light/dark)
-  const current = document.documentElement.dataset.theme;
-  if (current && current !== 'light' && current !== 'dark') {
-    document.documentElement.removeAttribute('data-theme');
-  }
-  if (!themeName || themeName === 'default') {
-    await window.api.setPrefs({ editorTheme: 'default' });
-    return;
-  }
-  document.documentElement.setAttribute('data-theme', themeName);
-  // Load theme CSS dynamically
+  const name = themeName || 'light';
+  document.documentElement.setAttribute('data-theme', name);
   editorThemeLink = document.createElement('link');
   editorThemeLink.rel = 'stylesheet';
-  editorThemeLink.href = `themes/${themeName}.css`;
+  editorThemeLink.href = `themes/${name}.css`;
   document.head.appendChild(editorThemeLink);
-  await window.api.setPrefs({ editorTheme: themeName });
+  await window.api.setPrefs({ editorTheme: name });
 }
 
 async function loadEditorTheme() {
   const prefs = await window.api.getPrefs();
-  if (prefs.editorTheme && prefs.editorTheme !== 'default') {
-    await applyEditorTheme(prefs.editorTheme);
-  }
+  await applyEditorTheme(prefs.editorTheme || 'light');
 }
 
 module.exports = { loadPrefs, applyTheme, applyFontSize, applyLineNumbers, toggleTheme, applyEditorTheme, loadEditorTheme };

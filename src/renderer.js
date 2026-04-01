@@ -97,13 +97,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   const isDark = document.documentElement.classList.contains('dark');
   applyEditorTheme(isDark);
 
-  // Theme toggle button
+  // Theme toggle button — cycles Light ↔ Dark
+  const { applyEditorTheme: setEdTheme } = require('./prefs.js');
   const themeBtn = document.getElementById('btn-theme');
   if (themeBtn) {
     themeBtn.addEventListener('click', async () => {
-      await toggleTheme();
-      const dark = document.documentElement.classList.contains('dark');
-      applyEditorTheme(dark);
+      const current = document.documentElement.dataset.theme || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      await setEdTheme(next);
     });
   }
 

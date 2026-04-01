@@ -1,0 +1,23 @@
+/* Sepia theme — warm beige, dark brown, easy on eyes */
+html[data-theme="sepia"] { color-scheme: light; }
+html[data-theme="sepia"] body,
+html[data-theme="sepia"] #editor-pane,
+html[data-theme="sepia"] #preview-pane { background: #f4ecd8 !important; }
+html[data-theme="sepia"] .cm-editor,
+html[data-theme="sepia"] .cm-content,
+html[data-theme="sepia"] .cm-line { background: #f4ecd8 !important; color: #3c2a1e !important; }
+html[data-theme="sepia"] #preview-content { color: #3c2a1e; }
+html[data-theme="sepia"] #preview-content h1,
+html[data-theme="sepia"] #preview-content h2,
+html[data-theme="sepia"] #preview-content h3 { color: #2a1a0e; }
+html[data-theme="sepia"] #preview-content a { color: #8b5a2b; }
+html[data-theme="sepia"] #titlebar,
+html[data-theme="sepia"] #format-strip,
+html[data-theme="sepia"] #tabbar,
+html[data-theme="sepia"] #statusbar,
+html[data-theme="sepia"] #icon-rail { background: #ece0c8 !important; border-color: #d4c8b0 !important; }
+html[data-theme="sepia"] .fmt-btn { color: #8b7355; }
+html[data-theme="sepia"] .fmt-btn:hover { background: #ddd0b8 !important; color: #2a1a0e; }
+html[data-theme="sepia"] .fmt-group { background: #f4ecd8; border-color: #d4c8b0; }
+html[data-theme="sepia"] .cm-gutters { background: #ece0c8 !important; border-color: #d4c8b0 !important; color: #c4a882 !important; }
+html[data-theme="sepia"] .cm-cursor { border-left-color: #3c2a1e !important; }

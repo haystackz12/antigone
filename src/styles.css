@@ -1652,16 +1652,21 @@ body.drag-over #editor-pane::after {
   font-size: 20px;
   font-weight: 600;
 }
-.tp-default    { background: #fff; color: #1a1a1a; font-family: system-ui; }
-.tp-academic   { background: #fff; color: #1a3a52; font-family: Georgia, serif; }
-.tp-minimal    { background: #fff; color: #111; font-family: system-ui; letter-spacing: -0.02em; }
-.tp-night      { background: #1a1814; color: #d4c9b0; font-family: Palatino, serif; }
-.tp-typewriter { background: #f5f0e8; color: #2a2520; font-family: 'Courier New', monospace; }
 .theme-name {
   font-size: 10px;
   text-align: center;
   padding: 4px;
   color: var(--color-text-secondary);
+}
+.theme-tier {
+  font-size: 9px;
+  text-align: center;
+  padding: 2px 4px;
+  color: var(--color-text-tertiary);
+}
+.theme-tier.pro {
+  color: #9b6f2f;
+  background: #fef3cd;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
