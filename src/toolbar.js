@@ -255,9 +255,29 @@ function setupResizer() {
     resizer.classList.remove('dragging');
     document.body.style.cursor = '';
     document.body.style.userSelect = '';
+
+    // Convert fixed px widths to percentages so panes fill workspace on resize
+    const workspace = document.getElementById('workspace');
+    const rightPanel = document.getElementById('right-panel');
+    const rpWidth = (rightPanel && !rightPanel.hidden) ? 220 : 0;
+    const available = workspace.offsetWidth - 52 - 5 - rpWidth;
+    if (available > 0) {
+      const editorPct = (editorPane.offsetWidth / available) * 100;
+      const previewPct = (previewPane.offsetWidth / available) * 100;
+      editorPane.style.width = editorPct + '%';
+      previewPane.style.width = previewPct + '%';
+    }
   });
 
   resizer.addEventListener('dblclick', () => {
+    editorPane.style.flex = '1';
+    editorPane.style.width = '';
+    previewPane.style.flex = '1';
+    previewPane.style.width = '';
+  });
+
+  // Reset to 50/50 on window resize to prevent blank areas
+  window.addEventListener('resize', () => {
     editorPane.style.flex = '1';
     editorPane.style.width = '';
     previewPane.style.flex = '1';

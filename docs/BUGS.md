@@ -6,6 +6,16 @@ None.
 
 ---
 
+## Resolved — Day 11 (batch 8)
+
+### BUG-041 — Clicking links in preview does nothing
+- **Resolved:** Links rendered as `<a>` tags but clicks blocked by Electron sandbox. Added `setupLinkInterceptor()` in preview.js — intercepts click events on `a[href]`, calls `window.api.openExternal(href)`. Updated main.js handler to auto-prepend `https://` for bare domains and accept `mailto:` protocol.
+
+### BUG-042 — Blank area after dragging resizer
+- **Resolved:** Resizer set fixed px widths that didn't adapt to window resize. On mouseup, now converts to percentage widths. Added `window.addEventListener('resize')` that resets both panes to `flex:1` clearing any fixed widths.
+
+---
+
 ## Resolved — Day 11 (batch 7)
 
 ### BUG-040 — Markdown links not rendering as hyperlinks in preview

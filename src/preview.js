@@ -144,9 +144,25 @@ function render(markdownText) {
   if (placeholder) placeholder.style.display = markdownText.trim() ? 'none' : '';
 }
 
+// ─── Link click interceptor ──────────────────────────────────────────────────
+// Electron sandbox blocks href navigation. Route through shell.openExternal.
+
+function setupLinkInterceptor() {
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href]');
+    if (!link) return;
+    const href = link.getAttribute('href');
+    if (!href || href.startsWith('#')) return;
+    e.preventDefault();
+    window.api.openExternal(href).catch(() => {});
+  });
+}
+
 // ─── Init ────────────────────────────────────────────────────────────────────
 
 function init() {
+  setupLinkInterceptor();
+
   window.addEventListener('editor:change', (e) => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {

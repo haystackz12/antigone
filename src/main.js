@@ -320,10 +320,13 @@ registerExportHandlers(() => mainWindow);
 // Renderer sends all external URL clicks here. Never navigates the editor pane.
 
 ipcMain.handle('open-external', async (_event, url) => {
-  if (typeof url !== 'string' || !url.startsWith('http')) {
-    throw new Error('open-external: invalid URL');
-  }
-  await shell.openExternal(url);
+  if (typeof url !== 'string' || !url.trim()) return { ok: false };
+  let resolved = url;
+  // Add https:// if no protocol specified (e.g., www.google.com)
+  if (!resolved.match(/^[a-zA-Z]+:/)) resolved = 'https://' + resolved;
+  // Only allow http, https, mailto protocols
+  if (!resolved.match(/^(https?|mailto):/)) return { ok: false };
+  await shell.openExternal(resolved);
   return { ok: true };
 });
 
