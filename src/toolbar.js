@@ -15,6 +15,37 @@ function configure(opts) {
 
 // ─── Wrap/unwrap selection with symmetric markers ────────────────────────────
 
+// Count how many times a character repeats at the start/end of text
+function countLeading(text, ch) {
+  let n = 0;
+  while (n < text.length && text[n] === ch) n++;
+  return n;
+}
+function countTrailing(text, ch) {
+  let n = 0;
+  while (n < text.length && text[text.length - 1 - n] === ch) n++;
+  return n;
+}
+
+// Check if text is wrapped with this marker (exact level)
+// *hello* → wrapped with * (1 leading, 1 trailing)
+// **hello** → wrapped with ** (2 leading, 2 trailing), NOT with *
+// ***hello*** → wrapped with both * AND ** (3 leading = 1+2 or 2+1)
+function isWrappedExact(text, marker) {
+  const mLen = marker.length;
+  if (text.length < mLen * 2) return false;
+  if (!text.startsWith(marker) || !text.endsWith(marker)) return false;
+  // For single-char markers like * or ~, check exact count
+  if (marker.length === 1) {
+    const leading = countLeading(text, marker[0]);
+    const trailing = countTrailing(text, marker[0]);
+    // Only match if leading count equals exactly marker length
+    // (not more, which would mean a different/combined marker)
+    return leading === mLen && trailing === mLen;
+  }
+  return true;
+}
+
 function wrapSelection(marker) {
   const view = getView();
   if (!view) return false;
@@ -28,9 +59,14 @@ function wrapSelection(marker) {
   // Check if markers are just OUTSIDE the selection (cursor between markers)
   const beforeMarker = state.sliceDoc(Math.max(0, from - mLen), from);
   const afterMarker  = state.sliceDoc(to, Math.min(docLen, to + mLen));
+  // For single-char markers, verify exact count outside selection
+  const mChar = marker[0];
+  const charBefore = from > mLen ? state.sliceDoc(from - mLen - 1, from - mLen) : '';
+  const charAfter = to + mLen < docLen ? state.sliceDoc(to + mLen, to + mLen + 1) : '';
+  const exactOutside = mLen > 1 || (charBefore !== mChar && charAfter !== mChar);
 
-  if (beforeMarker === marker && afterMarker === marker) {
-    // Remove markers outside the selection
+  if (beforeMarker === marker && afterMarker === marker && exactOutside) {
+    // Remove markers outside the selection (exact match)
     view.dispatch({
       changes: [
         { from: to, to: to + mLen, insert: '' },
@@ -38,8 +74,8 @@ function wrapSelection(marker) {
       ],
       selection: { anchor: from - mLen, head: to - mLen },
     });
-  } else if (selected.startsWith(marker) && selected.endsWith(marker) && selected.length >= mLen * 2) {
-    // Remove markers inside the selection
+  } else if (isWrappedExact(selected, marker)) {
+    // Remove markers inside the selection (exact match)
     view.dispatch({
       changes: { from, to, insert: selected.slice(mLen, -mLen) },
       selection: { anchor: from, head: from + selected.length - mLen * 2 },
