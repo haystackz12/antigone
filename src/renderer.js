@@ -5,7 +5,7 @@
 
 require('./styles.css');
 const { init: initEditor, applyTheme: applyEditorTheme } = require('./editor.js');
-const { loadPrefs, toggleTheme, applyTheme, loadEditorTheme } = require('./prefs.js');
+const { loadPrefs, loadEditorTheme } = require('./prefs.js');
 const editorSave = require('./editor-save.js');
 const focus      = require('./focus.js');
 const wordgoal   = require('./wordgoal.js');
@@ -103,16 +103,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     themeBtn.addEventListener('click', async () => {
       const isDark = document.documentElement.classList.contains('dark');
       document.documentElement.classList.toggle('dark', !isDark);
+      applyEditorTheme(!isDark); // Switch CM6 theme compartment
       await window.api.setPrefs({ darkMode: !isDark });
     });
   }
 
-  // Listen for OS theme changes
-  window.api.onNativeThemeUpdated((data) => {
-    const storedTheme = prefs.theme;
-    if (!storedTheme || storedTheme === 'system') {
-      applyTheme('system');
-      applyEditorTheme(data.shouldUseDarkColors);
-    }
-  });
 });
