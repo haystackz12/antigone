@@ -13,12 +13,11 @@ function configure(opts) {
 function init() {
   const railButtons = document.querySelectorAll('.rail-btn');
   const rightPanel = document.getElementById('right-panel');
-  const panelSections = document.querySelectorAll('.panel-section');
 
   // Ensure panel is hidden on init
   if (rightPanel) rightPanel.hidden = true;
 
-  // JS tooltip for rail buttons (CSS ::after is clipped by overflow:hidden)
+  // JS tooltip for rail buttons (CSS ::after clipped by overflow:hidden)
   const tooltip = document.createElement('div');
   tooltip.id = 'rail-tooltip';
   document.body.appendChild(tooltip);
@@ -55,18 +54,24 @@ function init() {
       return;
     }
 
-    // Deactivate all other rail buttons (except focus which is independent)
+    // Deactivate all other rail buttons (except focus)
     railButtons.forEach(b => {
       if (b.id !== 'rail-focus') b.classList.remove('active');
     });
     btn.classList.add('active');
 
-    // Show correct panel section
-    panelSections.forEach(s => s.hidden = true);
+    // Query panel sections fresh each time (not cached from init)
+    const allSections = document.querySelectorAll('.panel-section');
+    allSections.forEach(s => s.hidden = true);
+
     const targetPanel = document.getElementById(panelId);
-    if (targetPanel && rightPanel) {
+    if (targetPanel) {
       targetPanel.hidden = false;
+    }
+    // Always show right panel container
+    if (rightPanel) {
       rightPanel.hidden = false;
+      rightPanel.style.display = '';
     }
   }
 

@@ -6,6 +6,13 @@ None.
 
 ---
 
+## Resolved — Day 11 (batch 6)
+
+### BUG-038 — Right panel doesn't open from split view on first click
+- **Resolved:** `panelSections` was cached as a static NodeList at init time. If DOM order or hidden state changed between init and first click, the cached list could be stale. Changed `activateRailBtn` to query `.panel-section` elements fresh on each click. Also added `rightPanel.style.display = ''` to clear any inline display override alongside `hidden = false`.
+
+---
+
 ## Resolved — Day 11 (batch 5)
 
 ### BUG-035B — Rail tooltips clipped by overflow:hidden
