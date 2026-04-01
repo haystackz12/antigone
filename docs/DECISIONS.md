@@ -98,6 +98,11 @@
 **Why:** Standard desktop app behavior. Without this, closing the window silently discards unsaved work, which is a data loss risk. The dialog is implemented via `win.on('close')` intercepting the close event and `dialog.showMessageBox` presenting the options.
 **Date:** 2026-03-30
 
+## DEC-029 — Markdown parity: footnotes, math, video deferred to Sprint 5
+**Decision:** Footnotes, math (KaTeX), and video/iframe embeds deferred to Sprint 5. All other Markdown features from Typora reference implemented pre-Day-13.
+**Why:** Footnotes require complex bidirectional link rendering. Math requires KaTeX (~300KB) loaded on demand. Video/iframe requires security review with sandbox:true. Task lists, highlights, callouts, emoji, superscript, subscript, TOC, auto-linking, reference links, and table alignment all implemented in this session.
+**Date:** 2026-04-01
+
 ## DEC-028 — Option D toolbar: icon rail replaces sidebar
 **Decision:** 52px icon rail on left edge replaces the hamburger-toggled sidebar. Right panel opens from rail icons for Tags, TOC. Focus mode is a toggle on the rail (no panel). Titlebar cleaned up: view toggles left, title centered, formatting right.
 **Why:** The hamburger sidebar had UX issues (auto-open/close fighting, no visible toggle, unclear panel tabs). The icon rail provides persistent visual access to panels without taking space from the editor. Scales to TOC, file browser in Sprint 4-5 by adding rail icons.
