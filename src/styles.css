@@ -266,11 +266,13 @@ body {
   display:     grid;
   grid-template-rows:
     var(--titlebar-height)
+    32px
     var(--tabbar-height)
     1fr
     var(--statusbar-height);
   grid-template-areas:
     "titlebar"
+    "formatstrip"
     "tabbar"
     "workspace"
     "statusbar";
@@ -1844,6 +1846,7 @@ body.drag-over #editor-pane::after {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 #format-strip {
+  grid-area:        formatstrip;
   display:          flex;
   align-items:      center;
   height:           32px;
