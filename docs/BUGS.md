@@ -6,6 +6,26 @@ None.
 
 ---
 
+## Resolved — Day 11 (batch 2)
+
+### BUG-029 — No way to close the tag sidebar
+- **Found:** 2026-03-31, Day 11 of Sprint 3
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-31
+- **Symptom:** Sidebar opens when tags are found but cannot be dismissed.
+- **Fix:** Added `#sidebar-header` with heading and `#btn-sidebar-collapse` close button. Click sets `sidebar.dataset.collapsed = 'true'`.
+- **Files involved:** `src/index.html`, `src/styles.css`, `src/tags.js`
+
+### BUG-030 — Sidebar shows unwanted panels (Folder, Tags, Headers)
+- **Found:** 2026-03-31, Day 11 of Sprint 3
+- **Severity:** Low
+- **Status:** Resolved — 2026-03-31
+- **Symptom:** Multiple unimplemented sidebar tabs visible.
+- **Fix:** Removed Files and TOC tabs/sections from sidebar HTML. Only Tags section remains. Replaced tab-switching logic with collapse button. Auto-collapse when no tags found. Logged as DEC-027.
+- **Files involved:** `src/index.html`, `src/tags.js`
+
+---
+
 ## Resolved — Day 11
 
 ### BUG-026 — YAML frontmatter renders as raw text in preview

@@ -74,29 +74,17 @@ function updateSidebar(tags) {
   const section = document.querySelector('.sidebar-section[data-section="tags"]');
   if (!section) return;
 
+  const sidebar = document.getElementById('sidebar');
+
   if (tags.size === 0) {
     section.innerHTML = '<p class="sidebar-empty">No tags yet</p>';
+    // Auto-collapse sidebar when no tags
+    if (sidebar) sidebar.dataset.collapsed = 'true';
     return;
   }
 
-  // Expand sidebar if collapsed and show tags section
-  const sidebar = document.getElementById('sidebar');
-  if (sidebar && sidebar.dataset.collapsed === 'true') {
-    sidebar.dataset.collapsed = 'false';
-  }
-
-  // Auto-show tags section
-  section.classList.remove('sidebar-section--hidden');
-  const tagsTab = document.querySelector('.sidebar-tab[data-section="tags"]');
-  if (tagsTab) {
-    document.querySelectorAll('.sidebar-tab').forEach(t => {
-      t.classList.toggle('sidebar-tab--active', t === tagsTab);
-      t.setAttribute('aria-selected', String(t === tagsTab));
-    });
-    document.querySelectorAll('#sidebar-content .sidebar-section').forEach(s => {
-      s.classList.toggle('sidebar-section--hidden', s.dataset.section !== 'tags');
-    });
-  }
+  // Expand sidebar when tags are found
+  if (sidebar) sidebar.dataset.collapsed = 'false';
 
   const list = document.createElement('ul');
   list.className = 'tag-list';
@@ -202,30 +190,22 @@ function renameTag(oldTag) {
   };
 }
 
-// ─── Sidebar tab switching ───────────────────────────────────────────────────
+// ─── Sidebar collapse button ─────────────────────────────────────────────────
 
-function setupSidebarTabs() {
-  const tabs = document.querySelectorAll('#sidebar-nav .sidebar-tab');
-  const sections = document.querySelectorAll('#sidebar-content .sidebar-section');
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.dataset.section;
-      tabs.forEach(t => {
-        t.classList.toggle('sidebar-tab--active', t === tab);
-        t.setAttribute('aria-selected', String(t === tab));
-      });
-      sections.forEach(s => {
-        s.classList.toggle('sidebar-section--hidden', s.dataset.section !== target);
-      });
+function setupCollapseButton() {
+  const btn = document.getElementById('btn-sidebar-collapse');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar) sidebar.dataset.collapsed = 'true';
     });
-  });
+  }
 }
 
 // ─── Init ────────────────────────────────────────────────────────────────────
 
 function init() {
-  setupSidebarTabs();
+  setupCollapseButton();
 
   window.addEventListener('editor:change', (e) => {
     clearTimeout(debounceTimer);

@@ -641,12 +641,11 @@ body {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 #sidebar {
-  grid-column:      1 / 3;            /* span sidebar + its gutter (resize handle is inside) */
+  grid-column:      1 / 3;
   background:       var(--color-surface-1);
   border-right:     1px solid var(--color-border);
-  display:          grid;
-  grid-template-columns: 36px 1fr;
-  grid-template-rows:    1fr;
+  display:          flex;
+  flex-direction:   column;
   overflow:         hidden;
   position:         relative;
 }
@@ -655,11 +654,34 @@ body {
   border-right-color: transparent;
 }
 
-#sidebar-nav {
+#sidebar-header {
   display:          flex;
-  flex-direction:   column;
   align-items:      center;
-  padding:          var(--space-3) 0;
+  justify-content:  space-between;
+  padding:          var(--space-2) var(--space-3);
+  border-bottom:    1px solid var(--color-border-subtle);
+  flex-shrink:      0;
+}
+.sidebar-heading {
+  font-size:        12px;
+  font-weight:      600;
+  color:            var(--color-text-secondary);
+  text-transform:   uppercase;
+  letter-spacing:   0.05em;
+}
+#btn-sidebar-collapse {
+  background:       none;
+  border:           none;
+  cursor:           pointer;
+  color:            var(--color-text-tertiary);
+  font-size:        16px;
+  padding:          2px 6px;
+  border-radius:    4px;
+  line-height:      1;
+}
+#btn-sidebar-collapse:hover {
+  background:       var(--color-surface-3);
+  color:            var(--color-text-primary);
   gap:              var(--space-1);
   background:       var(--color-surface-2);
   border-right:     1px solid var(--color-border-subtle);

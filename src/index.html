@@ -139,44 +139,18 @@
 
     <!-- ── Sidebar ─────────────────────────────────────────────────────── -->
     <aside id="sidebar" aria-label="Sidebar" data-collapsed="true">
-      <nav id="sidebar-nav" role="tablist" aria-label="Sidebar sections">
-        <button class="sidebar-tab sidebar-tab--active" role="tab" data-section="files"  title="Files"  aria-selected="true">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M3 2h6l4 4v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/>
-            <path d="M9 2v4h4" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <button class="sidebar-tab" role="tab" data-section="tags"  title="Tags" aria-selected="false">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M2 8.5 8.5 2H14v5.5L7.5 14 2 8.5Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/>
-            <circle cx="11" cy="5" r="1" fill="currentColor"/>
-          </svg>
-        </button>
-        <button class="sidebar-tab" role="tab" data-section="toc"   title="Table of contents" aria-selected="false">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <line x1="3" y1="4"  x2="13" y2="4"  stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
-            <line x1="5" y1="7"  x2="13" y2="7"  stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
-            <line x1="5" y1="10" x2="13" y2="10" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
-            <line x1="3" y1="13" x2="13" y2="13" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </nav>
+      <div id="sidebar-header">
+        <span class="sidebar-heading">Tags</span>
+        <button id="btn-sidebar-collapse" data-tooltip="Close Sidebar" aria-label="Close sidebar">&times;</button>
+      </div>
 
       <div id="sidebar-content">
-        <section class="sidebar-section" data-section="files">
-          <p class="sidebar-empty">No folder open</p>
-        </section>
-        <section class="sidebar-section sidebar-section--hidden" data-section="tags">
+        <!-- Tags section — active in v1.0 (DEC-027) -->
+        <section class="sidebar-section" data-section="tags">
           <p class="sidebar-empty">No tags yet</p>
-        </section>
-        <section class="sidebar-section sidebar-section--hidden" data-section="toc">
-          <nav id="toc-nav" aria-label="Table of contents">
-            <p class="sidebar-empty">Open a file to see its outline</p>
-          </nav>
         </section>
       </div>
 
-      <!-- Resize handle -->
       <div id="sidebar-resize" aria-hidden="true"></div>
     </aside>
 
