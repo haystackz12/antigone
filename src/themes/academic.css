@@ -1,0 +1,16 @@
+/* Academic theme — serif fonts, wider line height */
+.cm-content, .cm-line {
+  font-family: 'Lora', Georgia, serif !important;
+  font-size: 17px !important;
+  line-height: 1.9 !important;
+}
+#preview-content {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 17px;
+  line-height: 1.9;
+}
+#preview-content h1, #preview-content h2, #preview-content h3 {
+  font-family: 'Lora', Georgia, serif;
+  color: #1a3a52;
+}
+#preview-content a { color: #2c5f8a; }

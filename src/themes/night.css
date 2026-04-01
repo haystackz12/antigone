@@ -1,0 +1,30 @@
+/* Night theme — warm dark with serif fonts */
+html[data-theme="night"] body { background: #1a1814; color: #d4c9b0; }
+html[data-theme="night"] .cm-content,
+html[data-theme="night"] .cm-line {
+  font-family: 'Cormorant Garamond', Palatino, serif !important;
+  font-size: 18px !important;
+  color: #d4c9b0 !important;
+  background: #1a1814 !important;
+}
+html[data-theme="night"] #preview-content {
+  font-family: 'Cormorant Garamond', Palatino, serif;
+  font-size: 18px; color: #d4c9b0;
+}
+html[data-theme="night"] #titlebar,
+html[data-theme="night"] #format-strip,
+html[data-theme="night"] #tabbar,
+html[data-theme="night"] #statusbar {
+  background: #1f1c18; border-color: #2e2b26; color: #d4c9b0;
+}
+html[data-theme="night"] #workspace,
+html[data-theme="night"] #editor-pane,
+html[data-theme="night"] #preview-pane,
+html[data-theme="night"] #icon-rail { background: #1a1814; }
+html[data-theme="night"] .fmt-btn,
+html[data-theme="night"] .toolbar-btn { color: #7a7060; }
+html[data-theme="night"] .fmt-btn:hover,
+html[data-theme="night"] .toolbar-btn:hover { background: #2e2b26; color: #d4c9b0; }
+html[data-theme="night"] .fmt-group { background: #1a1814; border-color: #2e2b26; }
+html[data-theme="night"] .cm-gutters { background: #1a1814 !important; color: #4a4540 !important; }
+html[data-theme="night"] .cm-cursor { border-left-color: #d4c9b0 !important; }

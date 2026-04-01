@@ -98,6 +98,11 @@
 **Why:** Standard desktop app behavior. Without this, closing the window silently discards unsaved work, which is a data loss risk. The dialog is implemented via `win.on('close')` intercepting the close event and `dialog.showMessageBox` presenting the options.
 **Date:** 2026-03-30
 
+## DEC-031 — Editor themes with preferences picker
+**Decision:** 5 editor themes: Default, Academic (serif), Minimal (no line numbers), Night (warm dark serif), Typewriter (monospace cream). Theme CSS loaded dynamically via `<link>` element. Persists in electron-store. Picker in preferences modal with visual preview cards.
+**Why:** Writers have different aesthetic preferences. Themes change fonts, colors, and spacing without affecting functionality. Dynamic CSS loading avoids bundling all themes, and the data-theme attribute approach allows clean CSS scoping.
+**Date:** 2026-04-01
+
 ## DEC-030 — Option C1 format strip
 **Decision:** Titlebar cleaned to view toggles + app name + theme/word-goal only. All formatting tools moved to a dedicated 32px format strip below the titlebar with three pill groups (text formatting, insert, headings) + Tags toggle. Active state tracking highlights the relevant button when cursor is inside formatted text.
 **Why:** Reduces titlebar crowding. Groups related tools visually. Active states give immediate feedback about the formatting at cursor position. Tags toggle provides quick access without needing the icon rail.

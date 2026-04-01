@@ -5,7 +5,7 @@
 
 require('./styles.css');
 const { init: initEditor, applyTheme: applyEditorTheme } = require('./editor.js');
-const { loadPrefs, toggleTheme, applyTheme } = require('./prefs.js');
+const { loadPrefs, toggleTheme, applyTheme, loadEditorTheme } = require('./prefs.js');
 const editorSave = require('./editor-save.js');
 const focus      = require('./focus.js');
 const wordgoal   = require('./wordgoal.js');
@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Apply stored theme before editor mounts to prevent flash
   const prefs = await loadPrefs();
   initEditor();
+  await loadEditorTheme();
   editorSave.initFromPrefs(prefs);
   focus.init();
   wordgoal.init();

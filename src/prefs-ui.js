@@ -63,6 +63,16 @@ async function open() {
         <option value="vim">Vim</option>
       </select>
     </div>
+    <div class="prefs-group prefs-group--full">
+      <label class="prefs-label">Editor Theme</label>
+      <div id="theme-picker">
+        <div class="theme-card" data-theme="default"><div class="theme-preview tp-default">Aa</div><div class="theme-name">Default</div></div>
+        <div class="theme-card" data-theme="academic"><div class="theme-preview tp-academic">Aa</div><div class="theme-name">Academic</div></div>
+        <div class="theme-card" data-theme="minimal"><div class="theme-preview tp-minimal">Aa</div><div class="theme-name">Minimal</div></div>
+        <div class="theme-card" data-theme="night"><div class="theme-preview tp-night">Aa</div><div class="theme-name">Night</div></div>
+        <div class="theme-card" data-theme="typewriter"><div class="theme-preview tp-typewriter">Aa</div><div class="theme-name">Typewriter</div></div>
+      </div>
+    </div>
     <button id="pref-close" class="prefs-close-btn">Done</button>
   `;
 
@@ -118,6 +128,18 @@ async function open() {
     const val = keybindSel.value;
     await window.api.setPrefs({ keybindings: val });
     if (setVimMode) setVimMode(val === 'vim');
+  });
+
+  // Theme picker
+  const { applyEditorTheme } = require('./prefs.js');
+  const currentEditorTheme = prefs.editorTheme || 'default';
+  document.querySelectorAll('.theme-card').forEach(card => {
+    if (card.dataset.theme === currentEditorTheme) card.classList.add('active');
+    card.addEventListener('click', async () => {
+      await applyEditorTheme(card.dataset.theme);
+      document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+    });
   });
 
   closeBtn.addEventListener('click', close);

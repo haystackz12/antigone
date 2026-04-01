@@ -36,4 +36,35 @@ async function toggleTheme() {
   await window.api.setNativeTheme(next);
 }
 
-module.exports = { loadPrefs, applyTheme, applyFontSize, applyLineNumbers, toggleTheme };
+// ─── Editor theme (academic, minimal, night, typewriter) ─────────────────────
+
+let editorThemeLink = null;
+
+async function applyEditorTheme(themeName) {
+  if (editorThemeLink) { editorThemeLink.remove(); editorThemeLink = null; }
+  // Remove custom theme data attributes (keep light/dark)
+  const current = document.documentElement.dataset.theme;
+  if (current && current !== 'light' && current !== 'dark') {
+    document.documentElement.removeAttribute('data-theme');
+  }
+  if (!themeName || themeName === 'default') {
+    await window.api.setPrefs({ editorTheme: 'default' });
+    return;
+  }
+  document.documentElement.setAttribute('data-theme', themeName);
+  // Load theme CSS dynamically
+  editorThemeLink = document.createElement('link');
+  editorThemeLink.rel = 'stylesheet';
+  editorThemeLink.href = `themes/${themeName}.css`;
+  document.head.appendChild(editorThemeLink);
+  await window.api.setPrefs({ editorTheme: themeName });
+}
+
+async function loadEditorTheme() {
+  const prefs = await window.api.getPrefs();
+  if (prefs.editorTheme && prefs.editorTheme !== 'default') {
+    await applyEditorTheme(prefs.editorTheme);
+  }
+}
+
+module.exports = { loadPrefs, applyTheme, applyFontSize, applyLineNumbers, toggleTheme, applyEditorTheme, loadEditorTheme };

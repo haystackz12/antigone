@@ -1,0 +1,28 @@
+/* Typewriter theme — monospace on cream */
+html[data-theme="typewriter"] body { background: #f5f0e8; }
+html[data-theme="typewriter"] .cm-content,
+html[data-theme="typewriter"] .cm-line {
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 15px !important;
+  color: #2a2520 !important;
+  background: #f5f0e8 !important;
+}
+html[data-theme="typewriter"] #preview-content {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 15px; color: #2a2520;
+}
+html[data-theme="typewriter"] #titlebar,
+html[data-theme="typewriter"] #format-strip,
+html[data-theme="typewriter"] #tabbar,
+html[data-theme="typewriter"] #statusbar {
+  background: #ede8e0; border-color: #d4cfc7; color: #2a2520;
+}
+html[data-theme="typewriter"] #workspace,
+html[data-theme="typewriter"] #editor-pane,
+html[data-theme="typewriter"] #preview-pane,
+html[data-theme="typewriter"] #icon-rail { background: #f5f0e8; }
+html[data-theme="typewriter"] .fmt-btn { color: #8a8078; }
+html[data-theme="typewriter"] .fmt-btn:hover { background: #ddd8d0; color: #2a2520; }
+html[data-theme="typewriter"] .fmt-group { background: #f5f0e8; border-color: #d4cfc7; }
+html[data-theme="typewriter"] .cm-gutters { background: #f5f0e8 !important; color: #b0a898 !important; }
+html[data-theme="typewriter"] .cm-cursor { border-left: 2px solid #2a2520 !important; }
