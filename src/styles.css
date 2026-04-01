@@ -1032,10 +1032,11 @@ kbd {
 }
 
 #preview-content {
-  max-width:        var(--preview-max-width);
+  /* Match editor: .cm-content has maxWidth:72ch, margin:0 auto, padding:20px 0 */
+  /* Scroller has padding:40px 0. Total top = 60px. */
+  max-width:        72ch;
   margin:           0 auto;
-  padding:          60px 48px 40px 48px;
-  width:            100%;
+  padding:          60px 0 40px 0;
   box-sizing:       border-box;
   overflow-x:       hidden;
   font-family:      var(--font-prose);
