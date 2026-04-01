@@ -1625,7 +1625,7 @@ body.drag-over #editor-pane::after {
   display:          flex;
   align-items:      center;
   gap:              6px;
-  padding-left:     72px;    /* traffic light gutter */
+  padding-left:     88px;    /* clear macOS traffic lights with breathing room */
   -webkit-app-region: no-drag;
 }
 #titlebar-center {
