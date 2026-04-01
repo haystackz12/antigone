@@ -1037,6 +1037,7 @@ kbd {
   padding:          60px 48px 40px 48px;
   width:            100%;
   box-sizing:       border-box;
+  overflow-x:       hidden;
   font-family:      var(--font-prose);
   font-size:        var(--preview-font-size);
   line-height:      var(--preview-line-height);
@@ -1124,19 +1125,21 @@ kbd {
 }
 
 .prose table {
+  width:            100%;
+  max-width:        100%;
   border-collapse:  collapse;
   margin-bottom:    1.1em;
   font-size:        0.9em;
-  display:          block;
-  overflow-x:       auto;
-  white-space:      nowrap;
-  max-width:        100%;
+  table-layout:     fixed;
+  word-wrap:        break-word;
+  box-sizing:       border-box;
 }
 .prose th, .prose td {
   border:           1px solid var(--preview-table-border);
   padding:          var(--space-2) var(--space-3);
   text-align:       left;
-  white-space:      nowrap;
+  word-break:       break-word;
+  overflow-wrap:    break-word;
 }
 .prose th {
   background:       var(--preview-table-header-bg);
