@@ -1,6 +1,4 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
-const path = require('path');
 const rules = require('./webpack.rules');
 
 rules.push({
@@ -15,10 +13,5 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin(),
-    new CopyPlugin({
-      patterns: [
-        { from: path.resolve(__dirname, 'src/themes'), to: 'themes' },
-      ],
-    }),
   ],
 };
