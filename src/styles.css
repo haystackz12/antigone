@@ -740,13 +740,13 @@ body {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 #editor-pane {
-  grid-column:      3;
   background:       var(--color-surface-0);
   display:          flex;
   flex-direction:   column;
   overflow:         hidden;
   position:         relative;
-  min-width:        0;               /* allow grid to shrink below content */
+  flex:             1;
+  min-width:        0;
 }
 
 /* CodeMirror mount — fills available height */
@@ -1004,28 +1004,21 @@ kbd {
    §13  SPLIT RESIZE GUTTER
    ═══════════════════════════════════════════════════════════════════════════ */
 
-#split-resize {
-  grid-column:      4;
-  background:       var(--color-border-subtle);
-  cursor:           col-resize;
-  transition:       background var(--transition-fast);
-  position:         relative;
-}
-#split-resize:hover,
-#split-resize.is-dragging { background: var(--color-accent); }
+/* Old #split-resize grid rule removed — now in §22 flex layout */
 
 /* ═══════════════════════════════════════════════════════════════════════════
    §14  PREVIEW PANE
    ═══════════════════════════════════════════════════════════════════════════ */
 
 #preview-pane {
-  grid-column:      5;
   background:       var(--preview-bg);
   border-left:      1px solid var(--color-border-subtle);
   overflow-y:       auto;
   overflow-x:       hidden;
   padding:          0;
   position:         relative;
+  flex:             1;
+  min-width:        0;
 }
 
 #preview-placeholder {
@@ -1793,16 +1786,6 @@ body.drag-over #editor-pane::after {
   display:          none !important;
   width:            0 !important;
   min-width:        0 !important;
-}
-
-/* Editor and preview panes flex equally in split */
-#editor-pane {
-  flex:             1;
-  min-width:        0;
-}
-#preview-pane {
-  flex:             1;
-  min-width:        0;
 }
 
 /* Split resize handle */
