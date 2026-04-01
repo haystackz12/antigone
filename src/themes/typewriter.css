@@ -1,27 +1,57 @@
-/* Typewriter theme — cream background, monospace, amber text */
-html[data-theme="typewriter"] { color-scheme: light; }
-html[data-theme="typewriter"] body,
-html[data-theme="typewriter"] #editor-pane,
-html[data-theme="typewriter"] #preview-pane { background: #f5f0e8 !important; }
-html[data-theme="typewriter"] .cm-editor,
-html[data-theme="typewriter"] .cm-content,
-html[data-theme="typewriter"] .cm-line {
+/* Typewriter theme — cream/amber, monospace */
+
+/* Light */
+html[data-theme="typewriter"] body, html[data-theme="typewriter"] #editor-pane,
+html[data-theme="typewriter"] #preview-pane, html[data-theme="typewriter"] .cm-editor,
+html[data-theme="typewriter"] .cm-content, html[data-theme="typewriter"] .cm-line {
   background: #f5f0e8 !important; color: #3d2b1f !important;
-  font-family: 'Courier New', Courier, monospace !important; font-size: 15px !important;
+  font-family: 'Courier New', Courier, monospace !important;
 }
-html[data-theme="typewriter"] #preview-content {
-  color: #3d2b1f; font-family: 'Courier New', Courier, monospace; font-size: 15px;
+html[data-theme="typewriter"] .cm-content, html[data-theme="typewriter"] .cm-line {
+  font-size: 15px !important;
 }
-html[data-theme="typewriter"] #preview-content h1,
-html[data-theme="typewriter"] #preview-content h2,
-html[data-theme="typewriter"] #preview-content h3 { color: #2a1a0f; font-family: 'Courier New', Courier, monospace; }
-html[data-theme="typewriter"] #titlebar,
-html[data-theme="typewriter"] #format-strip,
-html[data-theme="typewriter"] #tabbar,
-html[data-theme="typewriter"] #statusbar,
-html[data-theme="typewriter"] #icon-rail { background: #ede8e0 !important; border-color: #d4cfc7 !important; }
+html[data-theme="typewriter"] #titlebar, html[data-theme="typewriter"] #format-strip,
+html[data-theme="typewriter"] #tabbar, html[data-theme="typewriter"] #statusbar,
+html[data-theme="typewriter"] #icon-rail {
+  background: #ede8e0 !important; border-color: #d4cfc7 !important;
+}
+html[data-theme="typewriter"] .cm-gutters {
+  background: #ede8e0 !important; border-color: #d4cfc7 !important; color: #b8a898 !important;
+}
 html[data-theme="typewriter"] .fmt-btn { color: #8a7060; }
 html[data-theme="typewriter"] .fmt-btn:hover { background: #ddd8d0 !important; color: #2a1a0f; }
 html[data-theme="typewriter"] .fmt-group { background: #f5f0e8; border-color: #d4cfc7; }
-html[data-theme="typewriter"] .cm-gutters { background: #ede8e0 !important; border-color: #d4cfc7 !important; color: #b8a898 !important; }
-html[data-theme="typewriter"] .cm-cursor { border-left-color: #3d2b1f !important; }
+html[data-theme="typewriter"] #preview-content {
+  color: #3d2b1f; font-family: 'Courier New', Courier, monospace; font-size: 15px;
+}
+html[data-theme="typewriter"] #preview-content h1, html[data-theme="typewriter"] #preview-content h2,
+html[data-theme="typewriter"] #preview-content h3 {
+  color: #2a1a0f; font-family: 'Courier New', Courier, monospace;
+}
+
+/* Dark */
+html[data-theme="typewriter"].dark body, html[data-theme="typewriter"].dark #editor-pane,
+html[data-theme="typewriter"].dark #preview-pane, html[data-theme="typewriter"].dark .cm-editor,
+html[data-theme="typewriter"].dark .cm-content, html[data-theme="typewriter"].dark .cm-line {
+  background: #1a1510 !important; color: #c8a878 !important;
+  font-family: 'Courier New', Courier, monospace !important;
+}
+html[data-theme="typewriter"].dark #titlebar, html[data-theme="typewriter"].dark #format-strip,
+html[data-theme="typewriter"].dark #tabbar, html[data-theme="typewriter"].dark #statusbar,
+html[data-theme="typewriter"].dark #icon-rail {
+  background: #120f0a !important; border-color: #2a2018 !important;
+}
+html[data-theme="typewriter"].dark .cm-gutters {
+  background: #120f0a !important; border-color: #2a2018 !important; color: #4a3828 !important;
+}
+html[data-theme="typewriter"].dark .fmt-btn { color: #6a5040; }
+html[data-theme="typewriter"].dark .fmt-btn:hover { background: #2a2018 !important; color: #c8a878; }
+html[data-theme="typewriter"].dark .fmt-group { background: #1a1510; border-color: #2a2018; }
+html[data-theme="typewriter"].dark #preview-content {
+  color: #c8a878; font-family: 'Courier New', Courier, monospace;
+}
+html[data-theme="typewriter"].dark #preview-content h1, html[data-theme="typewriter"].dark #preview-content h2,
+html[data-theme="typewriter"].dark #preview-content h3 {
+  color: #e0c090; font-family: 'Courier New', Courier, monospace;
+}
+html[data-theme="typewriter"].dark .cm-cursor { border-left-color: #c8a878 !important; }

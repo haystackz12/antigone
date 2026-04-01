@@ -1,28 +1,48 @@
-/* Forest theme — very dark green, calm focused */
-html[data-theme="forest"] { color-scheme: dark; }
-html[data-theme="forest"] body,
-html[data-theme="forest"] #editor-pane,
-html[data-theme="forest"] #preview-pane { background: #0d1a0f !important; }
-html[data-theme="forest"] .cm-editor,
-html[data-theme="forest"] .cm-content,
-html[data-theme="forest"] .cm-line { background: #0d1a0f !important; color: #a8c5a0 !important; }
-html[data-theme="forest"] #preview-content { color: #a8c5a0; }
-html[data-theme="forest"] #preview-content h1,
-html[data-theme="forest"] #preview-content h2,
-html[data-theme="forest"] #preview-content h3 { color: #c8e0c0; }
-html[data-theme="forest"] #preview-content a { color: #7db87d; }
-html[data-theme="forest"] #preview-content code { background: #162518; color: #90b888; }
-html[data-theme="forest"] #titlebar,
-html[data-theme="forest"] #format-strip,
-html[data-theme="forest"] #tabbar,
-html[data-theme="forest"] #statusbar,
-html[data-theme="forest"] #icon-rail { background: #111d12 !important; border-color: #1e3020 !important; }
-html[data-theme="forest"] .fmt-btn,
-html[data-theme="forest"] .rail-btn { color: #4a7a4a; }
-html[data-theme="forest"] .fmt-btn:hover,
-html[data-theme="forest"] .rail-btn:hover { background: #1e3020 !important; color: #a8c5a0; }
-html[data-theme="forest"] .fmt-group { background: #0d1a0f; border-color: #1e3020; }
-html[data-theme="forest"] .cm-gutters { background: #111d12 !important; border-color: #1e3020 !important; color: #2e5030 !important; }
-html[data-theme="forest"] .cm-cursor { border-left-color: #a8c5a0 !important; }
-html[data-theme="forest"] .tab { color: #4a7a4a; }
-html[data-theme="forest"] .tab.tab--active { color: #a8c5a0; }
+/* Forest theme — light sage / dark forest green */
+
+/* Light */
+html[data-theme="forest"] body, html[data-theme="forest"] #editor-pane,
+html[data-theme="forest"] #preview-pane, html[data-theme="forest"] .cm-editor,
+html[data-theme="forest"] .cm-content, html[data-theme="forest"] .cm-line {
+  background: #f0f4f0 !important; color: #1a3020 !important;
+}
+html[data-theme="forest"] #titlebar, html[data-theme="forest"] #format-strip,
+html[data-theme="forest"] #tabbar, html[data-theme="forest"] #statusbar,
+html[data-theme="forest"] #icon-rail {
+  background: #e4ece4 !important; border-color: #c8d8c8 !important;
+}
+html[data-theme="forest"] .cm-gutters {
+  background: #e4ece4 !important; border-color: #c8d8c8 !important; color: #7a9a7a !important;
+}
+html[data-theme="forest"] .fmt-btn { color: #4a7a4a; }
+html[data-theme="forest"] .fmt-btn:hover { background: #d4e4d4 !important; color: #1a3020; }
+html[data-theme="forest"] .fmt-group { background: #f0f4f0; border-color: #c8d8c8; }
+html[data-theme="forest"] #preview-content { color: #1a3020; }
+html[data-theme="forest"] #preview-content h1, html[data-theme="forest"] #preview-content h2,
+html[data-theme="forest"] #preview-content h3 { color: #0d2010; }
+html[data-theme="forest"] #preview-content a { color: #2d7a2d; }
+
+/* Dark */
+html[data-theme="forest"].dark body, html[data-theme="forest"].dark #editor-pane,
+html[data-theme="forest"].dark #preview-pane, html[data-theme="forest"].dark .cm-editor,
+html[data-theme="forest"].dark .cm-content, html[data-theme="forest"].dark .cm-line {
+  background: #0d1a0f !important; color: #a8c5a0 !important;
+}
+html[data-theme="forest"].dark #titlebar, html[data-theme="forest"].dark #format-strip,
+html[data-theme="forest"].dark #tabbar, html[data-theme="forest"].dark #statusbar,
+html[data-theme="forest"].dark #icon-rail {
+  background: #111d12 !important; border-color: #1e3020 !important;
+}
+html[data-theme="forest"].dark .cm-gutters {
+  background: #111d12 !important; border-color: #1e3020 !important; color: #2e5030 !important;
+}
+html[data-theme="forest"].dark .fmt-btn, html[data-theme="forest"].dark .rail-btn { color: #4a7a4a; }
+html[data-theme="forest"].dark .fmt-btn:hover, html[data-theme="forest"].dark .rail-btn:hover {
+  background: #1e3020 !important; color: #a8c5a0;
+}
+html[data-theme="forest"].dark .fmt-group { background: #0d1a0f; border-color: #1e3020; }
+html[data-theme="forest"].dark #preview-content { color: #a8c5a0; }
+html[data-theme="forest"].dark #preview-content h1, html[data-theme="forest"].dark #preview-content h2,
+html[data-theme="forest"].dark #preview-content h3 { color: #c8e0c0; }
+html[data-theme="forest"].dark #preview-content a { color: #7db87d; }
+html[data-theme="forest"].dark .cm-cursor { border-left-color: #a8c5a0 !important; }

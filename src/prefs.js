@@ -42,7 +42,7 @@ let editorThemeLink = null;
 
 async function applyEditorTheme(themeName) {
   if (editorThemeLink) { editorThemeLink.remove(); editorThemeLink = null; }
-  const name = themeName || 'light';
+  const name = themeName || 'default';
   document.documentElement.setAttribute('data-theme', name);
   editorThemeLink = document.createElement('link');
   editorThemeLink.rel = 'stylesheet';
@@ -53,7 +53,12 @@ async function applyEditorTheme(themeName) {
 
 async function loadEditorTheme() {
   const prefs = await window.api.getPrefs();
-  await applyEditorTheme(prefs.editorTheme || 'light');
+  // Apply dark mode first
+  if (prefs.darkMode) {
+    document.documentElement.classList.add('dark');
+  }
+  // Then apply theme
+  await applyEditorTheme(prefs.editorTheme || 'default');
 }
 
 module.exports = { loadPrefs, applyTheme, applyFontSize, applyLineNumbers, toggleTheme, applyEditorTheme, loadEditorTheme };
