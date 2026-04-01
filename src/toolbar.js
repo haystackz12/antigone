@@ -34,8 +34,21 @@ function wrapSelection(marker) {
   // Check outside selection boundary
   const outerBefore = state.sliceDoc(Math.max(0, from - bLen), from);
   const outerAfter  = state.sliceDoc(to, Math.min(docLen, to + bLen));
+  let outerMatch = outerBefore === marker && outerAfter === marker;
 
-  if (outerBefore === marker && outerAfter === marker) {
+  // For single-char markers, check parity of surrounding marker chars
+  // to distinguish * (italic) from ** (bold) outside the selection.
+  // **|hello|** → 2 * before cursor = even → not an italic wrap → skip for *
+  // ***|hello|*** → 3 * before cursor = odd → italic exists → match for *
+  // *|hello|* → 1 * before cursor = odd → italic → match for *
+  if (outerMatch && bLen === 1) {
+    let outerLeadCount = 0;
+    let pos = from - 1;
+    while (pos >= 0 && state.sliceDoc(pos, pos + 1) === marker[0]) { outerLeadCount++; pos--; }
+    if (outerLeadCount % 2 === 0) outerMatch = false;
+  }
+
+  if (outerMatch) {
     // Remove markers outside selection
     view.dispatch({
       changes: [
