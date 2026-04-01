@@ -6,6 +6,27 @@ None.
 
 ---
 
+## Resolved — Day 11 (batch 3)
+
+### BUG-031 — Tags not detected when frontmatter is not at line 1
+- **Found:** 2026-03-31, Day 11 of Sprint 3
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-31
+- **Symptom:** Frontmatter tags not found when --- block starts mid-document.
+- **Root cause:** `parseFrontmatterTags()` used `text.match(/^---\n/)` which only matches at string start. Documents with headings before frontmatter were missed.
+- **Fix:** Changed to `fmRegex = /^---\s*\n([\s\S]*?)\n---/gm` with global+multiline flags, scanning entire document for all --- blocks.
+- **Files involved:** `src/tags.js`
+
+### BUG-032 — No sidebar toggle button in toolbar
+- **Found:** 2026-03-31, Day 11 of Sprint 3
+- **Severity:** Medium
+- **Status:** Resolved — 2026-03-31
+- **Symptom:** No way to open sidebar after closing it — only the internal × button existed.
+- **Fix:** Added hamburger-style toggle button (`#btn-sidebar-toggle`) to the left side of the toolbar with a 3-line SVG icon. Click toggles `sidebar.dataset.collapsed` between 'true' and 'false'.
+- **Files involved:** `src/index.html`, `src/tags.js`
+
+---
+
 ## Resolved — Day 11 (batch 2)
 
 ### BUG-029 — No way to close the tag sidebar

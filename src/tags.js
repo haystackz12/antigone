@@ -14,32 +14,42 @@ function configure(opts) {
 }
 
 // ─── YAML frontmatter tag parsing ───────────────────────────────────────────
+// Scans the ENTIRE document for --- blocks, not just line 1.
 
 function parseFrontmatterTags(text) {
-  const fmMatch = text.match(/^---\n([\s\S]*?)\n---/);
-  if (!fmMatch) return [];
+  const tags = [];
+  const fmRegex = /^---\s*\n([\s\S]*?)\n---/gm;
+  let fmMatch;
+  while ((fmMatch = fmRegex.exec(text)) !== null) {
+    const block = fmMatch[1];
 
-  const fm = fmMatch[1];
-  // Match tags: [tag1, tag2] or tags:\n  - tag1\n  - tag2
-  const tagsLine = fm.match(/^tags:\s*\[(.+)\]/m);
-  if (tagsLine) {
-    return tagsLine[1].split(',').map(t => t.trim().replace(/['"]/g, '')).filter(Boolean);
+    // tags: [tag1, tag2]
+    const inlineMatch = block.match(/^tags:\s*\[(.+)\]/m);
+    if (inlineMatch) {
+      inlineMatch[1].split(',').forEach(t => {
+        const name = t.trim().replace(/['"]/g, '');
+        if (name) tags.push(name);
+      });
+      continue;
+    }
+
+    // tags:\n  - tag1\n  - tag2
+    const listMatch = block.match(/^tags:\s*\n((?:\s*-\s*.+\n?)+)/m);
+    if (listMatch) {
+      listMatch[1].split('\n').forEach(line => {
+        const name = line.replace(/^\s*-\s*/, '').trim().replace(/['"]/g, '');
+        if (name) tags.push(name);
+      });
+      continue;
+    }
+
+    // tags: single
+    const singleMatch = block.match(/^tags:\s+(\S+)$/m);
+    if (singleMatch) {
+      tags.push(singleMatch[1].replace(/['"]/g, ''));
+    }
   }
-
-  const tagsList = fm.match(/^tags:\s*\n((?:\s+-\s+.+\n?)+)/m);
-  if (tagsList) {
-    return tagsList[1].split('\n')
-      .map(l => l.replace(/^\s+-\s+/, '').trim().replace(/['"]/g, ''))
-      .filter(Boolean);
-  }
-
-  // Single tag: tags: mytag
-  const singleTag = fm.match(/^tags:\s+(.+)$/m);
-  if (singleTag) {
-    return [singleTag[1].trim().replace(/['"]/g, '')];
-  }
-
-  return [];
+  return tags;
 }
 
 // ─── Scan document for tags ──────────────────────────────────────────────────
@@ -192,12 +202,22 @@ function renameTag(oldTag) {
 
 // ─── Sidebar collapse button ─────────────────────────────────────────────────
 
-function setupCollapseButton() {
-  const btn = document.getElementById('btn-sidebar-collapse');
-  if (btn) {
-    btn.addEventListener('click', () => {
+function setupSidebarButtons() {
+  // Close button inside sidebar
+  const closeBtn = document.getElementById('btn-sidebar-collapse');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
       const sidebar = document.getElementById('sidebar');
       if (sidebar) sidebar.dataset.collapsed = 'true';
+    });
+  }
+  // Toggle button in toolbar
+  const toggleBtn = document.getElementById('btn-sidebar-toggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      const sidebar = document.getElementById('sidebar');
+      if (!sidebar) return;
+      sidebar.dataset.collapsed = sidebar.dataset.collapsed === 'true' ? 'false' : 'true';
     });
   }
 }
@@ -205,7 +225,7 @@ function setupCollapseButton() {
 // ─── Init ────────────────────────────────────────────────────────────────────
 
 function init() {
-  setupCollapseButton();
+  setupSidebarButtons();
 
   window.addEventListener('editor:change', (e) => {
     clearTimeout(debounceTimer);

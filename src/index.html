@@ -34,6 +34,17 @@
     <!-- Toolbar actions — right-aligned -->
     <div id="toolbar" role="toolbar" aria-label="Formatting toolbar">
 
+      <!-- Sidebar toggle — far left -->
+      <button id="btn-sidebar-toggle" class="toolbar-btn tooltip-below" data-tooltip="Toggle Tag Sidebar" aria-label="Toggle sidebar">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <line x1="2" y1="4" x2="14" y2="4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+          <line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+          <line x1="2" y1="12" x2="14" y2="12" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <div class="toolbar-separator" aria-hidden="true"></div>
+
       <!-- View mode toggles -->
       <div class="toolbar-group" id="toolbar-view-toggles" role="group" aria-label="View mode">
         <button class="toolbar-btn tooltip-below" id="btn-view-editor"  data-view="editor"  data-tooltip="Editor Only" aria-pressed="false">
