@@ -18,6 +18,26 @@ function init() {
   // Ensure panel is hidden on init
   if (rightPanel) rightPanel.hidden = true;
 
+  // JS tooltip for rail buttons (CSS ::after is clipped by overflow:hidden)
+  const tooltip = document.createElement('div');
+  tooltip.id = 'rail-tooltip';
+  document.body.appendChild(tooltip);
+
+  railButtons.forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      const text = btn.dataset.tooltip;
+      if (!text) return;
+      const rect = btn.getBoundingClientRect();
+      tooltip.textContent = text;
+      tooltip.style.opacity = '1';
+      tooltip.style.top = (rect.top + rect.height / 2 - 10) + 'px';
+      tooltip.style.left = (rect.right + 8) + 'px';
+    });
+    btn.addEventListener('mouseleave', () => {
+      tooltip.style.opacity = '0';
+    });
+  });
+
   function activateRailBtn(btn) {
     const panelId = btn.dataset.panel;
 

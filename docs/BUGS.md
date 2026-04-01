@@ -6,6 +6,16 @@ None.
 
 ---
 
+## Resolved — Day 11 (batch 5)
+
+### BUG-035B — Rail tooltips clipped by overflow:hidden
+- **Resolved:** Disabled CSS ::after tooltips for rail buttons. Added JS-based fixed-position tooltip in icon-rail.js — `#rail-tooltip` element appended to `document.body`, positioned via `getBoundingClientRect()` on mouseenter, hidden on mouseleave. Cannot be clipped by parent overflow.
+
+### BUG-037 — Preview content cut off on right side
+- **Resolved:** Changed `#preview-content` padding from `60px var(--space-8) 40px` (32px sides) to `60px 48px 40px 48px` with `width:100%; box-sizing:border-box`. Equal 48px padding on both sides, box-sizing ensures padding included in width.
+
+---
+
 ## Resolved — Day 11 (batch 4)
 
 ### BUG-033 — Blank space on right in editor/preview-only modes

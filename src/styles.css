@@ -1041,8 +1041,9 @@ kbd {
 #preview-content {
   max-width:        var(--preview-max-width);
   margin:           0 auto;
-  /* Top padding = scroller 40px + cm-content 20px = 60px to match editor */
-  padding:          60px var(--space-8) 40px;
+  padding:          60px 48px 40px 48px;
+  width:            100%;
+  box-sizing:       border-box;
   font-family:      var(--font-prose);
   font-size:        var(--preview-font-size);
   line-height:      var(--preview-line-height);
@@ -1823,12 +1824,11 @@ body.drag-over #editor-pane::after {
 .rail-btn {
   position:         relative;
 }
-.rail-btn[data-tooltip]::after {
-  content:          attr(data-tooltip);
-  position:         absolute;
-  left:             calc(100% + 8px);
-  top:              50%;
-  transform:        translateY(-50%);
+/* Rail tooltips handled by JS (icon-rail.js) — CSS tooltips clipped by overflow:hidden */
+.rail-btn[data-tooltip]::after { display: none !important; }
+
+#rail-tooltip {
+  position:         fixed;
   background:       var(--color-tooltip-bg, #1a1a1a);
   color:            var(--color-tooltip-text, #fff);
   font-size:        11px;
@@ -1839,8 +1839,5 @@ body.drag-over #editor-pane::after {
   pointer-events:   none;
   opacity:          0;
   transition:       opacity 0.15s ease;
-  z-index:          1000;
-}
-.rail-btn[data-tooltip]:hover::after {
-  opacity:          1;
+  z-index:          9999;
 }
