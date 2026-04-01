@@ -178,33 +178,25 @@ function setupKeyboardShortcuts() {
 // ─── View mode toggles ──────────────────────────────────────────────────────
 
 function setViewMode(mode) {
-  const workspace = document.getElementById('workspace');
-  const editor    = document.getElementById('editor-pane');
-  const preview   = document.getElementById('preview-pane');
-  const resizer   = document.getElementById('split-resize');
+  const editor  = document.getElementById('editor-pane');
+  const preview = document.getElementById('preview-pane');
+  const resizer = document.getElementById('split-resize');
 
-  // Set inline grid-template-columns to override all CSS rules (including :has())
   if (mode === 'editor') {
-    if (workspace) workspace.style.gridTemplateColumns = '0 0 1fr 0 0';
-    if (editor)  editor.style.display  = '';
+    if (editor)  editor.style.display = '';
     if (preview) preview.style.display = 'none';
     if (resizer) resizer.style.display = 'none';
   } else if (mode === 'preview') {
-    if (workspace) workspace.style.gridTemplateColumns = '0 0 0 0 1fr';
-    if (editor)  editor.style.display  = 'none';
+    if (editor)  editor.style.display = 'none';
     if (preview) preview.style.display = '';
     if (resizer) resizer.style.display = 'none';
   } else {
-    // split — two independent panes, no scroll sync
-    if (workspace) workspace.style.gridTemplateColumns = '';
-    if (editor)  editor.style.display  = '';
+    if (editor)  editor.style.display = '';
     if (preview) preview.style.display = '';
     if (resizer) resizer.style.display = '';
   }
 
   document.documentElement.dataset.panel = mode;
-
-  // Update aria-pressed on view toggle buttons
   const buttons = document.querySelectorAll('#toolbar-view-toggles .toolbar-btn');
   buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === mode)));
 }

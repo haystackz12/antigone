@@ -1617,3 +1617,172 @@ body.drag-over #editor-pane::after {
   cursor: pointer;
 }
 .prefs-close-btn:hover { opacity: 0.9; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   §22  OPTION D — ICON RAIL + RIGHT PANEL
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Titlebar left/center/right layout */
+#titlebar-left {
+  display:          flex;
+  align-items:      center;
+  gap:              6px;
+  padding-left:     72px;    /* traffic light gutter */
+  -webkit-app-region: no-drag;
+}
+#titlebar-center {
+  position:         absolute;
+  left:             50%;
+  transform:        translateX(-50%);
+  font-size:        13px;
+  font-weight:      500;
+  color:            var(--color-text-tertiary);
+  pointer-events:   none;
+  user-select:      none;
+}
+#titlebar-right {
+  display:          flex;
+  align-items:      center;
+  gap:              2px;
+  margin-left:      auto;
+  -webkit-app-region: no-drag;
+}
+
+/* View toggle pill */
+.tb-pill {
+  display:          flex;
+  border:           1px solid var(--color-border);
+  border-radius:    6px;
+  overflow:         hidden;
+}
+.tb-pill .toolbar-btn {
+  border-radius:    0;
+  border-right:     1px solid var(--color-border);
+  height:           24px;
+  padding:          0 6px;
+}
+.tb-pill .toolbar-btn:last-child { border-right: none; }
+
+/* Titlebar separator */
+.tb-sep {
+  width:            1px;
+  height:           16px;
+  background:       var(--color-border-subtle);
+  margin:           0 4px;
+  flex-shrink:      0;
+}
+
+/* Icon rail */
+#icon-rail {
+  width:            52px;
+  min-width:        52px;
+  display:          flex;
+  flex-direction:   column;
+  align-items:      center;
+  padding:          8px 0;
+  gap:              4px;
+  border-right:     1px solid var(--color-border-subtle);
+  background:       var(--color-surface-1);
+  flex-shrink:      0;
+}
+.rail-btn {
+  width:            36px;
+  height:           36px;
+  border-radius:    8px;
+  border:           none;
+  background:       none;
+  display:          flex;
+  align-items:      center;
+  justify-content:  center;
+  color:            var(--color-text-tertiary);
+  cursor:           pointer;
+  transition:       background 0.1s, color 0.1s;
+}
+.rail-btn:hover {
+  background:       var(--color-surface-3);
+  color:            var(--color-text-primary);
+}
+.rail-btn.active {
+  background:       var(--color-accent-subtle);
+  color:            var(--color-accent);
+}
+
+/* Right panel */
+#right-panel {
+  width:            220px;
+  min-width:        220px;
+  max-width:        220px;
+  border-left:      1px solid var(--color-border-subtle);
+  background:       var(--color-surface-1);
+  display:          flex;
+  flex-direction:   column;
+  overflow:         hidden;
+  flex-shrink:      0;
+}
+#right-panel[hidden] { display: none; }
+
+.panel-header {
+  display:          flex;
+  align-items:      center;
+  justify-content:  space-between;
+  padding:          10px 12px 8px;
+  border-bottom:    1px solid var(--color-border-subtle);
+  flex-shrink:      0;
+}
+.panel-title {
+  font-size:        10px;
+  font-weight:      600;
+  letter-spacing:   0.08em;
+  color:            var(--color-text-tertiary);
+}
+.panel-close {
+  width:            18px;
+  height:           18px;
+  border-radius:    4px;
+  border:           none;
+  background:       none;
+  color:            var(--color-text-tertiary);
+  cursor:           pointer;
+  font-size:        14px;
+  display:          flex;
+  align-items:      center;
+  justify-content:  center;
+}
+.panel-close:hover {
+  background:       var(--color-surface-3);
+  color:            var(--color-text-primary);
+}
+.panel-section {
+  flex:             1;
+  overflow-y:       auto;
+  padding:          8px;
+}
+
+/* Tag items inside right panel */
+#tag-list .tag-item {
+  display:          flex;
+  align-items:      center;
+  justify-content:  space-between;
+  padding:          5px 8px;
+  border-radius:    6px;
+  font-size:        12px;
+  color:            var(--color-accent-text);
+  cursor:           pointer;
+}
+#tag-list .tag-item:hover { background: var(--color-surface-3); }
+.tag-fm {
+  font-size:        9px;
+  padding:          1px 4px;
+  border-radius:    3px;
+  background:       var(--color-surface-2);
+  color:            var(--color-text-tertiary);
+  border:           1px solid var(--color-border-subtle);
+}
+
+/* Workspace layout — flex row with icon rail */
+#workspace {
+  display:          flex;
+  flex:             1;
+  overflow:         hidden;
+  min-height:       0;
+}

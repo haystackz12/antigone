@@ -16,6 +16,7 @@ const toc        = require('./toc.js');
 const preview    = require('./preview.js');
 const tabs       = require('./tabs.js');
 const prefsUi    = require('./prefs-ui.js');
+const iconRail   = require('./icon-rail.js');
 const preprocessor = require('./preprocessor.js');
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -47,6 +48,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     getCurrentPath: require('./editor.js').getCurrentPath,
   });
   preprocessor.init();
+  iconRail.configure({ toggleFocusMode: focus.toggle });
+  iconRail.init();
 
   // Always launch to empty state (DEC-023 — session restore is opt-in, not default)
   window.api.setPrefs({ session: null });

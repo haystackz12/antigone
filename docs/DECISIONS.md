@@ -98,6 +98,11 @@
 **Why:** Standard desktop app behavior. Without this, closing the window silently discards unsaved work, which is a data loss risk. The dialog is implemented via `win.on('close')` intercepting the close event and `dialog.showMessageBox` presenting the options.
 **Date:** 2026-03-30
 
+## DEC-028 — Option D toolbar: icon rail replaces sidebar
+**Decision:** 52px icon rail on left edge replaces the hamburger-toggled sidebar. Right panel opens from rail icons for Tags, TOC. Focus mode is a toggle on the rail (no panel). Titlebar cleaned up: view toggles left, title centered, formatting right.
+**Why:** The hamburger sidebar had UX issues (auto-open/close fighting, no visible toggle, unclear panel tabs). The icon rail provides persistent visual access to panels without taking space from the editor. Scales to TOC, file browser in Sprint 4-5 by adding rail icons.
+**Date:** 2026-03-31
+
 ## DEC-027 — Sidebar panels: only Tags active in v1.0
 **Decision:** Only the Tags panel is active in the sidebar for v1.0. Folder browser and TOC/Headers panels removed from sidebar HTML.
 **Why:** Folder browser requires a project/workspace concept that doesn't exist yet. TOC is functional as a feature but was moved to the sidebar section system which is now simplified to Tags-only. Both can be re-added in Sprint 4 when the sidebar panel system is properly designed.

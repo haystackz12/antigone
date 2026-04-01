@@ -78,50 +78,44 @@ function scanTags(text) {
   return tags;
 }
 
-// ─── Update sidebar ─────────────────────────────────────────────────────────
+// ─── Update tag panel ────────────────────────────────────────────────────────
 
 function updateSidebar(tags) {
-  const section = document.querySelector('.sidebar-section[data-section="tags"]');
-  if (!section) return;
+  const tagList = document.getElementById('tag-list');
+  if (!tagList) return;
 
-  const sidebar = document.getElementById('sidebar');
+  const { openTagsPanel, closeTagsPanel } = require('./icon-rail.js');
 
   if (tags.size === 0) {
-    section.innerHTML = '<p class="sidebar-empty">No tags yet</p>';
-    // Auto-collapse sidebar when no tags
-    if (sidebar) sidebar.dataset.collapsed = 'true';
+    tagList.innerHTML = '<p class="sidebar-empty">No tags yet</p>';
+    closeTagsPanel();
     return;
   }
 
-  // Expand sidebar when tags are found
-  if (sidebar) sidebar.dataset.collapsed = 'false';
-
-  const list = document.createElement('ul');
-  list.className = 'tag-list';
-
   const sorted = [...tags.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  tagList.innerHTML = '';
 
   for (const [tag, offsets] of sorted) {
-    const li = document.createElement('li');
-    li.className = 'tag-item';
-
-    const btn = document.createElement('button');
-    btn.className = 'tag-btn';
-    btn.textContent = `#${tag}`;
+    const item = document.createElement('div');
+    item.className = 'tag-item';
+    item.dataset.tag = tag;
 
     const inlineCount = offsets.filter(o => o >= 0).length;
     const hasFrontmatter = offsets.includes(-1);
-    const label = hasFrontmatter ? `${inlineCount} inline + frontmatter` : `${inlineCount} occurrence${inlineCount !== 1 ? 's' : ''}`;
-    btn.title = label;
 
-    const count = document.createElement('span');
-    count.className = 'tag-count';
-    count.textContent = hasFrontmatter ? `${inlineCount}+fm` : String(inlineCount);
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = `#${tag}`;
+    item.appendChild(nameSpan);
 
-    btn.appendChild(count);
+    if (hasFrontmatter) {
+      const fmBadge = document.createElement('span');
+      fmBadge.className = 'tag-fm';
+      fmBadge.textContent = 'fm';
+      item.appendChild(fmBadge);
+    }
 
     // Click to jump to first inline occurrence
-    btn.addEventListener('click', () => {
+    item.addEventListener('click', () => {
       const view = getView();
       if (!view) return;
       const firstInline = offsets.find(o => o >= 0);
@@ -131,17 +125,15 @@ function updateSidebar(tags) {
     });
 
     // Right-click to rename
-    btn.addEventListener('contextmenu', (e) => {
+    item.addEventListener('contextmenu', (e) => {
       e.preventDefault();
       renameTag(tag);
     });
 
-    li.appendChild(btn);
-    list.appendChild(li);
+    tagList.appendChild(item);
   }
 
-  section.innerHTML = '';
-  section.appendChild(list);
+  openTagsPanel();
 }
 
 // ─── Tag rename ─────────────────────────────────────────────────────────────
@@ -200,33 +192,9 @@ function renameTag(oldTag) {
   };
 }
 
-// ─── Sidebar collapse button ─────────────────────────────────────────────────
-
-function setupSidebarButtons() {
-  // Close button inside sidebar
-  const closeBtn = document.getElementById('btn-sidebar-collapse');
-  if (closeBtn) {
-    closeBtn.addEventListener('click', () => {
-      const sidebar = document.getElementById('sidebar');
-      if (sidebar) sidebar.dataset.collapsed = 'true';
-    });
-  }
-  // Toggle button in toolbar
-  const toggleBtn = document.getElementById('btn-sidebar-toggle');
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-      const sidebar = document.getElementById('sidebar');
-      if (!sidebar) return;
-      sidebar.dataset.collapsed = sidebar.dataset.collapsed === 'true' ? 'false' : 'true';
-    });
-  }
-}
-
 // ─── Init ────────────────────────────────────────────────────────────────────
 
 function init() {
-  setupSidebarButtons();
-
   window.addEventListener('editor:change', (e) => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
