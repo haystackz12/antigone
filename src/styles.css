@@ -1015,7 +1015,7 @@ kbd {
   border-left:      1px solid var(--color-border-subtle);
   overflow-y:       auto;
   overflow-x:       hidden;
-  padding:          0;
+  padding:          0 16px;           /* minimum horizontal padding */
   position:         relative;
   flex:             1;
   min-width:        0;

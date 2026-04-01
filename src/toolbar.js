@@ -20,20 +20,35 @@ function wrapSelection(marker) {
   if (!view) return false;
   const state = view.state;
   const docLen = state.doc.length;
-  // Clamp selection to valid document range
+  const mLen = marker.length;
   const from = Math.max(0, Math.min(state.selection.main.from, docLen));
   const to   = Math.max(0, Math.min(state.selection.main.to, docLen));
   const selected = state.sliceDoc(from, to);
 
-  if (selected.startsWith(marker) && selected.endsWith(marker) && selected.length >= marker.length * 2) {
+  // Check if markers are just OUTSIDE the selection (cursor between markers)
+  const beforeMarker = state.sliceDoc(Math.max(0, from - mLen), from);
+  const afterMarker  = state.sliceDoc(to, Math.min(docLen, to + mLen));
+
+  if (beforeMarker === marker && afterMarker === marker) {
+    // Remove markers outside the selection
     view.dispatch({
-      changes: { from, to, insert: selected.slice(marker.length, -marker.length) },
-      selection: { anchor: from, head: from + selected.length - marker.length * 2 },
+      changes: [
+        { from: to, to: to + mLen, insert: '' },
+        { from: from - mLen, to: from, insert: '' },
+      ],
+      selection: { anchor: from - mLen, head: to - mLen },
+    });
+  } else if (selected.startsWith(marker) && selected.endsWith(marker) && selected.length >= mLen * 2) {
+    // Remove markers inside the selection
+    view.dispatch({
+      changes: { from, to, insert: selected.slice(mLen, -mLen) },
+      selection: { anchor: from, head: from + selected.length - mLen * 2 },
     });
   } else {
+    // Add markers around selection (preserving any existing formatting)
     view.dispatch({
       changes: { from, to, insert: `${marker}${selected}${marker}` },
-      selection: { anchor: from + marker.length, head: to + marker.length },
+      selection: { anchor: from + mLen, head: to + mLen },
     });
   }
   view.focus();

@@ -6,6 +6,19 @@ None.
 
 ---
 
+## Resolved — Day 12 (batch 2)
+
+### BUG-044 — Preview pane no padding at narrow widths
+- **Resolved:** Added `padding: 0 16px` to `#preview-pane` so content never touches the pane edge, even when 72ch max-width fills the full width.
+
+### BUG-045 — Italic removes bold markers
+- **Resolved:** Rewrote `wrapSelection()` to preserve existing formatting. New logic: adds markers around the full selected text (including any existing markers) instead of replacing content. Bold then italic produces `***text***`, not `*text*`.
+
+### BUG-046 — Strikethrough accumulates instead of toggling
+- **Resolved:** `wrapSelection()` now checks for markers both inside AND outside the selection. If cursor is between markers (e.g., `~~|text|~~`), removes the outer markers. If selection includes markers, strips them. Only adds markers if neither case matches.
+
+---
+
 ## Resolved — Day 12
 
 ### BUG-043 — Bold/formatting buttons crash after switching from large file
