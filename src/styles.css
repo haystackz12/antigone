@@ -1840,6 +1840,90 @@ body.drag-over #editor-pane::after {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   §22B  FORMAT STRIP (Option C1)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#format-strip {
+  display:          flex;
+  align-items:      center;
+  height:           32px;
+  min-height:       32px;
+  padding:          0 10px;
+  gap:              6px;
+  border-bottom:    1px solid var(--color-border-subtle);
+  background:       var(--color-surface-1);
+  flex-shrink:      0;
+}
+.fmt-group {
+  display:          flex;
+  align-items:      center;
+  gap:              1px;
+  padding:          2px;
+  background:       var(--color-surface-0);
+  border:           1px solid var(--color-border-subtle);
+  border-radius:    6px;
+}
+.fmt-btn {
+  height:           22px;
+  min-width:        22px;
+  border-radius:    4px;
+  border:           none;
+  background:       none;
+  display:          flex;
+  align-items:      center;
+  justify-content:  center;
+  font-size:        11px;
+  color:            var(--color-text-tertiary);
+  cursor:           pointer;
+  padding:          0 5px;
+  font-family:      inherit;
+  transition:       background 0.1s, color 0.1s;
+  position:         relative;
+}
+.fmt-btn:hover {
+  background:       var(--color-surface-3);
+  color:            var(--color-text-primary);
+}
+.fmt-btn.fmt-active {
+  background:       var(--color-accent-subtle);
+  color:            var(--color-accent);
+}
+.fmt-btn mark {
+  background:       #fff176;
+  color:            #555;
+  border-radius:    2px;
+  padding:          0 2px;
+  font-size:        10px;
+  pointer-events:   none;
+}
+.dark .fmt-btn mark { background: #f9a825; color: #1a1a1a; }
+#btn-h1, #btn-h2, #btn-h3 {
+  font-size:        10px;
+  font-weight:      600;
+}
+#fmt-spacer { flex: 1; }
+.fmt-tags {
+  font-size:        11px;
+  display:          flex;
+  align-items:      center;
+  gap:              4px;
+  color:            var(--color-text-tertiary);
+  padding:          0 8px;
+  border-radius:    6px;
+  border:           1px solid var(--color-border-subtle);
+  background:       var(--color-surface-0);
+  height:           22px;
+}
+.fmt-badge {
+  font-size:        9px;
+  padding:          1px 4px;
+  border-radius:    3px;
+  background:       var(--color-surface-2);
+  color:            var(--color-text-tertiary);
+}
+.fmt-badge[hidden] { display: none; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
    §23  MARKDOWN PARITY — Task lists, highlights, callouts, etc.
    ═══════════════════════════════════════════════════════════════════════════ */
 

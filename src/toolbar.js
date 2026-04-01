@@ -222,6 +222,42 @@ function setupButtons() {
       });
     }
   });
+
+  // New format strip buttons
+  document.getElementById('btn-underline')?.addEventListener('click', () => {
+    const view = getView();
+    if (!view) return;
+    const { from, to } = view.state.selection.main;
+    const selected = view.state.sliceDoc(from, to);
+    view.dispatch({
+      changes: { from, to, insert: `<u>${selected}</u>` },
+      selection: { anchor: from + 3, head: from + 3 + selected.length },
+    });
+    view.focus();
+  });
+
+  document.getElementById('btn-highlight')?.addEventListener('click', () => wrapSelection('=='));
+
+  document.getElementById('btn-blockquote')?.addEventListener('click', () => {
+    const view = getView();
+    if (!view) return;
+    const line = view.state.doc.lineAt(view.state.selection.main.head);
+    const hasQuote = line.text.startsWith('> ');
+    view.dispatch({
+      changes: { from: line.from, to: line.from + (hasQuote ? 2 : 0), insert: hasQuote ? '' : '> ' },
+    });
+    view.focus();
+  });
+
+  document.getElementById('btn-tags-toggle')?.addEventListener('click', () => {
+    const { openTagsPanel, closeTagsPanel } = require('./icon-rail.js');
+    const tagsBtn = document.getElementById('rail-tags');
+    if (tagsBtn && tagsBtn.classList.contains('active')) {
+      closeTagsPanel();
+    } else {
+      openTagsPanel();
+    }
+  });
 }
 
 // ─── Keyboard shortcuts (global fallback for when CM6 doesn't have focus) ───

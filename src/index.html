@@ -52,21 +52,6 @@
     <div id="titlebar-center">Antigone</div>
 
     <div id="titlebar-right">
-      <button class="toolbar-btn" id="btn-bold" data-action="bold" data-tooltip="Bold (⌘B)" aria-label="Bold"><b>B</b></button>
-      <button class="toolbar-btn" id="btn-italic" data-action="italic" data-tooltip="Italic (⌘I)" aria-label="Italic"><i>I</i></button>
-      <button class="toolbar-btn" id="btn-strike" data-action="strike" data-tooltip="Strikethrough" aria-label="Strikethrough"><s>S</s></button>
-      <button class="toolbar-btn" id="btn-code" data-action="code" data-tooltip="Inline Code" aria-label="Inline code"><code>`</code></button>
-      <button class="toolbar-btn" id="btn-link" data-action="link" data-tooltip="Insert Link (⌘K)" aria-label="Insert link">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <path d="M6.5 9.5a3.5 3.5 0 0 0 4.95 0l1.5-1.5a3.5 3.5 0 0 0-4.95-4.95l-.88.88" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
-          <path d="M9.5 6.5a3.5 3.5 0 0 0-4.95 0L3.05 8a3.5 3.5 0 0 0 4.95 4.95l.88-.88" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
-        </svg>
-      </button>
-      <div class="tb-sep"></div>
-      <button class="toolbar-btn toolbar-btn--mono" data-action="h1" data-tooltip="Heading 1" aria-label="Heading 1">H1</button>
-      <button class="toolbar-btn toolbar-btn--mono" data-action="h2" data-tooltip="Heading 2" aria-label="Heading 2">H2</button>
-      <button class="toolbar-btn toolbar-btn--mono" data-action="h3" data-tooltip="Heading 3" aria-label="Heading 3">H3</button>
-      <div class="tb-sep"></div>
       <button class="toolbar-btn" id="btn-theme" data-tooltip="Toggle Theme" aria-label="Toggle theme">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" id="icon-theme-sun">
           <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.25"/>
@@ -86,6 +71,31 @@
         </svg>
       </div>
     </div>
+  </div>
+
+  <!-- ── Format strip ─────────────────────────────────────────────────────── -->
+  <div id="format-strip">
+    <div class="fmt-group">
+      <button id="btn-bold" class="fmt-btn tooltip-below" data-action="bold" data-tooltip="Bold (⌘B)" aria-label="Bold"><b>B</b></button>
+      <button id="btn-italic" class="fmt-btn tooltip-below" data-action="italic" data-tooltip="Italic (⌘I)" aria-label="Italic"><i>I</i></button>
+      <button id="btn-underline" class="fmt-btn tooltip-below" data-tooltip="Underline" aria-label="Underline"><u>U</u></button>
+      <button id="btn-strike" class="fmt-btn tooltip-below" data-action="strike" data-tooltip="Strikethrough" aria-label="Strikethrough"><s>S</s></button>
+      <button id="btn-highlight" class="fmt-btn tooltip-below" data-tooltip="Highlight (==)" aria-label="Highlight"><mark>H</mark></button>
+    </div>
+    <div class="fmt-group">
+      <button id="btn-code" class="fmt-btn tooltip-below" data-action="code" data-tooltip="Inline Code" aria-label="Inline code"><code>`</code></button>
+      <button id="btn-link" class="fmt-btn tooltip-below" data-action="link" data-tooltip="Insert Link (⌘K)" aria-label="Insert link">⎔</button>
+      <button id="btn-blockquote" class="fmt-btn tooltip-below" data-tooltip="Blockquote" aria-label="Blockquote">&gt;</button>
+    </div>
+    <div class="fmt-group">
+      <button id="btn-h1" class="fmt-btn tooltip-below" data-action="h1" data-tooltip="Heading 1" aria-label="Heading 1">H1</button>
+      <button id="btn-h2" class="fmt-btn tooltip-below" data-action="h2" data-tooltip="Heading 2" aria-label="Heading 2">H2</button>
+      <button id="btn-h3" class="fmt-btn tooltip-below" data-action="h3" data-tooltip="Heading 3" aria-label="Heading 3">H3</button>
+    </div>
+    <div id="fmt-spacer"></div>
+    <button id="btn-tags-toggle" class="fmt-btn fmt-tags tooltip-below" data-tooltip="Toggle Tags Panel" aria-label="Toggle tags">
+      Tags <span id="fmt-tag-count" class="fmt-badge" hidden>0</span>
+    </button>
   </div>
 
   <!-- ── Tab bar ──────────────────────────────────────────────────────────── -->

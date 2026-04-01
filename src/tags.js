@@ -89,6 +89,7 @@ function updateSidebar(tags) {
   if (tags.size === 0) {
     tagList.innerHTML = '<p class="sidebar-empty">No tags yet</p>';
     closeTagsPanel();
+    updateTagBadge(0);
     return;
   }
 
@@ -134,6 +135,17 @@ function updateSidebar(tags) {
   }
 
   openTagsPanel();
+  updateTagBadge(tags.size);
+}
+
+function updateTagBadge(count) {
+  const badge = document.getElementById('fmt-tag-count');
+  const btn = document.getElementById('btn-tags-toggle');
+  if (badge) {
+    if (count > 0) { badge.textContent = count; badge.hidden = false; }
+    else { badge.hidden = true; }
+  }
+  if (btn) btn.classList.toggle('fmt-active', count > 0);
 }
 
 // ─── Tag rename ─────────────────────────────────────────────────────────────

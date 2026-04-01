@@ -98,6 +98,11 @@
 **Why:** Standard desktop app behavior. Without this, closing the window silently discards unsaved work, which is a data loss risk. The dialog is implemented via `win.on('close')` intercepting the close event and `dialog.showMessageBox` presenting the options.
 **Date:** 2026-03-30
 
+## DEC-030 — Option C1 format strip
+**Decision:** Titlebar cleaned to view toggles + app name + theme/word-goal only. All formatting tools moved to a dedicated 32px format strip below the titlebar with three pill groups (text formatting, insert, headings) + Tags toggle. Active state tracking highlights the relevant button when cursor is inside formatted text.
+**Why:** Reduces titlebar crowding. Groups related tools visually. Active states give immediate feedback about the formatting at cursor position. Tags toggle provides quick access without needing the icon rail.
+**Date:** 2026-04-01
+
 ## DEC-029 — Markdown parity: footnotes, math, video deferred to Sprint 5
 **Decision:** Footnotes, math (KaTeX), and video/iframe embeds deferred to Sprint 5. All other Markdown features from Typora reference implemented pre-Day-13.
 **Why:** Footnotes require complex bidirectional link rendering. Math requires KaTeX (~300KB) loaded on demand. Video/iframe requires security review with sandbox:true. Task lists, highlights, callouts, emoji, superscript, subscript, TOC, auto-linking, reference links, and table alignment all implemented in this session.

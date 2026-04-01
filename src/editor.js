@@ -100,7 +100,10 @@ function buildExtensions() {
     vimCompartment.of([]),
     EditorView.updateListener.of(update => {
       if (update.docChanged) onDocChange(update.state.doc.toString());
-      if (update.selectionSet || update.docChanged) updateCursorPosition(update.state);
+      if (update.selectionSet || update.docChanged) {
+        updateCursorPosition(update.state);
+        updateFormatActiveStates(update.view);
+      }
     }),
   ];
 }
@@ -136,6 +139,34 @@ function updateCursorPosition(state) {
   const col = pos - line.from + 1;
   const el = document.getElementById('status-cursor');
   if (el) el.textContent = `Ln ${line.number}, Col ${col}`;
+}
+
+// ─── Format strip active state tracking ──────────────────────────────────────
+function updateFormatActiveStates(view) {
+  const state = view.state;
+  const { from } = state.selection.main;
+  const line = state.doc.lineAt(from);
+  const lineText = line.text;
+  const offset = from - line.from;
+
+  function hasMarkerAround(marker) {
+    const before = lineText.lastIndexOf(marker, offset - 1);
+    if (before === -1) return false;
+    const after = lineText.indexOf(marker, offset);
+    return after !== -1 && after > before;
+  }
+
+  const toggle = (id, active) => document.getElementById(id)?.classList.toggle('fmt-active', active);
+
+  toggle('btn-bold', hasMarkerAround('**'));
+  toggle('btn-italic', !hasMarkerAround('**') && hasMarkerAround('*'));
+  toggle('btn-strike', hasMarkerAround('~~'));
+  toggle('btn-highlight', hasMarkerAround('=='));
+  toggle('btn-code', hasMarkerAround('`'));
+  toggle('btn-h1', lineText.startsWith('# ') && !lineText.startsWith('## '));
+  toggle('btn-h2', lineText.startsWith('## ') && !lineText.startsWith('### '));
+  toggle('btn-h3', lineText.startsWith('### '));
+  toggle('btn-blockquote', lineText.startsWith('> '));
 }
 
 // ─── Mount ────────────────────────────────────────────────────────────────────
