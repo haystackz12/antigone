@@ -69,6 +69,35 @@ marked.setOptions({
   breaks: true,  // Single \n → <br> (DEC-026: matches writing app expectations)
 });
 
+// ─── Post-process inline Markdown that custom renderer didn't handle ─────────
+
+function postProcessInline(html) {
+  // Protect existing <a> tags from regex mangling
+  const preserved = [];
+  let safe = html.replace(/<a\b[^>]*>[\s\S]*?<\/a>/gi, (match) => {
+    preserved.push(match);
+    return `\x00A${preserved.length - 1}\x00`;
+  });
+
+  // Convert raw Markdown links [text](url) → <a> tags
+  safe = safe.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+  );
+
+  // Apply bold/italic/strikethrough/code
+  safe = safe
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/~~(.+?)~~/g, '<del>$1</del>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  // Restore preserved <a> tags
+  safe = safe.replace(/\x00A(\d+)\x00/g, (_, i) => preserved[parseInt(i)]);
+
+  return safe;
+}
+
 // ─── Strip YAML frontmatter ──────────────────────────────────────────────────
 
 function stripFrontmatter(markdown) {
@@ -99,18 +128,14 @@ function render(markdownText) {
 
   const rawHtml = marked.parse(processed, { renderer });
 
-  // Post-process: catch any raw Markdown inline syntax that the custom
+  // Post-process: catch raw Markdown inline syntax that the custom
   // renderer passed through without rendering (heading/paragraph overrides
   // use token.text which may contain unprocessed inline markup)
-  const postProcessed = rawHtml
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/~~(.+?)~~/g, '<del>$1</del>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>');
+  const postProcessed = postProcessInline(rawHtml);
 
   const cleanHtml = DOMPurify.sanitize(postProcessed, {
     USE_PROFILES: { html: true },
-    ADD_ATTR: ['target', 'data-line'],
+    ADD_ATTR: ['target', 'rel', 'data-line'],
     ADD_TAGS: ['div'],
   });
   el.innerHTML = cleanHtml;

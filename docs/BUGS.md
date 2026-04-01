@@ -6,6 +6,13 @@ None.
 
 ---
 
+## Resolved — Day 11 (batch 7)
+
+### BUG-040 — Markdown links not rendering as hyperlinks in preview
+- **Resolved:** Custom renderer.paragraph() uses token.text which contains raw `[text](url)` syntax — never converted to `<a>` tags. Added `postProcessInline()` function that: (1) preserves existing `<a>` tags via placeholder substitution, (2) converts raw `[text](url)` to `<a href target=_blank rel=noopener>` tags, (3) applies bold/italic/code replacements, (4) restores preserved tags. Added `rel` to DOMPurify ADD_ATTR.
+
+---
+
 ## Resolved — Day 11 (batch 6)
 
 ### BUG-038 — Right panel doesn't open from split view on first click
