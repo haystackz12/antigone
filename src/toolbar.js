@@ -15,78 +15,72 @@ function configure(opts) {
 
 // ─── Wrap/unwrap selection with symmetric markers ────────────────────────────
 
-// Count how many times a character repeats at the start/end of text
-function countLeading(text, ch) {
-  let n = 0;
-  while (n < text.length && text[n] === ch) n++;
-  return n;
-}
-function countTrailing(text, ch) {
-  let n = 0;
-  while (n < text.length && text[text.length - 1 - n] === ch) n++;
-  return n;
-}
-
-// Check if text is wrapped with this marker (exact level)
-// *hello* → wrapped with * (1 leading, 1 trailing)
-// **hello** → wrapped with ** (2 leading, 2 trailing), NOT with *
-// ***hello*** → wrapped with both * AND ** (3 leading = 1+2 or 2+1)
-function isWrappedExact(text, marker) {
-  const mLen = marker.length;
-  if (text.length < mLen * 2) return false;
-  if (!text.startsWith(marker) || !text.endsWith(marker)) return false;
-  // For single-char markers like * or ~, check exact count
-  if (marker.length === 1) {
-    const leading = countLeading(text, marker[0]);
-    const trailing = countTrailing(text, marker[0]);
-    // Only match if leading count equals exactly marker length
-    // (not more, which would mean a different/combined marker)
-    return leading === mLen && trailing === mLen;
-  }
-  return true;
-}
+// ─── Wrap/unwrap: stack-based toggle ─────────────────────────────────────────
+// Checks if marker exists at selection boundary (inside or outside).
+// If found → remove it. If not found → add it.
+// This allows bold+italic stacking: **hello** + I → ***hello***,
+// ***hello*** + I → **hello** (removes one * layer).
 
 function wrapSelection(marker) {
   const view = getView();
   if (!view) return false;
   const state = view.state;
   const docLen = state.doc.length;
-  const mLen = marker.length;
+  const bLen = marker.length;
   const from = Math.max(0, Math.min(state.selection.main.from, docLen));
   const to   = Math.max(0, Math.min(state.selection.main.to, docLen));
   const selected = state.sliceDoc(from, to);
 
-  // Check if markers are just OUTSIDE the selection (cursor between markers)
-  const beforeMarker = state.sliceDoc(Math.max(0, from - mLen), from);
-  const afterMarker  = state.sliceDoc(to, Math.min(docLen, to + mLen));
-  // For single-char markers, verify exact count outside selection
-  const mChar = marker[0];
-  const charBefore = from > mLen ? state.sliceDoc(from - mLen - 1, from - mLen) : '';
-  const charAfter = to + mLen < docLen ? state.sliceDoc(to + mLen, to + mLen + 1) : '';
-  const exactOutside = mLen > 1 || (charBefore !== mChar && charAfter !== mChar);
+  // Check outside selection boundary
+  const outerBefore = state.sliceDoc(Math.max(0, from - bLen), from);
+  const outerAfter  = state.sliceDoc(to, Math.min(docLen, to + bLen));
 
-  if (beforeMarker === marker && afterMarker === marker && exactOutside) {
-    // Remove markers outside the selection (exact match)
+  if (outerBefore === marker && outerAfter === marker) {
+    // Remove markers outside selection
     view.dispatch({
       changes: [
-        { from: to, to: to + mLen, insert: '' },
-        { from: from - mLen, to: from, insert: '' },
+        { from: to, to: to + bLen, insert: '' },
+        { from: from - bLen, to: from, insert: '' },
       ],
-      selection: { anchor: from - mLen, head: to - mLen },
+      selection: { anchor: from - bLen, head: to - bLen },
     });
-  } else if (isWrappedExact(selected, marker)) {
-    // Remove markers inside the selection (exact match)
-    view.dispatch({
-      changes: { from, to, insert: selected.slice(mLen, -mLen) },
-      selection: { anchor: from, head: from + selected.length - mLen * 2 },
-    });
-  } else {
-    // Add markers around selection (preserving any existing formatting)
-    view.dispatch({
-      changes: { from, to, insert: `${marker}${selected}${marker}` },
-      selection: { anchor: from + mLen, head: to + mLen },
-    });
+    view.focus();
+    return true;
   }
+
+  // Check inside selection boundary — strip one marker layer from each end
+  const innerBefore = selected.slice(0, bLen);
+  const innerAfter  = selected.slice(-bLen);
+  let innerMatch = innerBefore === marker && innerAfter === marker && selected.length >= bLen * 2;
+
+  // For multi-char markers like ** or ~~: simple startsWith/endsWith is correct.
+  // For single-char markers like *: check parity of leading chars.
+  // **hello** has 2 leading * → even → this is bold only, * should NOT match.
+  // ***hello*** has 3 leading * → odd → this is bold+italic, * SHOULD match.
+  // *hello* has 1 leading * → odd → this is italic only, * SHOULD match.
+  if (innerMatch && bLen === 1) {
+    let leadCount = 0;
+    while (leadCount < selected.length && selected[leadCount] === marker[0]) leadCount++;
+    // Only match if there's an odd number of the marker char
+    // (meaning a single * layer exists on top of any ** layers)
+    if (leadCount % 2 === 0) innerMatch = false;
+  }
+
+  if (innerMatch) {
+    // Remove markers inside selection
+    view.dispatch({
+      changes: { from, to, insert: selected.slice(bLen, selected.length - bLen) },
+      selection: { anchor: from, head: to - bLen * 2 },
+    });
+    view.focus();
+    return true;
+  }
+
+  // Marker not present — add it
+  view.dispatch({
+    changes: { from, to, insert: `${marker}${selected}${marker}` },
+    selection: { anchor: from + bLen, head: from + bLen + selected.length },
+  });
   view.focus();
   return true;
 }
