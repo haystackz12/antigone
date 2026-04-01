@@ -15,6 +15,9 @@ function init() {
   const rightPanel = document.getElementById('right-panel');
   const panelSections = document.querySelectorAll('.panel-section');
 
+  // Ensure panel is hidden on init
+  if (rightPanel) rightPanel.hidden = true;
+
   function activateRailBtn(btn) {
     const panelId = btn.dataset.panel;
 

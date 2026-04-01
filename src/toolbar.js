@@ -178,21 +178,23 @@ function setupKeyboardShortcuts() {
 // ─── View mode toggles ──────────────────────────────────────────────────────
 
 function setViewMode(mode) {
+  const workspace = document.getElementById('workspace');
   const editor  = document.getElementById('editor-pane');
   const preview = document.getElementById('preview-pane');
   const resizer = document.getElementById('split-resize');
 
   if (mode === 'editor') {
-    if (editor)  editor.style.display = '';
+    if (editor)  { editor.style.display = ''; editor.style.flex = '1'; editor.style.width = ''; }
     if (preview) preview.style.display = 'none';
     if (resizer) resizer.style.display = 'none';
   } else if (mode === 'preview') {
     if (editor)  editor.style.display = 'none';
-    if (preview) preview.style.display = '';
+    if (preview) { preview.style.display = ''; preview.style.flex = '1'; preview.style.width = ''; }
     if (resizer) resizer.style.display = 'none';
   } else {
-    if (editor)  editor.style.display = '';
-    if (preview) preview.style.display = '';
+    // Split — reset to flex:1 for 50/50
+    if (editor)  { editor.style.display = ''; editor.style.flex = '1'; editor.style.width = ''; }
+    if (preview) { preview.style.display = ''; preview.style.flex = '1'; preview.style.width = ''; }
     if (resizer) resizer.style.display = '';
   }
 
@@ -212,6 +214,57 @@ function setupViewToggles() {
   });
 }
 
+// ─── Split pane resizer ──────────────────────────────────────────────────────
+
+function setupResizer() {
+  const resizer = document.getElementById('split-resize');
+  const editorPane = document.getElementById('editor-pane');
+  const previewPane = document.getElementById('preview-pane');
+  if (!resizer || !editorPane || !previewPane) return;
+
+  let isResizing = false;
+
+  resizer.addEventListener('mousedown', (e) => {
+    isResizing = true;
+    resizer.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isResizing) return;
+    const workspace = document.getElementById('workspace');
+    const rect = workspace.getBoundingClientRect();
+    const iconRailWidth = 52;
+    const rightPanel = document.getElementById('right-panel');
+    const rpWidth = (rightPanel && !rightPanel.hidden) ? 220 : 0;
+    const available = rect.width - iconRailWidth - rpWidth - 5;
+    const offset = e.clientX - rect.left - iconRailWidth;
+    const editorW = Math.max(200, Math.min(available - 200, offset));
+    const previewW = available - editorW;
+    editorPane.style.flex = 'none';
+    editorPane.style.width = editorW + 'px';
+    previewPane.style.flex = 'none';
+    previewPane.style.width = previewW + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!isResizing) return;
+    isResizing = false;
+    resizer.classList.remove('dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
+
+  resizer.addEventListener('dblclick', () => {
+    editorPane.style.flex = '1';
+    editorPane.style.width = '';
+    previewPane.style.flex = '1';
+    previewPane.style.width = '';
+  });
+}
+
 // ─── Init ────────────────────────────────────────────────────────────────────
 
 function init() {
@@ -219,6 +272,7 @@ function init() {
   setupKeyboardShortcuts();
   setupImagePaste();
   setupViewToggles();
+  setupResizer();
 }
 
 module.exports = { configure, init, setViewMode, wrapSelection, toggleHeadingPrefix, insertLink };

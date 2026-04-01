@@ -6,6 +6,22 @@ None.
 
 ---
 
+## Resolved — Day 11 (batch 4)
+
+### BUG-033 — Blank space on right in editor/preview-only modes
+- **Resolved:** Right panel `[hidden]` now has `display:none !important; width:0; min-width:0`. Panel hidden on init.
+
+### BUG-034 — Split view not 50/50
+- **Resolved:** Both panes get `flex:1; min-width:0`. setViewMode resets flex/width on mode switch.
+
+### BUG-035 — Rail button tooltips in wrong position
+- **Resolved:** Added `.rail-btn[data-tooltip]::after` with `left:calc(100%+8px); top:50%; transform:translateY(-50%)` — tooltips appear to the right.
+
+### BUG-036 — Split pane divider not draggable
+- **Resolved:** Added `setupResizer()` in toolbar.js — mousedown/mousemove/mouseup handlers for drag resize. Double-click resets to 50/50.
+
+---
+
 ## Resolved — Day 11 (batch 3)
 
 ### BUG-031 — Tags not detected when frontmatter is not at line 1

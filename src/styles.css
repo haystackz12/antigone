@@ -1786,3 +1786,61 @@ body.drag-over #editor-pane::after {
   overflow:         hidden;
   min-height:       0;
 }
+
+/* Right panel hidden — fully removed from layout */
+#right-panel[hidden] {
+  display:          none !important;
+  width:            0 !important;
+  min-width:        0 !important;
+}
+
+/* Editor and preview panes flex equally in split */
+#editor-pane {
+  flex:             1;
+  min-width:        0;
+}
+#preview-pane {
+  flex:             1;
+  min-width:        0;
+}
+
+/* Split resize handle */
+#split-resize {
+  width:            5px;
+  min-width:        5px;
+  cursor:           col-resize;
+  background:       transparent;
+  flex-shrink:      0;
+  position:         relative;
+  transition:       background 0.15s;
+}
+#split-resize:hover,
+#split-resize.dragging {
+  background:       var(--color-accent);
+}
+
+/* Rail button tooltips — appear to the RIGHT */
+.rail-btn {
+  position:         relative;
+}
+.rail-btn[data-tooltip]::after {
+  content:          attr(data-tooltip);
+  position:         absolute;
+  left:             calc(100% + 8px);
+  top:              50%;
+  transform:        translateY(-50%);
+  background:       var(--color-tooltip-bg, #1a1a1a);
+  color:            var(--color-tooltip-text, #fff);
+  font-size:        11px;
+  font-family:      var(--font-ui, system-ui);
+  white-space:      nowrap;
+  padding:          4px 8px;
+  border-radius:    4px;
+  pointer-events:   none;
+  opacity:          0;
+  transition:       opacity 0.15s ease;
+  z-index:          1000;
+}
+.rail-btn[data-tooltip]:hover::after {
+  opacity:          1;
+}
