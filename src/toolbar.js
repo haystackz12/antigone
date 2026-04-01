@@ -18,17 +18,19 @@ function configure(opts) {
 function wrapSelection(marker) {
   const view = getView();
   if (!view) return false;
-  const { from, to } = view.state.selection.main;
-  const selected = view.state.sliceDoc(from, to);
+  const state = view.state;
+  const docLen = state.doc.length;
+  // Clamp selection to valid document range
+  const from = Math.max(0, Math.min(state.selection.main.from, docLen));
+  const to   = Math.max(0, Math.min(state.selection.main.to, docLen));
+  const selected = state.sliceDoc(from, to);
 
   if (selected.startsWith(marker) && selected.endsWith(marker) && selected.length >= marker.length * 2) {
-    // Unwrap
     view.dispatch({
       changes: { from, to, insert: selected.slice(marker.length, -marker.length) },
       selection: { anchor: from, head: from + selected.length - marker.length * 2 },
     });
   } else {
-    // Wrap
     view.dispatch({
       changes: { from, to, insert: `${marker}${selected}${marker}` },
       selection: { anchor: from + marker.length, head: to + marker.length },
@@ -43,7 +45,8 @@ function wrapSelection(marker) {
 function toggleHeadingPrefix(level) {
   const view = getView();
   if (!view) return false;
-  const { head } = view.state.selection.main;
+  const docLen = view.state.doc.length;
+  const head = Math.max(0, Math.min(view.state.selection.main.head, docLen));
   const line = view.state.doc.lineAt(head);
   const prefix = '#'.repeat(level) + ' ';
   const lineText = line.text;

@@ -148,7 +148,10 @@ function mount(container) {
 // ─── Load content ─────────────────────────────────────────────────────────────
 function loadContent(content, filePath) {
   if (!view) return;
-  view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: content } });
+  view.dispatch({
+    changes: { from: 0, to: view.state.doc.length, insert: content },
+    selection: { anchor: 0, head: 0 },
+  });
   currentFilePath = filePath;
   isDirty = false;
   updateTabBar(fileNameFromPath(filePath), false);

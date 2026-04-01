@@ -6,6 +6,13 @@ None.
 
 ---
 
+## Resolved — Day 12
+
+### BUG-043 — Bold/formatting buttons crash after switching from large file
+- **Resolved:** `wrapSelection()` used stale selection range from previous large file. After loading a new (shorter) document, the selection pointed past the end of the new document. Fixed: (1) `loadContent()` now resets selection to `{anchor:0, head:0}` as part of the dispatch. (2) `wrapSelection()` and `toggleHeadingPrefix()` clamp from/to/head to `[0, doc.length]` before using.
+
+---
+
 ## Resolved — Day 11 (batch 8)
 
 ### BUG-041 — Clicking links in preview does nothing
