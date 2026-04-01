@@ -26,8 +26,10 @@ const tabs                                   = require('./tabs.js');
 let view            = null;
 let currentFilePath = null;
 let isDirty         = false;
-const themeCompartment = new Compartment();
-const vimCompartment   = new Compartment();
+const themeCompartment  = new Compartment();
+const vimCompartment    = new Compartment();
+const inlineCompartment = new Compartment();
+const LARGE_FILE_CHARS  = 150000;
 
 // ─── Base editor theme (layout + typography, always applied in both themes) ──
 const baseEditorTheme = EditorView.theme({
@@ -92,7 +94,7 @@ function buildExtensions() {
     ]),
     highlightSelectionMatches(),
     autocompletion({ override: [tagCompletion] }),
-    inlineRenderPlugin,
+    inlineCompartment.of(inlineRenderPlugin),
     baseEditorTheme,
     themeCompartment.of(isDarkMode() ? oneDark : githubLightTheme),
     vimCompartment.of([]),
@@ -153,6 +155,18 @@ function loadContent(content, filePath) {
   editorSave.updateSaveStatus(false);
   updateWordCount(content);
   setEmptyState(false);
+
+  // Large file handling: disable inline rendering for performance
+  const isLarge = content.length > LARGE_FILE_CHARS;
+  const banner = document.getElementById('large-file-banner');
+  if (isLarge) {
+    view.dispatch({ effects: inlineCompartment.reconfigure([]) });
+    if (banner) banner.hidden = false;
+  } else {
+    view.dispatch({ effects: inlineCompartment.reconfigure(inlineRenderPlugin) });
+    if (banner) banner.hidden = true;
+  }
+
   view.focus();
 }
 

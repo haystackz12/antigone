@@ -1349,6 +1349,16 @@ body.drag-over #editor-pane::after {
    §21  RECOVERY BANNER
    ═══════════════════════════════════════════════════════════════════════════ */
 
+#large-file-banner {
+  padding: 6px 16px;
+  background: var(--color-surface-2);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  flex-shrink: 0;
+}
+#large-file-banner[hidden] { display: none; }
+
 #recovery-banner {
   position: fixed;
   top: var(--titlebar-height, 38px);
