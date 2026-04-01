@@ -296,12 +296,13 @@ function setViewMode(mode) {
   }
 
   document.documentElement.dataset.panel = mode;
-  const buttons = document.querySelectorAll('#toolbar-view-toggles .toolbar-btn');
-  buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === mode)));
+  document.querySelectorAll('[data-view]').forEach(b =>
+    b.setAttribute('aria-pressed', String(b.dataset.view === mode))
+  );
 }
 
 function setupViewToggles() {
-  document.querySelectorAll('#toolbar-view-toggles .toolbar-btn').forEach(btn => {
+  document.querySelectorAll('[data-view]').forEach(btn => {
     btn.addEventListener('click', () => {
       const mode = btn.dataset.view;
       if (!mode) return;

@@ -6,6 +6,19 @@ None.
 
 ---
 
+## Resolved — Day 12 (batch 3)
+
+### BUG-047 — View toggle buttons not working in format strip
+- **Resolved:** `setupViewToggles()` queried `#toolbar-view-toggles .toolbar-btn` but buttons were changed to class `fmt-btn` when moved to format strip. Changed both queries to `[data-view]` which matches regardless of class name.
+
+### BUG-048 — View toggle tooltips removed
+- **Resolved:** Removed `data-tooltip` attributes from the 3 view toggle buttons.
+
+### BUG-049 — Theme picker has no effect
+- **Resolved:** Theme CSS files in `src/themes/` were not served by webpack. Installed `copy-webpack-plugin` and configured it to copy `src/themes/` to the renderer output directory. Theme CSS files now accessible at `themes/[name].css` relative to the page URL.
+
+---
+
 ## Resolved — Day 12 (batch 2)
 
 ### BUG-044 — Preview pane no padding at narrow widths
