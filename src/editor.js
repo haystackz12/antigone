@@ -97,7 +97,7 @@ function buildExtensions() {
     autocompletion({ override: [tagCompletion] }),
     inlineCompartment.of(inlineRenderPlugin),
     baseEditorTheme,
-    themeCompartment.of(isDarkMode() ? oneDark : githubLightTheme),
+    themeCompartment.of(githubLightTheme),
     vimCompartment.of([]),
     EditorView.updateListener.of(update => {
       if (update.docChanged) onDocChange(update.state.doc.toString());

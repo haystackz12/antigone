@@ -33,8 +33,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   initEditor();
   await loadEditorTheme();
-  // Sync CM6 theme compartment immediately after loadEditorTheme sets dark class
-  applyEditorTheme(document.documentElement.classList.contains('dark'));
+  // Sync CM6 theme compartment after editor is fully mounted
+  requestAnimationFrame(() => {
+    applyEditorTheme(document.documentElement.classList.contains('dark'));
+  });
   editorSave.initFromPrefs(prefs);
   focus.init();
   wordgoal.init();
