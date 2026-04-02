@@ -2132,6 +2132,76 @@ body.drag-over #editor-pane::after {
   border-right-color: var(--color-border) !important;
 }
 
+/* ── Dark mode comprehensive overrides ──────────────────────────────────────── */
+
+/* Editor text */
+html.dark .cm-content,
+html.dark .cm-line {
+  color: var(--color-text, #e0e0e0) !important;
+}
+
+/* Bold text */
+html.dark .cm-content strong,
+html.dark .cm-line strong,
+html.dark strong {
+  color: var(--color-text, #e0e0e0) !important;
+  font-weight: 700;
+}
+
+/* Preview headings */
+html.dark #preview-content h1,
+html.dark #preview-content h2,
+html.dark #preview-content h3,
+html.dark #preview-content h4,
+html.dark #preview-content h5,
+html.dark #preview-content h6 {
+  color: #ffffff !important;
+}
+
+/* Preview links */
+html.dark #preview-content a {
+  color: #7eb8f7 !important;
+}
+
+/* Tables */
+html.dark #preview-content table {
+  border-color: var(--color-border, #333) !important;
+}
+html.dark #preview-content th {
+  background: var(--color-bg-secondary, #1a1a1a) !important;
+  color: var(--color-text, #e0e0e0) !important;
+  border-color: var(--color-border, #333) !important;
+}
+html.dark #preview-content td {
+  background: var(--color-bg-primary, #0d0d0d) !important;
+  color: var(--color-text, #e0e0e0) !important;
+  border-color: var(--color-border, #333) !important;
+}
+html.dark #preview-content tr:nth-child(even) td {
+  background: var(--color-bg-secondary, #141414) !important;
+}
+
+/* Code blocks */
+html.dark #preview-content code {
+  background: var(--color-bg-secondary, #1a1a1a) !important;
+  color: #a8d8a8 !important;
+}
+html.dark #preview-content pre {
+  background: var(--color-bg-secondary, #1a1a1a) !important;
+}
+html.dark #preview-content pre code {
+  color: #a8d8a8 !important;
+}
+
+/* Inline code */
+html.dark #preview-content p code,
+html.dark #preview-content li code {
+  background: rgba(255,255,255,0.1) !important;
+  color: #e0e0e0 !important;
+  border-radius: 3px;
+  padding: 1px 4px;
+}
+
 /* Cursor */
 .cm-cursor {
   border-left-color: var(--color-text) !important;

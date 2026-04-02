@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const isDark = document.documentElement.classList.contains('dark');
       document.documentElement.classList.toggle('dark', !isDark);
       applyEditorTheme(!isDark); // Switch CM6 theme compartment
-      await window.api.setPrefs({ darkMode: !isDark });
+      await window.api.setPrefs({ darkMode: !isDark, themeSetByUser: true });
     });
   }
 
