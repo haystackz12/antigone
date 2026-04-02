@@ -249,15 +249,6 @@ function setupButtons() {
     view.focus();
   });
 
-  document.getElementById('btn-tags-toggle')?.addEventListener('click', () => {
-    const { openTagsPanel, closeTagsPanel } = require('./icon-rail.js');
-    const tagsBtn = document.getElementById('rail-tags');
-    if (tagsBtn && tagsBtn.classList.contains('active')) {
-      closeTagsPanel();
-    } else {
-      openTagsPanel();
-    }
-  });
 }
 
 // ─── Keyboard shortcuts (global fallback for when CM6 doesn't have focus) ───

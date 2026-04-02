@@ -441,32 +441,7 @@ body {
   top:              calc(100% + 8px);
 }
 
-/* Word goal ring */
-#word-goal-ring {
-  width:            28px;
-  height:           28px;
-  display:          flex;
-  align-items:      center;
-  justify-content:  center;
-  cursor:           pointer;
-  -webkit-app-region: no-drag;
-}
-
-.goal-track {
-  stroke:           var(--color-border);
-  stroke-width:     2;
-}
-
-.goal-progress {
-  stroke:           var(--color-accent);
-  stroke-width:     2;
-  stroke-linecap:   round;
-  stroke-dasharray: 50.27;           /* 2π × r=8 */
-  stroke-dashoffset: 50.27;          /* starts empty; wordgoal.js animates this */
-  transform:        rotate(-90deg);
-  transform-origin: center;
-  transition:       stroke-dashoffset 400ms ease;
-}
+/* Word goal ring removed for v1.0 */
 
 /* ═══════════════════════════════════════════════════════════════════════════
    §7  TAB BAR
@@ -1347,7 +1322,6 @@ body.drag-over #editor-pane::after {
     animation-duration:   0.01ms !important;
     transition-duration:  0.01ms !important;
   }
-  .goal-progress { transition: none; }
 }
 /* ── Day 2 additions to styles.css ─────────────────────────────────────────
    Append these rules at the bottom of your existing styles.css.
@@ -1439,38 +1413,6 @@ body.drag-over #editor-pane::after {
 }
 
 /* ── Word goal inline input ─────────────────────────────────────────────── */
-
-#goal-input-overlay {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: var(--color-surface-1, #f0ede8);
-  border: 1px solid var(--color-border, #d5d1c8);
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-#goal-input-overlay input {
-  width: 80px;
-  padding: 2px 6px;
-  border: 1px solid var(--color-border, #d5d1c8);
-  border-radius: 3px;
-  background: var(--color-surface-0, #faf9f7);
-  color: var(--color-text-primary, #1f1d18);
-  font-size: 12px;
-}
-#goal-input-overlay button {
-  padding: 2px 8px;
-  border: 1px solid var(--color-border, #d5d1c8);
-  border-radius: 3px;
-  background: var(--color-surface-2, #e8e4dd);
-  color: var(--color-text-secondary, #4a4740);
-  cursor: pointer;
-  font-size: 12px;
-}
-#goal-input-overlay button:hover {
-  background: var(--color-surface-3, #dedbd3);
-}
 
 /* ── Tag sidebar ────────────────────────────────────────────────────────── */
 

@@ -55,6 +55,42 @@ const THEME_CSS = {
       --selection-bg: rgba(139, 90, 43, 0.2);
     }
   `,
+  midnight: `
+    html[data-theme="midnight"] {
+      --color-bg-primary: #0d0d0d;
+      --color-bg-secondary: #141414;
+      --color-text: #e0e0e0;
+      --color-text-muted: #555555;
+      --color-border: #222222;
+      --selection-bg: rgba(255, 255, 255, 0.15);
+    }
+    html[data-theme="midnight"] #preview-content { color: #e0e0e0; }
+    html[data-theme="midnight"] #preview-content h1,
+    html[data-theme="midnight"] #preview-content h2,
+    html[data-theme="midnight"] #preview-content h3,
+    html[data-theme="midnight"] #preview-content h4,
+    html[data-theme="midnight"] #preview-content h5,
+    html[data-theme="midnight"] #preview-content h6 { color: #ffffff; }
+    html[data-theme="midnight"] #preview-content a { color: #7eb8f7; }
+    html[data-theme="midnight"] #preview-content strong { color: #ffffff; }
+    html[data-theme="midnight"] #preview-content code { background: #1a1a1a; color: #a8d8a8; border-radius: 3px; padding: 1px 4px; }
+    html[data-theme="midnight"] #preview-content pre { background: #1a1a1a; border: 1px solid #222222; border-radius: 6px; padding: 12px; }
+    html[data-theme="midnight"] #preview-content pre code { background: none; color: #a8d8a8; padding: 0; }
+    html[data-theme="midnight"] #preview-content table { border-color: #222222; }
+    html[data-theme="midnight"] #preview-content th { background: #1a1a1a; color: #ffffff; border-color: #222222; }
+    html[data-theme="midnight"] #preview-content td { background: #0d0d0d; color: #e0e0e0; border-color: #222222; }
+    html[data-theme="midnight"] #preview-content tr:nth-child(even) td { background: #111111; }
+    html[data-theme="midnight"] #preview-content blockquote { border-left-color: #333333; color: #aaaaaa; }
+    html[data-theme="midnight"] #preview-content hr { border-color: #222222; }
+    html[data-theme="midnight"] .fmt-btn { color: #555555; }
+    html[data-theme="midnight"] .fmt-btn:hover { background: #1a1a1a; color: #e0e0e0; }
+    html[data-theme="midnight"] .fmt-group { background: #0d0d0d; border-color: #222222; }
+    html[data-theme="midnight"] .rail-btn { color: #444444; }
+    html[data-theme="midnight"] .rail-btn:hover { background: #1a1a1a; color: #e0e0e0; }
+    html[data-theme="midnight"] .cm-gutters { color: #333333 !important; }
+    html[data-theme="midnight"] .cm-cursor { border-left-color: #e0e0e0 !important; }
+    html[data-theme="midnight"] .tab { color: #555555; border-color: #222222; }
+  `,
 };
 
 let themeStyleEl = null;
