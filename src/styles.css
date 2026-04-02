@@ -279,11 +279,11 @@ body {
 }
 
 /* Allow text selection in content areas (body is user-select:none for UI chrome) */
-#workspace {
-  user-select: text !important;
-  -webkit-user-select: text !important;
-}
-#editor-pane {
+#workspace,
+#editor-pane,
+#preview-pane,
+#preview-content,
+.sidebar-content {
   user-select: text !important;
   -webkit-user-select: text !important;
 }
@@ -293,15 +293,6 @@ body {
 .cm-line {
   user-select: text !important;
   -webkit-user-select: text !important;
-  cursor: text !important;
-}
-#preview-pane,
-#preview-content {
-  user-select: text !important;
-  -webkit-user-select: text !important;
-}
-.sidebar-content {
-  user-select: text;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -778,7 +769,7 @@ body {
   overflow:         hidden;
 }
 
-/* CodeMirror 6 outer element */
+/* CodeMirror 6 outer element — NO font-family (breaks CM6 click positioning) */
 .cm-editor {
   height:           100%;
   font-size:        var(--editor-font-size);
@@ -791,14 +782,14 @@ body {
   pointer-events: auto !important;
 }
 
-/* Remove gap between line numbers and icon rail */
+/* Remove gap between gutters and icon rail */
 .cm-gutters {
   border-right: 0.5px solid var(--color-border) !important;
   margin-left: 0 !important;
   padding-left: 0 !important;
 }
 
-/* Centered writing column */
+/* Centered writing column — padding on content, NOT scroller (gutters live in scroller) */
 .cm-scroller {
   overflow:         auto;
   padding-left:     0 !important;
@@ -823,29 +814,14 @@ body {
 /* Cursor */
 .cm-cursor { border-left-color: var(--color-accent) !important; }
 
-/* Selection — must contrast against all theme backgrounds */
+/* Selection — uses --selection-bg set by theme CSS */
 .cm-selectionBackground,
 .cm-focused .cm-selectionBackground {
-  background: rgba(124, 92, 62, 0.18) !important;
+  background: var(--selection-bg, rgba(0, 100, 255, 0.15)) !important;
 }
-.dark .cm-selectionBackground,
-.dark .cm-focused .cm-selectionBackground {
-  background: rgba(200, 180, 140, 0.25) !important;
-}
-::selection {
-  background: rgba(124, 92, 62, 0.18);
-}
-.dark ::selection {
-  background: rgba(200, 180, 140, 0.25);
-}
-/* Override oneDark transparent selection that leaks into light mode */
 .cm-line ::selection,
 .cm-line::selection {
-  background-color: rgba(0, 100, 255, 0.15) !important;
-}
-html.dark .cm-line ::selection,
-html.dark .cm-line::selection {
-  background-color: rgba(255, 255, 255, 0.2) !important;
+  background-color: var(--selection-bg, rgba(0, 100, 255, 0.15)) !important;
 }
 .cm-selectionMatch { background: color-mix(in srgb, var(--color-accent) 15%, transparent); }
 
@@ -1090,7 +1066,7 @@ kbd {
   /* Scroller has padding:40px 0. Total top = 60px. */
   max-width:        72ch;
   margin:           0 auto;
-  padding:          48px 32px 40px 32px !important;
+  padding:          48px 32px 40px 32px;
   box-sizing:       border-box;
   overflow-x:       hidden;
   font-family:      var(--font-prose);
@@ -2088,3 +2064,52 @@ body.drag-over #editor-pane::after {
 [data-theme="dark"] .alert-important, .dark .alert-important { background: #2a1b3d; border-color: #bc8cff; }
 [data-theme="dark"] .alert-warning,   .dark .alert-warning   { background: #2d2000; border-color: #d29922; }
 [data-theme="dark"] .alert-caution,   .dark .alert-caution   { background: #3d0c14; border-color: #f85149; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   §25  THEME VARIABLE OVERRIDES — driven by --color-* vars from THEME_CSS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Editor and preview backgrounds */
+.cm-editor,
+.cm-content,
+#editor-pane,
+#preview-pane {
+  background: var(--color-bg-primary) !important;
+  color: var(--color-text) !important;
+}
+
+/* Chrome elements */
+#titlebar, #format-strip, #tabbar, #statusbar, #icon-rail {
+  background: var(--color-bg-secondary) !important;
+  border-color: var(--color-border) !important;
+}
+
+/* Gutters */
+.cm-gutters {
+  background: var(--color-bg-secondary) !important;
+  color: var(--color-text-muted) !important;
+}
+
+/* Format strip groups */
+.fmt-group {
+  background: var(--color-bg-primary);
+  border-color: var(--color-border);
+}
+
+/* Format buttons */
+.fmt-btn {
+  color: var(--color-text-muted);
+}
+.fmt-btn:hover {
+  color: var(--color-text) !important;
+}
+
+/* Preview content */
+#preview-content {
+  color: var(--color-text);
+}
+
+/* Cursor */
+.cm-cursor {
+  border-left-color: var(--color-text) !important;
+}

@@ -92,11 +92,11 @@ function buildExtensions() {
       { key: 'Mod-i',       run: () => toolbar.wrapSelection('*') },
       { key: 'Mod-k',       run: () => toolbar.insertLink() },
     ]),
-    EditorView.contentAttributes.of({ spellcheck: 'true' }),
     highlightSelectionMatches(),
     autocompletion({ override: [tagCompletion] }),
     inlineCompartment.of(inlineRenderPlugin),
     baseEditorTheme,
+    EditorView.contentAttributes.of({ spellcheck: 'true' }),
     themeCompartment.of(githubLightTheme),
     vimCompartment.of([]),
     EditorView.updateListener.of(update => {
