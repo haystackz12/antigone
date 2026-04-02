@@ -799,6 +799,7 @@ body {
 .cm-content {
   max-width:        var(--editor-max-width);
   margin:           0 auto;
+  padding-top:      48px !important;
   padding-left:     32px !important;
   padding-right:    32px !important;
   caret-color:      var(--color-accent);
@@ -2106,6 +2107,13 @@ body.drag-over #editor-pane::after {
 
 /* Preview content */
 #preview-content {
+  color: var(--color-text);
+}
+#preview-content h1, #preview-content h2, #preview-content h3 {
+  color: var(--color-text);
+  font-weight: 700;
+}
+#preview-content p, #preview-content li {
   color: var(--color-text);
 }
 

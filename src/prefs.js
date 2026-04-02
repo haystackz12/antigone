@@ -54,10 +54,10 @@ const THEME_CSS = {
     html[data-theme="sepia"].dark {
       --color-bg-primary: #1e1208;
       --color-bg-secondary: #160d04;
-      --color-text: #c8a882;
-      --color-text-muted: #6a4a30;
+      --color-text: #d4b896;
+      --color-text-muted: #7a5a3a;
       --color-border: #2e1e10;
-      --selection-bg: rgba(200, 168, 130, 0.2);
+      --selection-bg: rgba(212, 184, 150, 0.25);
     }
   `,
 };
