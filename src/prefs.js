@@ -63,7 +63,7 @@ const THEME_CSS = {
       --color-text-muted: #555555;
       --color-border: #222222;
       --selection-bg: rgba(255, 255, 255, 0.15);
-      --focus-dim-opacity: 0.4;
+      --focus-dim-opacity: 0.6;
       --syntax-heading: #ffffff;
       --syntax-bold: #ffffff;
       --syntax-italic: #cccccc;
@@ -101,6 +101,8 @@ const THEME_CSS = {
     html[data-theme="midnight"] .rail-btn:hover { background: #1a1a1a; color: #e0e0e0; }
     html[data-theme="midnight"] .cm-gutters { color: #333333 !important; }
     html[data-theme="midnight"] .cm-cursor { border-left-color: #e0e0e0 !important; }
+    html[data-theme="midnight"] .cm-activeLine { background: rgba(255,255,255,0.03) !important; }
+    html[data-theme="midnight"] .cm-activeLineGutter { background: rgba(255,255,255,0.03) !important; }
     html[data-theme="midnight"] #tabbar { background: #0a0a0a !important; border-bottom-color: #1a1a1a !important; }
     html[data-theme="midnight"] .tab { color: #555555 !important; background: transparent !important; border-color: transparent !important; }
     html[data-theme="midnight"] .tab--active { color: #e0e0e0 !important; background: #141414 !important; border-bottom: 2px solid #555555 !important; }
