@@ -63,6 +63,7 @@ const THEME_CSS = {
       --color-text-muted: #555555;
       --color-border: #222222;
       --selection-bg: rgba(255, 255, 255, 0.15);
+      --focus-dim-opacity: 0.4;
       --syntax-heading: #ffffff;
       --syntax-bold: #ffffff;
       --syntax-italic: #cccccc;
