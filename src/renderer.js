@@ -33,6 +33,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   initEditor();
   await loadEditorTheme();
+  // Sync CM6 theme compartment immediately after loadEditorTheme sets dark class
+  applyEditorTheme(document.documentElement.classList.contains('dark'));
   editorSave.initFromPrefs(prefs);
   focus.init();
   wordgoal.init();
@@ -93,10 +95,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Apply vim mode from stored prefs
   const storedPrefs = await window.api.getPrefs();
   if (storedPrefs.keybindings === 'vim') editor.setVimMode(true);
-
-  // Apply CM6 theme to match
-  const isDark = document.documentElement.classList.contains('dark');
-  applyEditorTheme(isDark);
 
   // Theme toggle button — toggles dark mode class on current theme
   const themeBtn = document.getElementById('btn-theme');
