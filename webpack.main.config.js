@@ -7,7 +7,6 @@ module.exports = {
   // electron-store v11 is ESM-only — must be loaded at runtime, not bundled
   externals: {
     'electron-store': 'commonjs2 electron-store',
-    'electron-updater': 'commonjs2 electron-updater',
   },
   // Put your normal webpack config below here
   module: {

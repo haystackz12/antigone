@@ -266,37 +266,6 @@ contextBridge.exposeInMainWorld('api', {
   onMenuToggleFocus: (cb) => { ipcRenderer.on('menu-toggle-focus', () => cb()); },
   onMenuToggleLineNumbers: (cb) => { ipcRenderer.on('menu-toggle-line-numbers', () => cb()); },
 
-  // ── Auto-updater ───────────────────────────────────────────────────────────
-
-  /**
-   * Check for updates manually.
-   * @returns {Promise<{available: boolean, version: string|null}>}
-   */
-  checkForUpdates: () =>
-    ipcRenderer.invoke('check-for-updates'),
-
-  /**
-   * Install a downloaded update and restart the app.
-   */
-  installUpdate: () =>
-    ipcRenderer.invoke('install-update'),
-
-  /**
-   * Subscribe to 'update-available' events from main.
-   * @param {function({version: string, releaseNotes: string}): void} callback
-   */
-  onUpdateAvailable: (callback) => {
-    ipcRenderer.on('update-available', (_event, data) => callback(data));
-  },
-
-  /**
-   * Subscribe to 'update-ready' (downloaded, ready to install) events.
-   * @param {function({version: string, releaseNotes: string}): void} callback
-   */
-  onUpdateReady: (callback) => {
-    ipcRenderer.on('update-ready', (_event, data) => callback(data));
-  },
-
   // ── Inbound from main ──────────────────────────────────────────────────────
 
   /**
