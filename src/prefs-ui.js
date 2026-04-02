@@ -4,7 +4,7 @@
 
 'use strict';
 
-const { applyTheme, applyFontSize, applyLineNumbers } = require('./prefs.js');
+const { applyFontSize, applyLineNumbers } = require('./prefs.js');
 
 let isOpen = false;
 let applyEditorTheme = null;
@@ -98,7 +98,6 @@ async function open() {
   // Wire change handlers
   themeSelect.addEventListener('change', async () => {
     const val = themeSelect.value;
-    applyTheme(val);
     await window.api.setPrefs({ theme: val });
     await window.api.setNativeTheme(val);
     if (applyEditorTheme) {
@@ -131,12 +130,12 @@ async function open() {
   });
 
   // Theme picker
-  const { applyEditorTheme } = require('./prefs.js');
+  const { applyEditorTheme: applyVisualTheme } = require('./prefs.js');
   const currentEditorTheme = prefs.editorTheme || 'default';
   document.querySelectorAll('.theme-card').forEach(card => {
     if (card.dataset.theme === currentEditorTheme) card.classList.add('active');
     card.addEventListener('click', async () => {
-      await applyEditorTheme(card.dataset.theme);
+      await applyVisualTheme(card.dataset.theme);
       document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
       card.classList.add('active');
     });

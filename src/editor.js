@@ -52,7 +52,7 @@ const githubLightTheme = EditorView.theme({});
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function isDarkMode() {
-  return document.documentElement.classList.contains('theme-dark');
+  return document.documentElement.classList.contains('dark');
 }
 
 // ─── Tag autocomplete ────────────────────────────────────────────────────────
