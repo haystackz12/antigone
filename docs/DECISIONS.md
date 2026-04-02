@@ -162,3 +162,9 @@
 **Why:** The preview pane is not wired for live updates until Sprint 2 (split-view, scroll sync). Installing marked.js and DOMPurify now would add unused dependencies. The `inline-render.js` decoration layer handles all visual rendering in Sprint 1.
 **Revisit trigger:** Sprint 2, Day 8 (split-view implementation).
 **Date:** 2026-03-29
+
+## DEC-032 — Dark mode removed for v1.0
+**Decision:** Dark mode is completely removed for the v1.0 release. The app is light-only with two themes (White, Sepia).
+**Why:** Dark mode introduced cascading bugs: oneDark theme leaking into light mode, invisible text selection, CM6 coordinate calculation breakage from font overrides on internal elements, stale stored prefs causing dark-on-launch, and unreadable text in preview pane. Each fix introduced new regressions. A clean light-only v1.0 is better than a buggy dark mode.
+**Revisit trigger:** Sprint 4 — implement dark mode properly with dedicated CSS variable sets, correct inline-render decoration colors, table/code styling, and full QA pass.
+**Date:** 2026-04-01

@@ -13,7 +13,6 @@ const { defaultKeymap, history,
         historyKeymap, indentWithTab }       = require('@codemirror/commands');
 const { markdown, markdownLanguage }         = require('@codemirror/lang-markdown');
 const { languages }                          = require('@codemirror/language-data');
-const { oneDark }                            = require('@codemirror/theme-one-dark');
 const { searchKeymap, highlightSelectionMatches, openSearchPanel } = require('@codemirror/search');
 const { autocompletion }                     = require('@codemirror/autocomplete');
 const { inlineRenderPlugin }                 = require('./inline-render.js');
@@ -26,7 +25,6 @@ const tabs                                   = require('./tabs.js');
 let view            = null;
 let currentFilePath = null;
 let isDirty         = false;
-const themeCompartment  = new Compartment();
 const vimCompartment    = new Compartment();
 const inlineCompartment = new Compartment();
 const LARGE_FILE_CHARS  = 150000;
@@ -46,14 +44,6 @@ const baseEditorTheme = EditorView.theme({
   '.cm-activeLine':       { backgroundColor: 'var(--bg-active-line, rgba(0,0,0,0.04))' },
   '.cm-foldPlaceholder':  { backgroundColor: 'transparent', border: 'none' },
 });
-
-// Light theme — empty (colors come from CSS variables, layout from baseEditorTheme)
-const githubLightTheme = EditorView.theme({});
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-function isDarkMode() {
-  return document.documentElement.classList.contains('dark');
-}
 
 // ─── Tag autocomplete ────────────────────────────────────────────────────────
 function tagCompletion(context) {
@@ -97,7 +87,7 @@ function buildExtensions() {
     inlineCompartment.of(inlineRenderPlugin),
     baseEditorTheme,
     EditorView.contentAttributes.of({ spellcheck: 'true' }),
-    themeCompartment.of(githubLightTheme),
+    EditorView.theme({}),
     vimCompartment.of([]),
     EditorView.updateListener.of(update => {
       if (update.docChanged) onDocChange(update.state.doc.toString());
@@ -273,12 +263,6 @@ function setupOpenFileIPC() {
   window.api.onOpenFile(async (filePath) => { await openFilePath(filePath); });
 }
 
-// ─── Theme toggle ─────────────────────────────────────────────────────────────
-function applyTheme(dark) {
-  if (!view) return;
-  view.dispatch({ effects: themeCompartment.reconfigure(dark ? oneDark : githubLightTheme) });
-}
-
 // ─── Vim mode toggle ─────────────────────────────────────────────────────────
 function setVimMode(enabled) {
   if (!view) return;
@@ -355,7 +339,6 @@ module.exports = {
   loadContent,
   openFileDialog,
   openFilePath,
-  applyTheme,
   setVimMode,
   getView:        () => view,
   getCurrentPath: () => currentFilePath,

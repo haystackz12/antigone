@@ -7,11 +7,9 @@
 const { applyFontSize, applyLineNumbers } = require('./prefs.js');
 
 let isOpen = false;
-let applyEditorTheme = null;
 let setVimMode = null;
 
 function configure(opts) {
-  applyEditorTheme = opts.applyEditorTheme;
   setVimMode = opts.setVimMode;
 }
 
@@ -69,7 +67,7 @@ async function open() {
         <div class="theme-card active" data-theme="white"><div class="theme-preview" style="background:#ffffff;color:#1a1a1a">Aa</div><div class="theme-name">White</div><div class="theme-tier">Free</div></div>
         <div class="theme-card" data-theme="sepia"><div class="theme-preview" style="background:#f4ecd8;color:#3c2a1e">Aa</div><div class="theme-name">Sepia</div><div class="theme-tier">Free</div></div>
       </div>
-      <p class="pref-note">Each theme adapts to light/dark mode via the ☽ toggle.</p>
+      <p class="pref-note">Choose your writing environment.</p>
     </div>
     <button id="pref-close" class="prefs-close-btn">Done</button>
   `;
@@ -98,9 +96,6 @@ async function open() {
     const val = themeSelect.value;
     await window.api.setPrefs({ theme: val });
     await window.api.setNativeTheme(val);
-    if (applyEditorTheme) {
-      applyEditorTheme(document.documentElement.classList.contains('dark'));
-    }
   });
 
   fontRange.addEventListener('input', async () => {

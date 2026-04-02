@@ -4,7 +4,7 @@
 'use strict';
 
 require('./styles.css');
-const { init: initEditor, applyTheme: applyEditorTheme } = require('./editor.js');
+const { init: initEditor } = require('./editor.js');
 const { loadPrefs, loadEditorTheme } = require('./prefs.js');
 const editorSave = require('./editor-save.js');
 const focus      = require('./focus.js');
@@ -33,10 +33,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   initEditor();
   await loadEditorTheme();
-  // Sync CM6 theme compartment after editor is fully mounted
-  requestAnimationFrame(() => {
-    applyEditorTheme(document.documentElement.classList.contains('dark'));
-  });
   editorSave.initFromPrefs(prefs);
   focus.init();
   wordgoal.init();
@@ -79,7 +75,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Preferences UI
   prefsUi.configure({
-    applyEditorTheme: applyEditorTheme,
     setVimMode: editor.setVimMode,
   });
   window.api.onMenuPrefs(() => prefsUi.toggle());
@@ -98,15 +93,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const storedPrefs = await window.api.getPrefs();
   if (storedPrefs.keybindings === 'vim') editor.setVimMode(true);
 
-  // Theme toggle button — toggles dark mode class on current theme
-  const themeBtn = document.getElementById('btn-theme');
-  if (themeBtn) {
-    themeBtn.addEventListener('click', async () => {
-      const isDark = document.documentElement.classList.contains('dark');
-      document.documentElement.classList.toggle('dark', !isDark);
-      applyEditorTheme(!isDark); // Switch CM6 theme compartment
-      await window.api.setPrefs({ darkMode: !isDark, themeSetByUser: true });
-    });
-  }
+  // Dark mode removed for v1.0 (DEC-032)
 
 });

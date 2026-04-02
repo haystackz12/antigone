@@ -169,13 +169,11 @@ const { registerPreprocessorHandler } = require('./main-export.js');
 // ── App lifecycle ────────────────────────────────────────────────────────────
 
 app.whenReady().then(async () => {
-  // Clear stale prefs that cause flash and dark-mode-on-launch
+  // Dark mode removed for v1.0 (DEC-032) — ensure clean state
   const s = await getStore();
   if (s.get('session')) s.delete('session');
-  if (!s.get('themeSetByUser')) {
-    s.set('darkMode', false);
-    s.set('editorTheme', 'white');
-  }
+  s.delete('darkMode');
+  s.delete('themeSetByUser');
 
   createWindow();
   await setupMenu(() => mainWindow, getStore);
