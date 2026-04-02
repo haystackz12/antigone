@@ -35,8 +35,14 @@ const baseEditorTheme = EditorView.theme({
   '.cm-scroller': { overflow: 'auto', fontFamily: 'var(--font-editor)', lineHeight: '1.75' },
   '.cm-content': { caretColor: 'var(--fg-primary)', padding: '20px 0', maxWidth: '72ch', margin: '0 auto' },
   '.cm-cursor': { borderLeftColor: 'var(--fg-primary)' },
-  '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, ::selection': {
-    backgroundColor: 'var(--selection-bg, rgba(0,100,255,0.12))',
+  '&.cm-focused .cm-selectionBackground': {
+    backgroundColor: 'rgba(0, 100, 255, 0.3) !important',
+  },
+  '.cm-selectionBackground': {
+    backgroundColor: 'rgba(0, 100, 255, 0.15)',
+  },
+  '.cm-selectionLayer': {
+    zIndex: '1 !important',
   },
   '.cm-gutters': { backgroundColor: 'var(--bg-editor)', color: 'var(--fg-muted)', border: 'none', paddingRight: '8px', minWidth: '40px' },
   '.cm-lineNumbers .cm-gutterElement': { paddingLeft: '8px' },
