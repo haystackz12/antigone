@@ -781,7 +781,6 @@ body {
 /* CodeMirror 6 outer element */
 .cm-editor {
   height:           100%;
-  font-family:      var(--font-prose);
   font-size:        var(--editor-font-size);
   line-height:      var(--editor-line-height);
   letter-spacing:   var(--editor-letter-spacing);
