@@ -35,6 +35,16 @@ const THEME_CSS = {
       --selection-bg: rgba(0, 100, 255, 0.15);
     }
   `,
+  parchment: `
+    html[data-theme="parchment"] {
+      --color-bg-primary: #f5f0e8;
+      --color-bg-secondary: #ede8e0;
+      --color-text: #3d2b1f;
+      --color-text-muted: #8a7060;
+      --color-border: #d4cfc7;
+      --selection-bg: rgba(61, 43, 31, 0.15);
+    }
+  `,
   sepia: `
     html[data-theme="sepia"] {
       --color-bg-primary: #f4ecd8;

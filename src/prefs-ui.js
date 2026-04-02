@@ -65,6 +65,7 @@ async function open() {
       <label class="prefs-label">Editor Theme</label>
       <div id="theme-picker">
         <div class="theme-card active" data-theme="white"><div class="theme-preview" style="background:#ffffff;color:#1a1a1a">Aa</div><div class="theme-name">White</div><div class="theme-tier">Free</div></div>
+        <div class="theme-card" data-theme="parchment"><div class="theme-preview" style="background:#f5f0e8;color:#3d2b1f">Aa</div><div class="theme-name">Parchment</div><div class="theme-tier">Free</div></div>
         <div class="theme-card" data-theme="sepia"><div class="theme-preview" style="background:#f4ecd8;color:#3c2a1e">Aa</div><div class="theme-name">Sepia</div><div class="theme-tier">Free</div></div>
       </div>
       <p class="pref-note">Choose your writing environment.</p>
