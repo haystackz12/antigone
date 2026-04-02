@@ -169,16 +169,11 @@ const { registerPreprocessorHandler } = require('./main-export.js');
 // ── App lifecycle ────────────────────────────────────────────────────────────
 
 app.whenReady().then(async () => {
-  // Ensure clean state on launch
+  // Always launch in white — theme is session-only
   const s = await getStore();
-  if (s.get('session')) s.delete('session');
+  s.set('editorTheme', 'white');
   s.delete('darkMode');
-  s.delete('themeSetByUser');
-  // Default to white if stored theme is missing or invalid
-  const validThemes = ['white', 'parchment', 'sepia', 'midnight'];
-  if (!validThemes.includes(s.get('editorTheme'))) {
-    s.set('editorTheme', 'white');
-  }
+  s.delete('session');
 
   createWindow();
   await setupMenu(() => mainWindow, getStore);

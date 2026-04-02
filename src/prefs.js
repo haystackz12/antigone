@@ -100,10 +100,9 @@ const THEME_CSS = {
     html[data-theme="midnight"] .rail-btn:hover { background: #1a1a1a; color: #e0e0e0; }
     html[data-theme="midnight"] .cm-gutters { color: #333333 !important; }
     html[data-theme="midnight"] .cm-cursor { border-left-color: #e0e0e0 !important; }
-    html[data-theme="midnight"] .tab { color: #888888 !important; border-color: #222222 !important; background: #111111 !important; }
-    html[data-theme="midnight"] .tab.active,
-    html[data-theme="midnight"] #tabbar .tab:first-child { color: #cccccc !important; border-bottom-color: #444444 !important; }
-    html[data-theme="midnight"] #tabbar { background: #0d0d0d !important; border-color: #1a1a1a !important; }
+    html[data-theme="midnight"] #tabbar { background: #0a0a0a !important; border-bottom-color: #1a1a1a !important; }
+    html[data-theme="midnight"] .tab { color: #555555 !important; background: transparent !important; border-color: transparent !important; }
+    html[data-theme="midnight"] .tab--active { color: #e0e0e0 !important; background: #141414 !important; border-bottom: 2px solid #555555 !important; }
   `,
 };
 
