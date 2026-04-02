@@ -17,12 +17,53 @@ module.exports = {
         },
       ],
     },
+
+    // ── macOS code signing ────────────────────────────────────────────────────
+    // Requires: APPLE_IDENTITY env var (Developer ID Application certificate)
+    // Skipped when not set (local dev builds).
+    ...(process.env.APPLE_IDENTITY
+      ? {
+          osxSign: {
+            identity: process.env.APPLE_IDENTITY,
+            optionsForFile: () => ({
+              entitlements: './entitlements.plist',
+              'entitlements-inherit': './entitlements.plist',
+              'hardened-runtime': true,
+            }),
+          },
+        }
+      : {}),
+
+    // ── macOS notarization ────────────────────────────────────────────────────
+    // Requires: APPLE_ID, APPLE_PASSWORD (app-specific), APPLE_TEAM_ID env vars
+    // Skipped when any env var is missing (local dev builds).
+    ...(process.env.APPLE_ID && process.env.APPLE_PASSWORD && process.env.APPLE_TEAM_ID
+      ? {
+          osxNotarize: {
+            appleId: process.env.APPLE_ID,
+            appleIdPassword: process.env.APPLE_PASSWORD,
+            teamId: process.env.APPLE_TEAM_ID,
+          },
+        }
+      : {}),
   },
   rebuildConfig: {},
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        name: 'Antigone',
+        setupExe: 'AntigoneSetup.exe',
+        // ── Windows code signing ──────────────────────────────────────────────
+        // Requires: WINDOWS_CERT_FILE (.pfx path) and WINDOWS_CERT_PASSWORD
+        // EV certificates use signtool.exe directly via certificateFile.
+        ...(process.env.WINDOWS_CERT_FILE
+          ? {
+              certificateFile: process.env.WINDOWS_CERT_FILE,
+              certificatePassword: process.env.WINDOWS_CERT_PASSWORD || '',
+            }
+          : {}),
+      },
     },
     {
       name: '@electron-forge/maker-zip',
@@ -37,6 +78,22 @@ module.exports = {
       config: {},
     },
   ],
+
+  // ── GitHub Releases publisher ────────────────────────────────────────────────
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'haystackz12',
+          name: 'antigone',
+        },
+        prerelease: false,
+        draft: true,
+      },
+    },
+  ],
+
   plugins: [
     {
       name: '@electron-forge/plugin-auto-unpack-natives',

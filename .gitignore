@@ -25,6 +25,9 @@ desktop.ini
 .env
 .env.local
 
+# Nested clone
+antigone/
+
 # Logs
 *.log
 npm-debug.log*
