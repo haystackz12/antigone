@@ -109,6 +109,10 @@ const THEME_CSS = {
     html[data-theme="typewriter"].dark .fmt-btn:hover { background:#2a2018 !important; color:#c8a878; }
     html[data-theme="typewriter"].dark .fmt-group { background:#1a1510; border-color:#2a2018; }
     html[data-theme="typewriter"].dark #preview-content { color:#c8a878; font-family:'Courier New',Courier,monospace; }
+    html[data-theme="typewriter"].dark #preview-content h1, html[data-theme="typewriter"].dark #preview-content h2,
+    html[data-theme="typewriter"].dark #preview-content h3, html[data-theme="typewriter"].dark #preview-content h4,
+    html[data-theme="typewriter"].dark #preview-content h5, html[data-theme="typewriter"].dark #preview-content h6 { color:#e0c090 !important; font-family:'Courier New',Courier,monospace; }
+    html[data-theme="typewriter"].dark .cm-heading, html[data-theme="typewriter"].dark .cm-line.cm-heading { color:#e0c090 !important; }
     html[data-theme="typewriter"].dark .cm-cursor { border-left-color:#c8a878 !important; }
   `,
   forest: `
@@ -147,7 +151,7 @@ const THEME_CSS = {
 let themeStyleEl = null;
 
 async function applyEditorTheme(themeName) {
-  const name = themeName || 'default';
+  const name = themeName || 'typewriter';
   if (themeStyleEl) { themeStyleEl.remove(); themeStyleEl = null; }
   document.documentElement.setAttribute('data-theme', name);
   if (THEME_CSS[name]) {
@@ -162,7 +166,7 @@ async function applyEditorTheme(themeName) {
 async function loadEditorTheme() {
   const prefs = await window.api.getPrefs();
   if (prefs.darkMode) document.documentElement.classList.add('dark');
-  await applyEditorTheme(prefs.editorTheme || 'default');
+  await applyEditorTheme(prefs.editorTheme || 'typewriter');
 }
 
 module.exports = { loadPrefs, applyFontSize, applyLineNumbers, applyEditorTheme, loadEditorTheme };

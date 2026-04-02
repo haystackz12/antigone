@@ -770,7 +770,7 @@ body {
 /* Centered writing column */
 .cm-scroller {
   overflow:         auto;
-  padding:          var(--space-10) 0;
+  padding:          0 32px !important;
 }
 
 .cm-content {
@@ -1038,7 +1038,7 @@ kbd {
   /* Scroller has padding:40px 0. Total top = 60px. */
   max-width:        72ch;
   margin:           0 auto;
-  padding:          60px 0 40px 0;
+  padding:          48px 32px 40px 32px !important;
   box-sizing:       border-box;
   overflow-x:       hidden;
   font-family:      var(--font-prose);

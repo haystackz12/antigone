@@ -131,7 +131,7 @@ async function open() {
 
   // Theme picker
   const { applyEditorTheme: applyVisualTheme } = require('./prefs.js');
-  const currentEditorTheme = prefs.editorTheme || 'default';
+  const currentEditorTheme = prefs.editorTheme || 'typewriter';
   document.querySelectorAll('.theme-card').forEach(card => {
     if (card.dataset.theme === currentEditorTheme) card.classList.add('active');
     card.addEventListener('click', async () => {
