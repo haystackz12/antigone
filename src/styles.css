@@ -824,10 +824,20 @@ body {
 /* Cursor */
 .cm-cursor { border-left-color: var(--color-accent) !important; }
 
-/* Selection */
+/* Selection — must contrast against all theme backgrounds */
 .cm-selectionBackground,
 .cm-focused .cm-selectionBackground {
-  background: var(--color-accent-subtle) !important;
+  background: rgba(124, 92, 62, 0.18) !important;
+}
+.dark .cm-selectionBackground,
+.dark .cm-focused .cm-selectionBackground {
+  background: rgba(200, 180, 140, 0.25) !important;
+}
+::selection {
+  background: rgba(124, 92, 62, 0.18);
+}
+.dark ::selection {
+  background: rgba(200, 180, 140, 0.25);
 }
 .cm-selectionMatch { background: color-mix(in srgb, var(--color-accent) 15%, transparent); }
 
