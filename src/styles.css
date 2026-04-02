@@ -278,16 +278,30 @@ body {
     "statusbar";
 }
 
-/* Allow text selection inside the editor and preview */
-#cm-editor,
-#preview-content,
-.sidebar-content {
-  user-select: text;
+/* Allow text selection in content areas (body is user-select:none for UI chrome) */
+#workspace {
+  user-select: text !important;
+  -webkit-user-select: text !important;
 }
-.cm-content {
+#editor-pane {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+.cm-editor,
+.cm-scroller,
+.cm-content,
+.cm-line {
   user-select: text !important;
   -webkit-user-select: text !important;
   cursor: text !important;
+}
+#preview-pane,
+#preview-content {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+.sidebar-content {
+  user-select: text;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
