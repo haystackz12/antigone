@@ -314,7 +314,8 @@ function init() {
   const container = document.getElementById('cm-editor');
   if (!container) { console.error('[editor] Mount point #cm-editor not found'); return; }
   mount(container);
-  setEmptyState(true);
+  /* HOME SCREEN PERMANENTLY REMOVED — do not re-add */
+  setEmptyState(false);
   setupDragDrop();
   setupKeyboardShortcuts();
   setupOpenFileIPC();

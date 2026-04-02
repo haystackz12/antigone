@@ -79,8 +79,9 @@ async function applyEditorTheme(themeName) {
 
 async function loadEditorTheme() {
   const prefs = await window.api.getPrefs();
-  const dark = prefs.darkMode || false;
-  if (dark) {
+  // Never default to dark — must be explicitly set to true
+  const isDark = prefs.darkMode === true ? true : false;
+  if (isDark) {
     document.documentElement.classList.add('dark');
   } else {
     document.documentElement.classList.remove('dark');

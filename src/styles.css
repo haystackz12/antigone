@@ -2117,6 +2117,21 @@ body.drag-over #editor-pane::after {
   color: var(--color-text);
 }
 
+/* Ensure CM6 editor respects theme color variables */
+.cm-editor .cm-content {
+  color: var(--color-text) !important;
+  background: var(--color-bg-primary) !important;
+  caret-color: var(--color-text) !important;
+}
+.cm-editor .cm-line {
+  color: var(--color-text) !important;
+}
+.cm-editor .cm-gutters {
+  background: var(--color-bg-secondary) !important;
+  color: var(--color-text-muted) !important;
+  border-right-color: var(--color-border) !important;
+}
+
 /* Cursor */
 .cm-cursor {
   border-left-color: var(--color-text) !important;
