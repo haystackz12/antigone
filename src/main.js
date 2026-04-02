@@ -169,11 +169,16 @@ const { registerPreprocessorHandler } = require('./main-export.js');
 // ── App lifecycle ────────────────────────────────────────────────────────────
 
 app.whenReady().then(async () => {
-  // Dark mode removed for v1.0 (DEC-032) — ensure clean state
+  // Ensure clean state on launch
   const s = await getStore();
   if (s.get('session')) s.delete('session');
   s.delete('darkMode');
   s.delete('themeSetByUser');
+  // Default to white if stored theme is missing or invalid
+  const validThemes = ['white', 'parchment', 'sepia', 'midnight'];
+  if (!validThemes.includes(s.get('editorTheme'))) {
+    s.set('editorTheme', 'white');
+  }
 
   createWindow();
   await setupMenu(() => mainWindow, getStore);

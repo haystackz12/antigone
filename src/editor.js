@@ -222,15 +222,10 @@ function updateTabBar(filename, dirty) {
   tab.title = currentFilePath || filename || 'Untitled';
 }
 
-// ─── Empty state ──────────────────────────────────────────────────────────────
-function setEmptyState(visible) {
-  // Also toggle the CM6 mount point so empty state isn't covered
-  const el   = document.getElementById('empty-state');
-  const pane = document.getElementById('editor-pane');
-  const cm  = document.getElementById('cm-editor');
-  if (el)   el.style.display = visible ? 'flex' : 'none';
-  if (cm)   cm.style.visibility = visible ? 'hidden' : 'visible';
-  if (pane) pane.dataset.hasFile = String(!visible);
+// ─── Empty state — permanently hidden, do not re-add ─────────────────────────
+function setEmptyState() {
+  const el = document.getElementById('empty-state');
+  if (el) el.style.display = 'none';
 }
 
 // ─── Drag and drop (deferred — blocked by system policy on this machine) ──────
