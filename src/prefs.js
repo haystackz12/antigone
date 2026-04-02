@@ -63,6 +63,17 @@ const THEME_CSS = {
       --color-text-muted: #555555;
       --color-border: #222222;
       --selection-bg: rgba(255, 255, 255, 0.15);
+      --syntax-heading: #ffffff;
+      --syntax-bold: #ffffff;
+      --syntax-italic: #cccccc;
+      --syntax-code: #a8d8a8;
+      --syntax-code-bg: #1a1a1a;
+      --syntax-link: #7eb8f7;
+      --syntax-blockquote: #888888;
+      --syntax-marker: #444444;
+      --syntax-list-marker: #a8d8a8;
+      --syntax-strikethrough: #c46060;
+      --preview-heading: #ffffff;
     }
     html[data-theme="midnight"] #preview-content { color: #e0e0e0; }
     html[data-theme="midnight"] #preview-content h1,
