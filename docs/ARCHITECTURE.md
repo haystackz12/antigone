@@ -91,9 +91,13 @@ get-platform       main returns process.platform
 get-app-data-path  main returns app.getPath('userData')
 get-version        main returns app.getVersion()
 
+check-for-updates  renderer requests manual update check
+install-update     renderer requests quit-and-install
+
 // Main → renderer (use webContents.send):
 file-changed       external file modification detected
-update-ready       auto-updater has downloaded an update
+update-available   auto-updater found a new version
+update-ready       auto-updater has downloaded an update, ready to install
 open-file          file path to open (from OS file association or CLI)
 ```
 
