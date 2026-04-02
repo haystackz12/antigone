@@ -284,6 +284,11 @@ body {
 .sidebar-content {
   user-select: text;
 }
+.cm-content {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  cursor: text !important;
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    §6  TITLEBAR
@@ -783,13 +788,15 @@ body {
 /* Centered writing column */
 .cm-scroller {
   overflow:         auto;
-  padding:          0 32px !important;
+  padding-left:     0 !important;
+  padding-right:    0 !important;
 }
 
 .cm-content {
   max-width:        var(--editor-max-width);
   margin:           0 auto;
-  padding:          0 var(--space-8);
+  padding-left:     32px !important;
+  padding-right:    32px !important;
   caret-color:      var(--color-accent);
 }
 
@@ -1948,8 +1955,15 @@ body.drag-over #editor-pane::after {
   color:            var(--color-text-primary);
 }
 .fmt-btn.fmt-active {
-  background:       var(--color-accent-subtle);
-  color:            var(--color-accent);
+  background: rgba(0,0,0,0.08) !important;
+  border: 0.5px solid rgba(0,0,0,0.2) !important;
+  color: var(--color-text) !important;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+.dark .fmt-btn.fmt-active {
+  background: rgba(255,255,255,0.12) !important;
+  border: 0.5px solid rgba(255,255,255,0.2) !important;
+  color: var(--color-text) !important;
 }
 .fmt-btn mark {
   background:       #fff176;
