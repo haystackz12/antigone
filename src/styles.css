@@ -5,6 +5,12 @@
    Never fetch fonts from the network — CSP blocks it anyway.
    ─────────────────────────────────────────────────────────────────────────── */
 
+/* SAFETY NET — text selection — DO NOT REMOVE */
+.cm-content, .cm-line, #editor-pane {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    §1  DESIGN TOKENS — LIGHT THEME (default)
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -278,15 +284,17 @@ body {
     "statusbar";
 }
 
-/* Allow text selection in content areas (body is user-select:none for UI chrome) */
+/* ============================================
+   PERMANENT — DO NOT REMOVE OR MODIFY
+   Text selection must work in editor and preview.
+   body has user-select:none for chrome elements.
+   These overrides restore selection in content areas.
+   Removing these breaks text selection entirely.
+   ============================================ */
 #workspace,
 #editor-pane,
 #preview-pane,
 #preview-content,
-.sidebar-content {
-  user-select: text !important;
-  -webkit-user-select: text !important;
-}
 .cm-editor,
 .cm-scroller,
 .cm-content,
