@@ -22,6 +22,15 @@ const preprocessor = require('./preprocessor.js');
 document.addEventListener('DOMContentLoaded', async () => {
   // Apply stored theme before editor mounts to prevent flash
   const prefs = await loadPrefs();
+
+  // Clean up ALL stale recovery files BEFORE editor mounts (prevents banner flash)
+  const staleRecovery = await window.api.listRecovery();
+  if (staleRecovery && staleRecovery.length > 0) {
+    for (const f of staleRecovery) {
+      await window.api.deleteRecovery(f.tabId).catch(() => {});
+    }
+  }
+
   initEditor();
   await loadEditorTheme();
   editorSave.initFromPrefs(prefs);
@@ -54,14 +63,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Always launch to empty state (DEC-023 — session restore is opt-in, not default)
   window.api.setPrefs({ session: null });
-
-  // Clean up ALL stale recovery files from previous sessions on launch
-  const staleRecovery = await window.api.listRecovery();
-  if (staleRecovery && staleRecovery.length > 0) {
-    for (const f of staleRecovery) {
-      await window.api.deleteRecovery(f.tabId).catch(() => {});
-    }
-  }
 
   tabs.openNewTab();
 

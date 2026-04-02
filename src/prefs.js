@@ -165,7 +165,12 @@ async function applyEditorTheme(themeName) {
 
 async function loadEditorTheme() {
   const prefs = await window.api.getPrefs();
-  if (prefs.darkMode) document.documentElement.classList.add('dark');
+  const dark = prefs.darkMode || false;
+  if (dark) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
   await applyEditorTheme(prefs.editorTheme || 'typewriter');
 }
 

@@ -296,9 +296,10 @@ function setViewMode(mode) {
   }
 
   document.documentElement.dataset.panel = mode;
-  document.querySelectorAll('[data-view]').forEach(b =>
-    b.setAttribute('aria-pressed', String(b.dataset.view === mode))
-  );
+  document.querySelectorAll('[data-view]').forEach(b => {
+    b.setAttribute('aria-pressed', String(b.dataset.view === mode));
+    b.classList.toggle('fmt-active', b.dataset.view === mode);
+  });
 }
 
 function setupViewToggles() {

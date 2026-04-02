@@ -749,6 +749,7 @@ body {
   position:         relative;
   flex:             1;
   min-width:        0;
+  padding-left:     0 !important;
 }
 
 /* CodeMirror mount — fills available height */
@@ -765,6 +766,18 @@ body {
   font-size:        var(--editor-font-size);
   line-height:      var(--editor-line-height);
   letter-spacing:   var(--editor-letter-spacing);
+}
+
+/* Ensure mouse events always reach the editor */
+.cm-editor, .cm-content, .cm-scroller {
+  pointer-events: auto !important;
+}
+
+/* Remove gap between line numbers and icon rail */
+.cm-gutters {
+  border-right: 0.5px solid var(--color-border) !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
 }
 
 /* Centered writing column */
