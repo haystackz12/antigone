@@ -1,4 +1,3 @@
-require('dotenv').config();
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
@@ -92,39 +91,26 @@ module.exports = {
 
   hooks: {
     postMake: async (config, makeResults) => {
-      console.log('postMake hook running');
-      console.log('APPLE_ID:', process.env.APPLE_ID ? 'SET' : 'NOT SET');
-      console.log('APPLE_PASSWORD:', process.env.APPLE_PASSWORD ? 'SET' : 'NOT SET');
-      console.log('APPLE_TEAM_ID:', process.env.APPLE_TEAM_ID ? 'SET' : 'NOT SET');
-      console.log('artifacts:', makeResults.flatMap(r => r.artifacts));
-
-      if (!process.env.APPLE_ID ||
-          !process.env.APPLE_PASSWORD ||
-          !process.env.APPLE_TEAM_ID) {
-        console.log('Skipping notarization — env vars not set');
-        return makeResults;
-      }
-
       const { notarize } = require('@electron/notarize');
 
       for (const result of makeResults) {
         for (const artifact of result.artifacts) {
           if (!artifact.endsWith('.dmg')) continue;
-
           console.log(`Notarizing ${artifact}...`);
-          await notarize({
-            tool: 'notarytool',
-            appPath: artifact,
-            appleId: process.env.APPLE_ID,
-            appleIdPassword: process.env.APPLE_PASSWORD,
-            teamId: process.env.APPLE_TEAM_ID,
-          });
-          console.log(`Notarized ${artifact}`);
+          try {
+            await notarize({
+              tool: 'notarytool',
+              appPath: artifact,
+              keychainProfile: 'AntignoneNotarize',
+            });
+            console.log(`Notarized successfully.`);
+          } catch (e) {
+            console.log('Notarization skipped or failed:', e.message);
+          }
         }
       }
-
       return makeResults;
-    },
+    }
   },
 
   plugins: [
