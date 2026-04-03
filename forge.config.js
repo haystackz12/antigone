@@ -34,18 +34,6 @@ module.exports = {
         }
       : {}),
 
-    // ── macOS notarization ────────────────────────────────────────────────────
-    // Requires: APPLE_ID, APPLE_PASSWORD (app-specific), APPLE_TEAM_ID env vars
-    // Skipped when any env var is missing (local dev builds).
-    ...(process.env.APPLE_ID && process.env.APPLE_PASSWORD && process.env.APPLE_TEAM_ID
-      ? {
-          osxNotarize: {
-            appleId: process.env.APPLE_ID,
-            appleIdPassword: process.env.APPLE_PASSWORD,
-            teamId: process.env.APPLE_TEAM_ID,
-          },
-        }
-      : {}),
   },
   rebuildConfig: {},
   makers: [
@@ -93,6 +81,37 @@ module.exports = {
       },
     },
   ],
+
+  hooks: {
+    postMake: async (config, makeResults) => {
+      if (!process.env.APPLE_ID ||
+          !process.env.APPLE_PASSWORD ||
+          !process.env.APPLE_TEAM_ID) {
+        console.log('Skipping notarization — env vars not set');
+        return makeResults;
+      }
+
+      const { notarize } = require('@electron/notarize');
+
+      for (const result of makeResults) {
+        for (const artifact of result.artifacts) {
+          if (!artifact.endsWith('.dmg')) continue;
+
+          console.log(`Notarizing ${artifact}...`);
+          await notarize({
+            tool: 'notarytool',
+            appPath: artifact,
+            appleId: process.env.APPLE_ID,
+            appleIdPassword: process.env.APPLE_PASSWORD,
+            teamId: process.env.APPLE_TEAM_ID,
+          });
+          console.log(`Notarized ${artifact}`);
+        }
+      }
+
+      return makeResults;
+    },
+  },
 
   plugins: [
     {
