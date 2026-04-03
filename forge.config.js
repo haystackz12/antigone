@@ -58,6 +58,13 @@ module.exports = {
       platforms: ['darwin'],
     },
     {
+      name: '@electron-forge/maker-dmg',
+      config: {
+        format: 'ULFO',
+        name: 'Antigone',
+      },
+    },
+    {
       name: '@electron-forge/maker-deb',
       config: {},
     },
@@ -84,6 +91,12 @@ module.exports = {
 
   hooks: {
     postMake: async (config, makeResults) => {
+      console.log('postMake hook running');
+      console.log('APPLE_ID:', process.env.APPLE_ID ? 'SET' : 'NOT SET');
+      console.log('APPLE_PASSWORD:', process.env.APPLE_PASSWORD ? 'SET' : 'NOT SET');
+      console.log('APPLE_TEAM_ID:', process.env.APPLE_TEAM_ID ? 'SET' : 'NOT SET');
+      console.log('artifacts:', makeResults.flatMap(r => r.artifacts));
+
       if (!process.env.APPLE_ID ||
           !process.env.APPLE_PASSWORD ||
           !process.env.APPLE_TEAM_ID) {
