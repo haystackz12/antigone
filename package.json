@@ -37,6 +37,7 @@
     "babel-loader": "^10.1.1",
     "copy-webpack-plugin": "^14.0.0",
     "css-loader": "^6.11.0",
+    "dotenv": "^17.4.0",
     "electron": "41.0.3",
     "mini-css-extract-plugin": "^2.10.1",
     "node-loader": "^2.1.0",
