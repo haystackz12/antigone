@@ -92,10 +92,24 @@ module.exports = {
   hooks: {
     postMake: async (config, makeResults) => {
       const { notarize } = require('@electron/notarize');
+      const { execSync } = require('child_process');
 
       for (const result of makeResults) {
         for (const artifact of result.artifacts) {
           if (!artifact.endsWith('.dmg')) continue;
+
+          // Sign the DMG first
+          console.log(`Signing DMG: ${artifact}`);
+          execSync(
+            `codesign --force --sign "Developer ID Application: MICHAEL LEE HASTINGS (FFQ2H8DFCV)" "${artifact}"`,
+            { stdio: 'inherit' }
+          );
+          console.log('DMG signed successfully.');
+
+          // Verify signature
+          execSync(`codesign -dv "${artifact}"`, { stdio: 'inherit' });
+
+          // Then notarize
           console.log(`Notarizing ${artifact}...`);
           try {
             await notarize({
@@ -103,9 +117,9 @@ module.exports = {
               appPath: artifact,
               keychainProfile: 'AntignoneNotarize',
             });
-            console.log(`Notarized successfully.`);
+            console.log('Notarized successfully.');
           } catch (e) {
-            console.log('Notarization skipped or failed:', e.message);
+            console.log('Notarization failed:', e.message);
           }
         }
       }
