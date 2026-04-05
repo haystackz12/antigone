@@ -176,7 +176,44 @@ app.whenReady().then(async () => {
   s.delete('session');
 
   createWindow();
-  await setupMenu(() => mainWindow, getStore);
+  try {
+    await setupMenu(() => mainWindow, getStore);
+  } catch (err) {
+    console.error('setupMenu failed:', err);
+    // Fallback — set a basic menu so File > Open works
+    const template = [
+      {
+        label: 'File',
+        submenu: [
+          {
+            label: 'Open...',
+            accelerator: 'CmdOrCtrl+O',
+            click: async () => {
+              const result = await dialog.showOpenDialog(mainWindow, {
+                properties: ['openFile'],
+                filters: [
+                  { name: 'Markdown', extensions: ['md', 'markdown', 'txt'] }
+                ]
+              });
+              if (!result.canceled && result.filePaths.length > 0) {
+                mainWindow.webContents.send('menu-open-file', result.filePaths[0]);
+              }
+            }
+          }
+        ]
+      },
+      { label: 'Edit', submenu: [
+        { role: 'undo' }, { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' }, { role: 'copy' }, { role: 'paste' }, { role: 'selectAll' }
+      ]},
+      { label: 'Window', submenu: [
+        { role: 'minimize' }, { role: 'zoom' }, { role: 'front' }
+      ]}
+    ];
+    const { Menu } = require('electron');
+    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+  }
   registerPreprocessorHandler();
 });
 
