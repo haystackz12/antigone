@@ -25,17 +25,44 @@ const os   = require('node:os');
 // ── Forge webpack injects these globals ──────────────────────────────────────
 /* global MAIN_WINDOW_WEBPACK_ENTRY, MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY */
 
-// electron-store v11 is ESM-only — loaded at runtime via webpack externals
-/** @type {import('electron-store').default|null} */
+// Simple JSON file store — replaces electron-store to avoid ESM/asar issues
 let store = null;
 
-async function getStore() {
-  if (!store) {
-    const mod = await import('electron-store');
-    const Store = mod.default || mod;
-    store = new Store();
+function getStoreSync() {
+  if (store) return store;
+  const storePath = path.join(app.getPath('userData'), 'config.json');
+  let data = {};
+  try { data = JSON.parse(fs.readFileSync(storePath, 'utf8')); } catch {}
+
+  function save() {
+    const dir = path.dirname(storePath);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(storePath, JSON.stringify(data, null, 2), 'utf8');
   }
+
+  store = {
+    get(key, defaultValue) {
+      return key in data ? data[key] : defaultValue;
+    },
+    set(keyOrObj, value) {
+      if (typeof keyOrObj === 'object') {
+        Object.assign(data, keyOrObj);
+      } else {
+        data[keyOrObj] = value;
+      }
+      save();
+    },
+    delete(key) {
+      delete data[key];
+      save();
+    },
+    get store() { return { ...data }; },
+  };
   return store;
+}
+
+async function getStore() {
+  return getStoreSync();
 }
 
 // ── Module-level state ───────────────────────────────────────────────────────
