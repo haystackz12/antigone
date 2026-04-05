@@ -11,14 +11,14 @@ let getMainWindow = null;
 let getStore = null;
 
 function buildMenu(recentFiles) {
-  const isMac = process.platform === 'darwin';
+  const isMac = true; // Antigone is Mac-only
   const win = () => getMainWindow();
 
-  // Recent Files submenu
+  // Recent Files submenu — fresh array each build to avoid shared references
   const recentSubmenu = recentFiles.length === 0
     ? [{ label: 'No Recent Files', enabled: false }]
     : [
-        ...recentFiles.map(fp => ({
+        ...recentFiles.slice().map(fp => ({
           label: path.basename(fp),
           click: () => win()?.webContents.send('open-file', fp),
         })),
@@ -129,8 +129,12 @@ function buildMenu(recentFiles) {
 async function rebuildMenu() {
   const s = await getStore();
   const recents = s.get('recentFiles', []);
-  const menu = buildMenu(recents);
-  Menu.setApplicationMenu(menu);
+  try {
+    const menu = buildMenu(recents);
+    Menu.setApplicationMenu(menu);
+  } catch (err) {
+    console.error('Menu build failed:', err);
+  }
 }
 
 async function addRecentFile(filePath) {
