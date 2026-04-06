@@ -107,11 +107,13 @@ function createWindow() {
     mainWindow.webContents.send('before-close');
   });
 
+  ipcMain.removeHandler('close-confirmed');
   ipcMain.handle('close-confirmed', () => {
     allowClose = true;
     mainWindow.close();
   });
 
+  ipcMain.removeHandler('show-unsaved-dialog');
   ipcMain.handle('show-unsaved-dialog', async () => {
     const { response } = await dialog.showMessageBox(mainWindow, {
       type: 'question',
@@ -256,6 +258,7 @@ app.on('activate', () => {
 
 // ── IPC: File read ───────────────────────────────────────────────────────────
 
+ipcMain.removeHandler('read-file');
 ipcMain.handle('read-file', async (_event, filePath) => {
   if (!filePath || typeof filePath !== 'string') {
     throw new Error('read-file: filePath must be a non-empty string');
@@ -266,6 +269,7 @@ ipcMain.handle('read-file', async (_event, filePath) => {
 
 // ── IPC: File write (atomic temp → rename) ───────────────────────────────────
 
+ipcMain.removeHandler('write-file');
 ipcMain.handle('write-file', async (_event, filePath, content) => {
   if (!filePath || typeof filePath !== 'string') {
     return { ok: false, error: 'write-file: filePath must be a non-empty string' };
@@ -290,6 +294,7 @@ ipcMain.handle('write-file', async (_event, filePath, content) => {
 
 // ── IPC: Open dialog ─────────────────────────────────────────────────────────
 
+ipcMain.removeHandler('open-dialog');
 ipcMain.handle('open-dialog', async () => {
   if (!mainWindow) return { canceled: true };
   const result = await dialog.showOpenDialog(mainWindow, {
@@ -310,6 +315,7 @@ ipcMain.handle('open-dialog', async () => {
 
 // ── IPC: Save-as dialog ──────────────────────────────────────────────────────
 
+ipcMain.removeHandler('save-dialog');
 ipcMain.handle('save-dialog', async (_event, defaultPath) => {
   if (!mainWindow) return { canceled: true };
   const result = await dialog.showSaveDialog(mainWindow, {
@@ -329,6 +335,7 @@ ipcMain.handle('save-dialog', async (_event, defaultPath) => {
 // Renderer calls this on a 30-second interval with the current doc content.
 // Written to OS temp dir — NEVER adjacent to the source file.
 
+ipcMain.removeHandler('write-recovery');
 ipcMain.handle('write-recovery', async (_event, tabId, content) => {
   if (typeof tabId !== 'string' || typeof content !== 'string') {
     throw new Error('write-recovery: invalid arguments');
@@ -340,6 +347,7 @@ ipcMain.handle('write-recovery', async (_event, tabId, content) => {
   return { ok: true, path: recoveryPath };
 });
 
+ipcMain.removeHandler('read-recovery');
 ipcMain.handle('read-recovery', async (_event, tabId) => {
   if (typeof tabId !== 'string') throw new Error('read-recovery: tabId must be string');
   const recoveryPath = path.join(
@@ -353,6 +361,7 @@ ipcMain.handle('read-recovery', async (_event, tabId) => {
   }
 });
 
+ipcMain.removeHandler('delete-recovery');
 ipcMain.handle('delete-recovery', async (_event, tabId) => {
   const recoveryPath = path.join(
     app.getPath('temp'), 'Antigone-recovery', `${tabId}.md`
@@ -365,6 +374,7 @@ ipcMain.handle('delete-recovery', async (_event, tabId) => {
 // Saves image data to an assets/ directory adjacent to the current file.
 // Returns the relative path for Markdown reference.
 
+ipcMain.removeHandler('save-image');
 ipcMain.handle('save-image', async (_event, filePath, filename, dataArray) => {
   if (!filePath || !filename || !dataArray) {
     return { ok: false, error: 'save-image: missing arguments' };
@@ -389,6 +399,7 @@ registerExportHandlers(() => mainWindow);
 // ── IPC: External link ───────────────────────────────────────────────────────
 // Renderer sends all external URL clicks here. Never navigates the editor pane.
 
+ipcMain.removeHandler('open-external');
 ipcMain.handle('open-external', async (_event, url) => {
   if (typeof url !== 'string' || !url.trim()) return { ok: false };
   let resolved = url;
@@ -402,6 +413,7 @@ ipcMain.handle('open-external', async (_event, url) => {
 
 // ── IPC: Native theme ────────────────────────────────────────────────────────
 
+ipcMain.removeHandler('get-native-theme');
 ipcMain.handle('get-native-theme', () => ({
   shouldUseDarkColors: nativeTheme.shouldUseDarkColors,
 }));
@@ -414,6 +426,7 @@ nativeTheme.on('updated', () => {
 
 // ── IPC: App paths ───────────────────────────────────────────────────────────
 
+ipcMain.removeHandler('get-app-paths');
 ipcMain.handle('get-app-paths', () => ({
   userData: app.getPath('userData'),   // ~/Library/Application Support/Antigone/
   temp:     app.getPath('temp'),
@@ -422,6 +435,7 @@ ipcMain.handle('get-app-paths', () => ({
 
 // ── IPC: List recovery files ────────────────────────────────────────────────
 
+ipcMain.removeHandler('list-recovery');
 ipcMain.handle('list-recovery', async () => {
   const recoveryDir = path.join(app.getPath('temp'), 'Antigone-recovery');
   try {
@@ -436,16 +450,19 @@ ipcMain.handle('list-recovery', async () => {
 
 // ── IPC: Preferences (electron-store) ───────────────────────────────────────
 
+ipcMain.removeHandler('get-prefs');
 ipcMain.handle('get-prefs', async () => {
   const s = await getStore();
   return s.store;
 });
 
+ipcMain.removeHandler('set-prefs');
 ipcMain.handle('set-prefs', async (_event, delta) => {
   const s = await getStore();
   s.set(delta);
 });
 
+ipcMain.removeHandler('set-native-theme');
 ipcMain.handle('set-native-theme', (_event, source) => {
   nativeTheme.themeSource = source; // 'light' | 'dark' | 'system'
 });

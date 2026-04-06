@@ -9,6 +9,7 @@ const fs   = require('node:fs');
 
 function registerExportHandlers(getMainWindow) {
 
+  ipcMain.removeHandler('export-pdf');
   ipcMain.handle('export-pdf', async (_event, html, defaultPath) => {
     const mainWindow = getMainWindow();
     if (!mainWindow) return { ok: false, error: 'No window' };
@@ -36,6 +37,7 @@ function registerExportHandlers(getMainWindow) {
     return { ok: true, path: result.filePath };
   });
 
+  ipcMain.removeHandler('export-html');
   ipcMain.handle('export-html', async (_event, html, defaultPath) => {
     const mainWindow = getMainWindow();
     if (!mainWindow) return { ok: false, error: 'No window' };
@@ -55,6 +57,7 @@ function registerExportHandlers(getMainWindow) {
 function registerPreprocessorHandler() {
   const path = require('node:path');
 
+  ipcMain.removeHandler('run-preprocessor');
   ipcMain.handle('run-preprocessor', async (_event, cmd, content, filePath) => {
     if (!cmd || typeof cmd !== 'string') return { ok: false, error: 'No command' };
     const { execFile } = require('node:child_process');
