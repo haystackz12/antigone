@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Antigone — A markdown editor that gets out of your way.</title>
+  <meta name="description" content="Antigone is a beautiful, focused markdown editor for Mac. Open it. Write. Close it. Your words live in plain .md files — readable anywhere, forever." />
+  <meta property="og:title" content="Antigone — A markdown editor that gets out of your way." />
+  <meta property="og:description" content="Beautiful. Focused. Yours. Free to download for macOS." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://antigone.app" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono&display=swap" rel="stylesheet" />
+  <script defer data-domain="antigone.app" src="https://plausible.io/js/script.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --font-heading: 'DM Serif Display', Georgia, serif;
+      --font-body: 'DM Sans', system-ui, sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --color-bg: #ffffff;
+      --color-bg-alt: #f8f8f8;
+      --color-text: #1a1a1a;
+      --color-text-muted: #666666;
+      --color-accent: #2a2a2a;
+      --color-border: #e8e8e8;
+      --color-parchment: #f5f0e8;
+      --color-cta: #1a1a1a;
+      --color-cta-text: #ffffff;
+      --color-pro: #9b6f2f;
+      --color-pro-bg: #fef3cd;
+      --max-width: 1100px;
+      --border-radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(8px);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      transition: border-bottom 0.2s;
+    }
+    nav.scrolled { border-bottom: 0.5px solid var(--color-border); }
+    .nav-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      color: var(--color-text);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--color-text); }
+    .nav-cta {
+      background: var(--color-cta);
+      color: var(--color-cta-text);
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .nav-cta:hover { opacity: 0.85; }
+    .nav-mobile-hide { display: flex; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px 60px;
+      background: var(--color-bg);
+    }
+    .hero-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      background: var(--color-text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 28px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    }
+    .hero-icon svg { width: 40px; height: 40px; }
+    #hero h1 {
+      font-family: var(--font-heading);
+      font-size: clamp(52px, 8vw, 88px);
+      letter-spacing: -0.03em;
+      line-height: 1.0;
+      margin-bottom: 20px;
+    }
+    .hero-tagline {
+      font-size: clamp(18px, 2.5vw, 22px);
+      color: var(--color-text-muted);
+      margin-bottom: 8px;
+      font-weight: 400;
+    }
+    .hero-sub {
+      font-family: var(--font-heading);
+      font-style: italic;
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--color-text-muted);
+      margin-bottom: 40px;
+    }
+    .hero-ctas {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .btn-primary {
+      background: var(--color-cta);
+      color: var(--color-cta-text);
+      padding: 0 28px;
+      height: 48px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-outlined {
+      background: transparent;
+      color: var(--color-cta);
+      border: 1.5px solid var(--color-cta);
+      padding: 0 28px;
+      height: 48px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-outlined:hover { background: var(--color-bg-alt); }
+    .hero-platform {
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 64px;
+    }
+    .hero-screenshot-wrap {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .screenshot-placeholder {
+      width: 100%;
+      aspect-ratio: 16/10;
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,0.3);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .screenshot-placeholder.dark { color: rgba(255,255,255,0.25); }
+    .window-chrome {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 36px;
+      background: rgba(0,0,0,0.04);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 7px;
+    }
+    .screenshot-placeholder.dark .window-chrome {
+      background: rgba(255,255,255,0.04);
+      border-bottom-color: rgba(255,255,255,0.06);
+    }
+    .dot { width: 11px; height: 11px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #28ca41; }
+
+    /* ── EDITORIAL ── */
+    #editorial {
+      background: var(--color-bg-alt);
+      padding: 120px 24px;
+      text-align: center;
+    }
+    .editorial-inner {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .editorial-lead {
+      font-family: var(--font-heading);
+      font-style: italic;
+      font-size: clamp(32px, 5vw, 48px);
+      line-height: 1.2;
+      margin-bottom: 40px;
+      letter-spacing: -0.02em;
+    }
+    .editorial-body p {
+      font-size: clamp(18px, 2.5vw, 22px);
+      color: #555;
+      line-height: 1.85;
+      margin-bottom: 0;
+    }
+    .editorial-body p + p { margin-top: 4px; }
+    .editorial-body .spacer { display: block; height: 28px; }
+    .editorial-body strong {
+      color: var(--color-text);
+      font-weight: 500;
+    }
+
+    /* ── FEATURES ── */
+    #features {
+      padding: 120px 24px;
+      background: var(--color-bg);
+    }
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: clamp(28px, 4vw, 40px);
+      letter-spacing: -0.02em;
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .features-grid {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .feature-card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius);
+      padding: 28px;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .feature-card:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+    .feature-icon {
+      font-size: 26px;
+      margin-bottom: 14px;
+      display: block;
+      line-height: 1;
+    }
+    .feature-card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+    .feature-card p {
+      font-size: 14px;
+      color: var(--color-text-muted);
+      line-height: 1.65;
+    }
+
+    /* ── THEMES ── */
+    #themes {
+      padding: 120px 24px;
+      background: var(--color-bg-alt);
+    }
+    .themes-inner { max-width: 960px; margin: 0 auto; }
+    .theme-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: 40px;
+    }
+    .theme-tab {
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.15s, border-color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      font-family: var(--font-body);
+    }
+    .theme-tab:hover { color: var(--color-text); }
+    .theme-tab.active {
+      color: var(--color-text);
+      border-bottom-color: var(--color-text);
+    }
+    .pro-badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: var(--color-pro-bg);
+      color: var(--color-pro);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .theme-panel { display: none; }
+    .theme-panel.active { display: block; }
+    .theme-caption {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 15px;
+      color: var(--color-text-muted);
+    }
+
+    /* ── DEEP DIVE ── */
+    #deepdive {
+      padding: 120px 24px;
+      background: var(--color-bg);
+    }
+    .deepdive-inner { max-width: var(--max-width); margin: 0 auto; }
+    .deepdive-block {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      margin-bottom: 100px;
+    }
+    .deepdive-block:last-child { margin-bottom: 0; }
+    .deepdive-block.reverse .deepdive-text { order: -1; }
+    .deepdive-text h2 {
+      font-family: var(--font-heading);
+      font-size: clamp(28px, 3.5vw, 36px);
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      line-height: 1.15;
+    }
+    .deepdive-text p {
+      font-size: 17px;
+      color: #555;
+      line-height: 1.75;
+      margin-bottom: 12px;
+    }
+    .deepdive-text p:last-child { margin-bottom: 0; }
+
+    /* ── PRICING ── */
+    #pricing {
+      padding: 120px 24px;
+      background: var(--color-bg-alt);
+    }
+    .pricing-cards {
+      max-width: 700px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .pricing-card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      padding: 36px 32px;
+    }
+    .pricing-card.pro {
+      border: 2px solid var(--color-text);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .pricing-best {
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-text);
+      color: white;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .pricing-tier {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      margin-bottom: 12px;
+    }
+    .pricing-price {
+      font-family: var(--font-heading);
+      font-size: 52px;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .pricing-period {
+      font-size: 14px;
+      color: var(--color-text-muted);
+      margin-bottom: 28px;
+    }
+    .pricing-features {
+      list-style: none;
+      margin-bottom: 28px;
+    }
+    .pricing-features li {
+      font-size: 14px;
+      color: var(--color-text-muted);
+      padding: 5px 0;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .pricing-features li::before {
+      content: '✓';
+      color: var(--color-text);
+      font-weight: 600;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .pricing-features .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      opacity: 0.6;
+      padding-top: 10px;
+      padding-bottom: 2px;
+      border-top: 1px solid var(--color-border);
+      margin-top: 8px;
+      display: block;
+    }
+    .pricing-features .section-label::before { display: none; }
+    .pricing-cta {
+      display: block;
+      text-align: center;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: opacity 0.15s, background 0.15s;
+    }
+    .pricing-cta.dark {
+      background: var(--color-text);
+      color: white;
+    }
+    .pricing-cta.dark:hover { opacity: 0.85; }
+    .pricing-cta.outlined {
+      border: 1.5px solid var(--color-text);
+      color: var(--color-text);
+    }
+    .pricing-cta.outlined:hover { background: var(--color-bg-alt); }
+    .pricing-note {
+      text-align: center;
+      margin-top: 28px;
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    /* ── ABOUT ── */
+    #about {
+      padding: 120px 24px;
+      background: var(--color-bg);
+      text-align: center;
+    }
+    .about-inner { max-width: 600px; margin: 0 auto; }
+    .about-lead {
+      font-family: var(--font-heading);
+      font-style: italic;
+      font-size: clamp(32px, 5vw, 48px);
+      letter-spacing: -0.02em;
+      margin-bottom: 28px;
+      line-height: 1.15;
+    }
+    .about-body {
+      font-size: clamp(17px, 2vw, 20px);
+      color: var(--color-text-muted);
+      line-height: 1.8;
+    }
+    .about-body p + p { margin-top: 16px; }
+
+    /* ── FINAL CTA ── */
+    #cta {
+      padding: 120px 24px;
+      background: #1a1a1a;
+      text-align: center;
+    }
+    #cta h2 {
+      font-family: var(--font-heading);
+      font-size: clamp(48px, 8vw, 80px);
+      color: white;
+      letter-spacing: -0.03em;
+      line-height: 1.0;
+      margin-bottom: 40px;
+    }
+    #cta .hero-ctas { margin-bottom: 28px; }
+    .btn-primary.inverted {
+      background: white;
+      color: #1a1a1a;
+    }
+    .btn-outlined.inverted {
+      border-color: rgba(255,255,255,0.4);
+      color: white;
+    }
+    .btn-outlined.inverted:hover { background: rgba(255,255,255,0.08); }
+    #cta .support-email {
+      font-size: 14px;
+      color: rgba(255,255,255,0.35);
+    }
+    #cta .support-email a {
+      color: rgba(255,255,255,0.45);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    #cta .support-email a:hover { color: rgba(255,255,255,0.7); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--color-bg-alt);
+      padding: 48px 24px;
+    }
+    .footer-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .footer-logo {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      color: var(--color-text);
+      text-decoration: none;
+    }
+    .footer-center {
+      font-size: 13px;
+      color: #aaa;
+      text-align: center;
+    }
+    .footer-center a {
+      color: #aaa;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer-center a:hover { color: var(--color-text); }
+    .footer-center .divider { margin: 0 8px; opacity: 0.4; }
+    .footer-social {
+      display: flex;
+      gap: 16px;
+    }
+    .footer-social a {
+      color: #bbb;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer-social a:hover { color: var(--color-text); }
+    .footer-social svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .deepdive-block {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        margin-bottom: 64px;
+      }
+      .deepdive-block.reverse .deepdive-text { order: unset; }
+      .pricing-cards { grid-template-columns: 1fr; max-width: 360px; }
+      .theme-tab { padding: 10px 14px; font-size: 14px; }
+      .footer-inner { justify-content: center; text-align: center; }
+      .nav-mobile-hide { display: none; }
+    }
+    @media (max-width: 480px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .hero-ctas { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav id="main-nav">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-logo">Antigone</a>
+    <ul class="nav-links nav-mobile-hide">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#themes">Themes</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+    </ul>
+    <a href="https://delightfuldev.gumroad.com/l/antigone-free" class="nav-cta">Download Free</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-icon">
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="6" y="8" width="28" height="3" rx="1.5" fill="white" opacity="0.9"/>
+      <rect x="6" y="15" width="20" height="2.5" rx="1.25" fill="white" opacity="0.6"/>
+      <rect x="6" y="21" width="24" height="2.5" rx="1.25" fill="white" opacity="0.6"/>
+      <rect x="6" y="27" width="14" height="2.5" rx="1.25" fill="white" opacity="0.4"/>
+    </svg>
+  </div>
+
+  <h1>Antigone</h1>
+  <p class="hero-tagline">A markdown editor that gets out of your way.</p>
+  <p class="hero-sub">Beautiful. Focused. Yours.</p>
+
+  <div class="hero-ctas">
+    <a href="https://delightfuldev.gumroad.com/l/antigone-free" class="btn-primary">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v10M4 7l4 4 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13h12" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Download Free
+    </a>
+    <a href="https://delightfuldev.gumroad.com/l/antigone-pro" class="btn-outlined">Get Pro — $14.99</a>
+  </div>
+  <p class="hero-platform">For macOS 12 or later · Apple Silicon &amp; Intel · No account required</p>
+
+  <div class="hero-screenshot-wrap">
+    <div class="screenshot-placeholder" style="background:#f9f9f9;">
+      <div class="window-chrome">
+        <span class="dot dot-r"></span>
+        <span class="dot dot-y"></span>
+        <span class="dot dot-g"></span>
+      </div>
+      White Theme — Split View
+    </div>
+  </div>
+</section>
+
+<!-- ── EDITORIAL ── -->
+<section id="editorial">
+  <div class="editorial-inner reveal">
+    <p class="editorial-lead">Most writing apps want to be everything.<br>Antigone wants to be one thing.</p>
+    <div class="editorial-body">
+      <p>Note-taking apps became databases.<br>
+      Document editors became collaboration suites.<br>
+      Markdown editors became developer tools.</p>
+      <span class="spacer"></span>
+      <p><strong>Antigone is just a writing app.</strong><br>
+      Open it. Write. Close it.<br>
+      Your words live in plain .md files —<br>
+      readable anywhere, forever.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section id="features">
+  <h2 class="section-title reveal">Everything you need. Nothing you don't.</h2>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <span class="feature-icon">◫</span>
+      <h3>Split view</h3>
+      <p>Write markdown on the left, see the preview on the right. Switch to full editor or full preview anytime.</p>
+    </div>
+    <div class="feature-card reveal reveal-delay-1">
+      <span class="feature-icon">⌁</span>
+      <h3>Focus mode</h3>
+      <p>Dim every line except the one you're writing. Stay in the moment.</p>
+    </div>
+    <div class="feature-card reveal reveal-delay-2">
+      <span class="feature-icon">☾</span>
+      <h3>Four themes</h3>
+      <p>White, Parchment, Sepia, and Midnight. A theme for every mood and every hour.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">#</span>
+      <h3>Tags</h3>
+      <p>Add #tags anywhere in your document. Find everything instantly.</p>
+    </div>
+    <div class="feature-card reveal reveal-delay-1">
+      <span class="feature-icon">⌘</span>
+      <h3>Keyboard first</h3>
+      <p>Every action has a shortcut. Your hands never leave the keys.</p>
+    </div>
+    <div class="feature-card reveal reveal-delay-2">
+      <span class="feature-icon">∞</span>
+      <h3>Plain files</h3>
+      <p>Standard .md files. No proprietary format. No lock-in. Edit in any app.</p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">⚡</span>
+      <h3>Instant launch</h3>
+      <p>No loading screens. No splash page. Opens in under a second.</p>
+    </div>
+    <div class="feature-card reveal reveal-delay-1">
+      <span class="feature-icon">🔒</span>
+      <h3>Completely private</h3>
+      <p>Your files never leave your Mac. No account. No cloud. No tracking.</p>
+    </div>
+    <div class="feature-card reveal reveal-delay-2">
+      <span class="feature-icon">✦</span>
+      <h3>Markdown complete</h3>
+      <p>Tables, task lists, footnotes, callouts, emoji, highlight, and more.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── THEMES ── -->
+<section id="themes">
+  <h2 class="section-title reveal">Four themes. One for every mood.</h2>
+  <div class="themes-inner">
+    <div class="theme-tabs">
+      <button class="theme-tab active" data-theme="white">White</button>
+      <button class="theme-tab" data-theme="parchment">Parchment</button>
+      <button class="theme-tab" data-theme="sepia">Sepia</button>
+      <button class="theme-tab" data-theme="midnight">Midnight <span class="pro-badge">Pro</span></button>
+    </div>
+
+    <div class="theme-panel active" id="theme-white">
+      <div class="screenshot-placeholder" style="background:#f9f9f9;">
+        <div class="window-chrome">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        </div>
+        White Theme
+      </div>
+      <p class="theme-caption">Clean and bright. The classic writing environment.</p>
+    </div>
+
+    <div class="theme-panel" id="theme-parchment">
+      <div class="screenshot-placeholder" style="background:#f5f0e8;">
+        <div class="window-chrome" style="background:rgba(0,0,0,0.03); border-bottom-color:rgba(0,0,0,0.05);">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        </div>
+        Parchment Theme
+      </div>
+      <p class="theme-caption">Warm cream. Easy on the eyes for long sessions.</p>
+    </div>
+
+    <div class="theme-panel" id="theme-sepia">
+      <div class="screenshot-placeholder" style="background:#f4ecd8;">
+        <div class="window-chrome" style="background:rgba(0,0,0,0.03); border-bottom-color:rgba(0,0,0,0.05);">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        </div>
+        Sepia Theme
+      </div>
+      <p class="theme-caption">Deep warmth. Like writing on aged paper.</p>
+    </div>
+
+    <div class="theme-panel" id="theme-midnight">
+      <div class="screenshot-placeholder dark" style="background:#0d0d0d;">
+        <div class="window-chrome" style="background:rgba(255,255,255,0.04); border-bottom-color:rgba(255,255,255,0.06);">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        </div>
+        Midnight Theme — Pro
+      </div>
+      <p class="theme-caption">Dark and focused. For late-night writers.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── DEEP DIVE ── -->
+<section id="deepdive">
+  <div class="deepdive-inner">
+
+    <div class="deepdive-block">
+      <div class="screenshot-placeholder" style="background:#f9f9f9; flex-shrink:0;">
+        <div class="window-chrome">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        </div>
+        Split View
+      </div>
+      <div class="deepdive-text reveal">
+        <h2>Write and preview.<br>Side by side.</h2>
+        <p>See your markdown rendered in real time. Split view keeps your source and preview in perfect sync — scroll together, write freely.</p>
+        <p>Switch to editor-only when you need to focus. Preview-only when you want to read.</p>
+      </div>
+    </div>
+
+    <div class="deepdive-block reverse">
+      <div class="screenshot-placeholder" style="background:#f9f9f9; flex-shrink:0;">
+        <div class="window-chrome">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        </div>
+        Focus Mode
+      </div>
+      <div class="deepdive-text reveal">
+        <h2>The rest of the world can wait.</h2>
+        <p>Focus mode dims every line except the one you're writing. Your attention stays exactly where it needs to be.</p>
+        <p>Press Escape to return to the world.</p>
+      </div>
+    </div>
+
+    <div class="deepdive-block">
+      <div class="screenshot-placeholder" style="background:#f5f5f5; flex-shrink:0;">
+        <div class="window-chrome">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        </div>
+        Preferences
+      </div>
+      <div class="deepdive-text reveal">
+        <h2>Your editor.<br>Your mood.</h2>
+        <p>Four carefully designed themes ship with Antigone. White and Parchment are free. Sepia and Midnight unlock with Pro.</p>
+        <p>One click to switch. Instant. Beautiful.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── PRICING ── -->
+<section id="pricing">
+  <h2 class="section-title reveal">Simple pricing. No surprises.</h2>
+  <div class="pricing-cards">
+
+    <div class="pricing-card reveal">
+      <div class="pricing-tier">Free</div>
+      <div class="pricing-price">$0</div>
+      <div class="pricing-period">forever</div>
+      <ul class="pricing-features">
+        <li>Full markdown editor</li>
+        <li>White theme</li>
+        <li>Parchment theme</li>
+        <li>Split view</li>
+        <li>Focus mode</li>
+        <li>Tags</li>
+        <li>Keyboard shortcuts</li>
+        <li>Plain .md files</li>
+        <li>No account required</li>
+      </ul>
+      <a href="https://delightfuldev.gumroad.com/l/antigone-free" class="pricing-cta outlined">Download Free →</a>
+    </div>
+
+    <div class="pricing-card pro reveal reveal-delay-1">
+      <div class="pricing-best">Best Value</div>
+      <div class="pricing-tier">Pro</div>
+      <div class="pricing-price">$14.99</div>
+      <div class="pricing-period">one-time purchase</div>
+      <ul class="pricing-features">
+        <li>Everything in Free, plus:</li>
+        <span class="section-label">Themes</span>
+        <li>Midnight theme</li>
+        <li>Sepia theme</li>
+        <li>All future Pro themes</li>
+        <span class="section-label">Support</span>
+        <li>Priority support</li>
+      </ul>
+      <a href="https://delightfuldev.gumroad.com/l/antigone-pro" class="pricing-cta dark">Get Pro — $14.99 →</a>
+    </div>
+
+  </div>
+  <p class="pricing-note">macOS 12+ · Apple Silicon &amp; Intel · No subscription · No cloud</p>
+</section>
+
+<!-- ── ABOUT ── -->
+<section id="about">
+  <div class="about-inner reveal">
+    <p class="about-lead">Built with care.</p>
+    <div class="about-body">
+      <p>Antigone is an independent Mac app built for writers who want a tool that respects their time and their words.</p>
+      <p>No venture capital. No growth targets. No dark patterns.<br>Just a writing app, built by writers, for writers.</p>
+      <p>Made by Delightful Development.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FINAL CTA ── -->
+<section id="cta">
+  <h2>Start writing.</h2>
+  <div class="hero-ctas">
+    <a href="https://delightfuldev.gumroad.com/l/antigone-free" class="btn-primary inverted">Download Free</a>
+    <a href="https://delightfuldev.gumroad.com/l/antigone-pro" class="btn-outlined inverted">Get Pro — $14.99</a>
+  </div>
+  <p class="support-email"><a href="mailto:support@antigone.app">support@antigone.app</a></p>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <a href="#hero" class="footer-logo">Antigone</a>
+    <div class="footer-center">
+      <div style="margin-bottom:8px;">
+        <a href="https://twitter.com/antigoneapp">Twitter</a><span class="divider">·</span>
+        <a href="https://mastodon.social/@antigoneapp">Mastodon</a><span class="divider">·</span>
+        <a href="https://bsky.app/profile/antigone.app">Bluesky</a>
+      </div>
+      <div>
+        <a href="/privacy.html">Privacy Policy</a><span class="divider">·</span>
+        <a href="/terms.html">Terms of Service</a><span class="divider">·</span>
+        <a href="mailto:support@antigone.app">support@antigone.app</a>
+      </div>
+    </div>
+    <div style="font-size:13px; color:#aaa;">© 2026 Delightful Development</div>
+  </div>
+</footer>
+
+<script>
+  // Sticky nav border on scroll
+  const nav = document.getElementById('main-nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 10);
+  });
+
+  // Theme tab switcher
+  document.querySelectorAll('.theme-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.theme-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.theme-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('theme-' + tab.dataset.theme).classList.add('active');
+    });
+  });
+
+  // Scroll reveal
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+</script>
+
+</body>
+</html>
