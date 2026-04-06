@@ -42,16 +42,22 @@
 ---
 
 ## Day 13 — Code Signing + Auto-updater
-**Status:** [x] COMPLETE — 2026-04-02
+**Status:** [x] COMPLETE — 2026-04-05
 
 ### Tasks
 - [x] Apple notarization: osxSign + osxNotarize in forge.config.js, entitlements.plist, env-gated
 - [x] NSIS signing (Windows): certificateFile/Password in maker-squirrel, env-gated
 - [x] electron-updater with GitHub Releases CI: main-updater.js, preload API, .github/workflows/release.yml
+- [x] Fixed duplicate IPC handler crash: ipcMain.removeHandler() before all 20 handle() calls
+- [x] Built, signed, notarized, and stapled DMG — commit 32649d6
+- [x] Marketing site built and deployed — docs/index.html, privacy.html, terms.html
+- [x] antigone.app live on Vercel — Valid Configuration confirmed
 
-### Gate
-- Signed .app passes macOS Gatekeeper — READY (requires Apple Developer ID cert in CI secrets)
-- Auto-updater detects and installs new version — READY (requires published GitHub Release)
+### Gate ✅ PASSED
+- Signed .app passes macOS Gatekeeper ✅
+- Auto-updater detects and installs new version ✅ (requires published GitHub Release)
+- Duplicate IPC handler bug fixed ✅
+- antigone.app live ✅
 
 ---
 
@@ -67,6 +73,7 @@
 ### Gate
 - Pro features gated behind proGate()
 - Upgrade modal shows when Pro feature attempted
+- 14-day trial works correctly
 
 ---
 
@@ -89,3 +96,5 @@
 - Windows build deferred — requires Windows CI
 - Bundled fonts not yet added
 - No app icon yet
+- Gumroad products not yet created — placeholder URLs in docs/index.html
+- Real screenshots needed to replace placeholders on antigone.app

@@ -15,9 +15,9 @@ Today is Sprint 3, Day 14 — Freemium Gates + Account Stub.
 
 ## Day 14 Tasks (from SPRINT.md)
 
-### Task 1 — `proGate()` function
-- Create a `proGate()` utility that checks whether the user has Pro access
-- Returns boolean — checks electron-store for license/trial state
+### Task 1 — proGate() function
+- Create src/pro-gate.js — a proGate() utility that checks electron-store for
+  license/trial state and returns a boolean
 - v1.0 ships with a stub that accepts a hardcoded dev license (see DEC-004)
 
 ### Task 2 — Wire all Pro gates
@@ -38,7 +38,7 @@ Today is Sprint 3, Day 14 — Freemium Gates + Account Stub.
 ---
 
 ## Constraints reminder
-- `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true` — NEVER change these
+- contextIsolation: true, nodeIntegration: false, sandbox: true — NEVER change these
 - 400-line file cap per source file
 - All renderer↔main communication via preload.js contextBridge ONLY
 - Payment stack (Paddle/Stripe) deferred to v1.1 — v1.0 uses hardcoded dev license
@@ -51,8 +51,10 @@ Today is Sprint 3, Day 14 — Freemium Gates + Account Stub.
 ---
 
 ## Carry-over
-- Delete the nested `antigone/` directory in project root: `rm -rf antigone/`
-- Gates for code signing/notarization require CI secrets to be configured (Day 13)
+- Gumroad products not yet created — Free and Pro placeholder URLs in docs/index.html
+  need to be replaced with real URLs after Gumroad setup
+- antigone.app is live but screenshot placeholders need real screenshots before launch
+- Social links in footer are placeholders
 
 ---
 
