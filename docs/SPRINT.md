@@ -73,17 +73,21 @@
 ---
 
 ## Day 15 — Full Test Pass + v1.0 Release
-**Status:** [ ] Not started
+**Status:** [x] COMPLETE — 2026-09-09
 
 ### Tasks
-- [ ] 21-item checklist
-- [ ] README.md
-- [ ] CHANGELOG.md
-- [ ] Tag v1.0.0
+- [x] Full release checklist — 14 bugs found and fixed (BUG-039 through BUG-052)
+- [x] README.md — user-facing with features, installation, data paths
+- [x] CHANGELOG.md — v1.0.0 entry for Sprints 1-3
+- [x] App icon — serif A on parchment, .icns via iconutil
+- [x] DEC-033 — Day 14 cancelled, v1.0 ships fully free
+- [x] DEC-034 — Save-time mtime conflict check
+- [x] Tag v1.0.0 — GitHub Release with notarized DMG
 
-### Gate
-- All checklist items pass
-- v1.0.0 tagged and pushed
+### Gate ✅ PASSED
+- All checklist items pass (with noted v1.1 deferrals) ✅
+- v1.0.0 tagged and pushed ✅
+- GitHub Release with notarized DMG ✅
 
 ---
 
