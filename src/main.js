@@ -102,10 +102,23 @@ function createWindow() {
 
   // ── Unsaved changes: intercept close ────────────────────────────────────
   let allowClose = false;
+  let isQuitting = false;
+  let quitAfterClose = false;
+
+  app.on('before-quit', (e) => {
+    if (!allowClose) {
+      // Cmd+Q while unsaved-changes flow hasn't completed — let the
+      // close handler deal with it, but remember we want to quit after.
+      isQuitting = true;
+    }
+  });
 
   mainWindow.on('close', (e) => {
     if (allowClose) return;
     e.preventDefault();
+    // Snapshot whether this close was initiated by quit (Cmd+Q)
+    quitAfterClose = isQuitting;
+    isQuitting = false; // reset so a cancelled dialog doesn't pollute later Cmd+W
     mainWindow.webContents.send('before-close');
   });
 
@@ -113,6 +126,8 @@ function createWindow() {
   ipcMain.handle('close-confirmed', () => {
     allowClose = true;
     mainWindow.close();
+    // If this close was triggered by Cmd+Q, finish quitting the app
+    if (quitAfterClose) app.quit();
   });
 
   ipcMain.removeHandler('show-unsaved-dialog');

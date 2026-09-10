@@ -3,6 +3,15 @@
 
 ## Active bugs
 
+### BUG-052 — Cmd+Q requires two presses to quit
+- **Found:** 2026-09-09, v1.0 release checklist
+- **Severity:** Medium
+- **Status:** Resolved — 2026-09-09
+- **Symptom:** Cmd+Q closes the window but the app stays running in the dock; a second Cmd+Q is needed.
+- **Root cause:** `win.on('close')` calls `e.preventDefault()` for the unsaved-changes dialog, which also cancels the app quit. After `closeConfirmed` closes the window, the app stays alive because `window-all-closed` doesn't call `app.quit()` on macOS (by design — dock apps stay running).
+- **Fix:** Track `before-quit` with an `isQuitting` flag. Snapshot it as `quitAfterClose` when the close handler fires, then reset `isQuitting` (so a cancelled dialog doesn't pollute a later Cmd+W). In `close-confirmed`, call `app.quit()` if `quitAfterClose` is true.
+- **Files involved:** `src/main.js`
+
 ### BUG-051 — Theme selection doesn't persist across sessions
 - **Found:** 2026-09-09, v1.0 release checklist
 - **Severity:** Medium

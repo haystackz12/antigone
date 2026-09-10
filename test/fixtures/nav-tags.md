@@ -10,12 +10,12 @@ More text. Another #project/plain tag.
 ### Heading Three
 `code block with misspelled inside should not underline`
 wilsss
-mispeled word here
+mispeled word hereasdfadf
 <!-- pagebreak --> 
 The slow brown fox jumps over the lazy dog. The slow brown fox jumps over the lazy dog. The slow brown fox jumps over the lazy dog. The slow brown fox jumps over the lazy dog. The slow brown fox jumps over the lazy dog. The slow brown fox jumps over the lazy dog. The slow brown fox
 asdfasdfasdfasdfasdfasdfasdfasdf dfdd eeee sssss sagginh 
 #project/plain
-receive
+receivecd ~/Projects/antigone && npm start
 definitely
 
 1 - pass
