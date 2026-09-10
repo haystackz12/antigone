@@ -2,7 +2,117 @@
 > Log bugs here as they are found. Mark status. Move to "Resolved" section when fixed.
 
 ## Active bugs
-None.
+
+### BUG-051 — Theme selection doesn't persist across sessions
+- **Found:** 2026-09-09, v1.0 release checklist
+- **Severity:** Medium
+- **Status:** Resolved — 2026-09-09
+- **Symptom:** Selecting a theme (e.g. Midnight) and relaunching reverts to White.
+- **Root cause:** Three issues: (1) Theme picker in prefs-ui.js didn't call `setPrefs` to save the selection. (2) `app.whenReady()` in main.js forced `editorTheme: 'white'` on every launch, overwriting any saved preference. (3) Stale `"theme": "light"` key from removed dark mode (DEC-032) lingered in config.json.
+- **Fix:** (1) Added `setPrefs({ editorTheme })` call in theme picker click handler. (2) Removed the forced `s.set('editorTheme', 'white')` from main.js startup. (3) Added `s.delete('theme')` to clean up the stale key. Also removed wasteful `session.tabs` writes in tabs.js (never restored per DEC-023).
+- **Files involved:** `src/prefs-ui.js`, `src/main.js`, `src/tabs.js`
+
+### BUG-048 — Nested tags (#project/antigone) indexed as #project only
+- **Found:** 2026-09-09, v1.0 release checklist
+- **Severity:** Medium
+- **Status:** Resolved — 2026-09-09
+- **Symptom:** `#project/antigone` indexed as `project` instead of `project/antigone` in the tag sidebar.
+- **Root cause:** `TAG_REGEX` in tags.js used `#([a-zA-Z][\w-]*)` which stopped at `/`. Autocomplete `matchBefore` in editor.js also excluded `/`.
+- **Fix:** Extended TAG_REGEX to `#([a-zA-Z][\w-]*(?:\/[\w-]+)*)` and autocomplete regex to `/#[\w\-\/]*/`.
+- **Files involved:** `src/tags.js`, `src/editor.js`
+
+### BUG-049 — No right-click suggestions for misspelled words
+- **Found:** 2026-09-09, v1.0 release checklist
+- **Severity:** Medium
+- **Status:** Resolved — 2026-09-09
+- **Symptom:** Right-clicking a misspelled word shows no suggestions or "Add to Dictionary" option.
+- **Root cause:** No `webContents.on('context-menu')` handler in main.js. Initial fix using `webContents.replaceMisspelling()` failed because CM6 rejects direct DOM mutations.
+- **Fix:** Added context-menu handler that sends misspelled word, suggestion, and click coordinates via IPC to the renderer. Renderer uses CM6's `posAtCoords` to find the word position and `view.dispatch` to replace it. "Add to Dictionary" uses `session.addWordToSpellCheckerDictionary`.
+- **Files involved:** `src/main.js`, `src/preload.js`, `src/renderer.js`
+
+### BUG-047 — Crash recovery files deleted on startup before check
+- **Found:** 2026-09-09, v1.0 release checklist
+- **Severity:** High
+- **Status:** Resolved — 2026-09-09
+- **Symptom:** After kill -9 and relaunch, no recovery banner appears despite recovery files existing on disk.
+- **Root cause:** `renderer.js` lines 27-32 unconditionally deleted ALL recovery files on startup ("prevents banner flash") before `initEditor()` → `checkRecovery()` had a chance to find and offer them.
+- **Fix:** Removed the unconditional deletion. Recovery files are now only deleted by `checkRecovery()` (after user chooses Restore or Dismiss) and by `stopRecovery()` on clean exit.
+- **Files involved:** `src/renderer.js`
+
+### BUG-046 — Auto-save appeared broken (config state issue)
+- **Found:** 2026-09-09, v1.0 release checklist
+- **Severity:** Low
+- **Status:** Resolved — 2026-09-09 (no code change needed)
+- **Symptom:** Auto-save didn't write changes to disk during initial test.
+- **Root cause:** Not a code bug. The auto-save setting in `config.json` was toggled during testing (BUG-040 investigation) and the store's in-memory cache didn't match the file on disk. After a clean restart with `autoSave: true` confirmed in config, auto-save works correctly: `scheduleAutoSave` fires, mtime guard passes, `writeFile` succeeds.
+- **Files involved:** None (config state issue)
+
+### BUG-045 — Inline image renders infinite loop on 404
+- **Found:** 2026-09-09, v1.0 release checklist
+- **Severity:** Critical
+- **Status:** Resolved — 2026-09-09
+- **Symptom:** After pasting a screenshot and moving the cursor off the `![]()` line, the editor freezes and console floods with 404 errors for the image, each triggering a new render cycle.
+- **Root cause:** `img.onerror` in `inline-render.js` called `img.parentNode.insertBefore(span, img)`, inserting a new DOM node inside CM6's content area. CM6's `MutationObserver` detected this as a DOM change, called `applyDOMChange`, which re-rendered decorations, creating a new `<img>` widget → 404 → `onerror` → infinite loop.
+- **Fix:** Changed `insertBefore` to `replaceChild` — the `<img>` is replaced by the `<span>` fallback, so no new node is inserted and CM6 doesn't see a content change.
+- **Files involved:** `src/inline-render.js`
+
+### BUG-043 — Cmd+B/I/K do nothing (bold, italic, link shortcuts)
+- **Found:** 2026-09-08, v1.0 release checklist
+- **Severity:** Medium
+- **Status:** Resolved — 2026-09-08
+- **Symptom:** Cmd+B to bold selected text has no visible effect.
+- **Root cause:** Both CM6's keymap (editor.js) and a `document.addEventListener('keydown')` handler (toolbar.js) handled Cmd+B. Both called `wrapSelection('**')`. The first call added `**` markers, the second call detected them and removed them — net zero. Double-toggle on every keypress.
+- **Fix:** Removed the redundant `setupKeyboardShortcuts()` from toolbar.js. Bold/italic/link are handled exclusively by CM6's keymap in editor.js.
+- **Files involved:** `src/toolbar.js`
+
+### BUG-044 — Paste image from clipboard inserts reference hundreds of times
+- **Found:** 2026-09-08, v1.0 release checklist
+- **Severity:** Critical
+- **Status:** Resolved — 2026-09-08
+- **Symptom:** Pasting a screenshot from clipboard inserts the `![]()` reference ~1000 times in an infinite loop.
+- **Root cause:** `setupImagePaste()` added a `document.addEventListener('paste')` handler on every call. Electron Forge's webpack plugin enables HMR (`hot: true`), which re-ran `toolbar.init()` on each hot reload, accumulating duplicate paste listeners. Each listener independently handled the paste event.
+- **Fix:** Store the paste handler reference and `removeEventListener` before re-adding. Only one listener is ever active.
+- **Files involved:** `src/toolbar.js`
+
+### BUG-042 — New tab inherits active tab's title
+- **Found:** 2026-09-08, v1.0 release checklist
+- **Severity:** Medium
+- **Status:** Resolved — 2026-09-08
+- **Symptom:** Clicking + after Save As creates a new tab that shows the previous tab's filename instead of "Untitled".
+- **Root cause:** `loadContent()` set `currentFilePath` AFTER `view.dispatch()`. The dispatch fires the `updateListener` synchronously, which calls `onDocChange()` → `updateTabBar(fileNameFromPath(currentFilePath), true)`. At that point `currentFilePath` was still the previous file's path, so the DOM tab title was patched with the stale name.
+- **Fix:** Moved `currentFilePath = filePath` and `isDirty = false` before `view.dispatch()` in `loadContent()`, so the synchronous update listener sees the correct path and dirty state.
+- **Files involved:** `src/editor.js`
+
+### BUG-041 — No external file change detection (watcher removed, never re-added)
+- **Found:** 2026-09-08, v1.0 release checklist item 7
+- **Severity:** Medium
+- **Status:** Resolved (partial) — 2026-09-08
+- **Symptom:** Editing an open file externally (e.g. `echo "text" >> file.md`) produces no reload banner.
+- **Root cause:** `fs.watch`, the `#file-changed-banner` UI, and all watcher IPC were intentionally removed in Sprint 1 (DEC-019) to fix the self-watch loop (BUG-003B). DEC-019 said "revisit in Sprint 2 with content hash comparison" but it was never re-implemented.
+- **v1.0 fix (DEC-034):** Save-time conflict check — mtime recorded at open and after each save; before writing, stat is compared and an Overwrite/Cancel dialog shown if the file was modified externally. Live watcher deferred to v1.1.
+- **Files involved:** `src/main.js`, `src/preload.js`, `src/editor-save.js`, `src/editor.js`
+
+---
+
+## Resolved — v1.0 release checklist
+
+### BUG-039 — Tab title bleeds across tabs after Save As
+- **Found:** 2026-09-08, v1.0 release checklist
+- **Severity:** Medium
+- **Status:** Resolved — 2026-09-08
+- **Symptom:** After Save As, opening a second file shows both tabs with the Save As filename.
+- **Root cause:** `saveFile()` in editor-save.js updated `currentFilePath` (the editor.js module variable) but never synced `tab.filePath` in the tabs.js data model. When `renderTabBar()` re-rendered from the stale `tabs[]` array, titles were wrong.
+- **Fix:** Added `setActiveTabPath()` function to tabs.js. Wired it into editor-save.js via `configure()`. Called after `setCurrentPath(targetPath)` in `saveFile()` so both the editor module and tab data model stay in sync.
+- **Files involved:** `src/tabs.js`, `src/editor-save.js`, `src/editor.js`
+
+### BUG-040 — Cmd+W on modified file closes without unsaved-changes prompt
+- **Found:** 2026-09-08, v1.0 release checklist
+- **Severity:** High
+- **Status:** Resolved — 2026-09-08
+- **Symptom:** Pressing Cmd+W on a modified file closes without showing the unsaved-changes dialog.
+- **Root cause:** Three issues: (1) Electron Forge's webpack plugin enables HMR (`hot: true`) by default. Each HMR reload re-ran `setupBeforeClose()`, adding a duplicate `ipcRenderer.on('before-close')` listener. The stale listener's closure referenced an old `isDirty` variable (forever `false`) and called `closeConfirmed()` before the current listener could show the dialog. (2) `closeTab()` in tabs.js checked `tab.dirty` (only synced on tab switch) instead of `getIsDirty()` for the active tab. (3) In `setupBeforeClose`, the "save" branch called `closeConfirmed()` unconditionally even if the user cancelled Save As.
+- **Fix:** (1) All `ipcRenderer.on` handlers in preload.js now call `removeAllListeners(channel)` before registering, preventing HMR listener accumulation. (2) `closeTab` checks `getIsDirty()` in addition to `tab.dirty` for the active tab. (3) `setupBeforeClose` save branch aborts close if `isDirty` is still true after `saveFile()`.
+- **Files involved:** `src/preload.js`, `src/tabs.js`, `src/editor-save.js`
 
 ---
 

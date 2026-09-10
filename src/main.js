@@ -15,6 +15,8 @@ const {
   BrowserWindow,
   ipcMain,
   dialog,
+  Menu,
+  MenuItem,
   shell,
   nativeTheme,
 } = require('electron');
@@ -147,6 +149,27 @@ function createWindow() {
     mainWindow.webContents.openDevTools({ mode: 'detach' });
   }
 
+  // ── Spell-check context menu (BUG-049) ────────────────────────────────────
+  mainWindow.webContents.on('context-menu', (_event, params) => {
+    if (!params.misspelledWord) return;
+
+    const menu = new Menu();
+    for (const suggestion of params.dictionarySuggestions) {
+      menu.append(new MenuItem({
+        label: suggestion,
+        click: () => mainWindow.webContents.send(
+          'replace-misspelling', params.misspelledWord, suggestion, params.x, params.y
+        ),
+      }));
+    }
+    menu.append(new MenuItem({ type: 'separator' }));
+    menu.append(new MenuItem({
+      label: 'Add to Dictionary',
+      click: () => mainWindow.webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord),
+    }));
+    menu.popup();
+  });
+
   mainWindow.on('closed', () => { mainWindow = null; });
 }
 
@@ -198,10 +221,10 @@ const { registerPreprocessorHandler } = require('./main-export.js');
 // ── App lifecycle ────────────────────────────────────────────────────────────
 
 app.whenReady().then(async () => {
-  // Always launch in white — theme is session-only
+  // Clean up stale keys from removed features
   const s = await getStore();
-  s.set('editorTheme', 'white');
   s.delete('darkMode');
+  s.delete('theme');
   s.delete('session');
 
   createWindow();
@@ -240,7 +263,6 @@ app.whenReady().then(async () => {
         { role: 'minimize' }, { role: 'zoom' }, { role: 'front' }
       ]}
     ];
-    const { Menu } = require('electron');
     Menu.setApplicationMenu(Menu.buildFromTemplate(template));
   }
   registerPreprocessorHandler();
@@ -265,6 +287,33 @@ ipcMain.handle('read-file', async (_event, filePath) => {
   }
   const resolved = path.resolve(filePath);
   return fs.promises.readFile(resolved, 'utf8');
+});
+
+// ── IPC: Stat file (mtime for save-time conflict check, DEC-034) ────────────
+
+ipcMain.removeHandler('stat-file');
+ipcMain.handle('stat-file', async (_event, filePath) => {
+  if (!filePath || typeof filePath !== 'string') return { mtimeMs: null };
+  try {
+    const stat = await fs.promises.stat(path.resolve(filePath));
+    return { mtimeMs: stat.mtimeMs };
+  } catch {
+    return { mtimeMs: null };
+  }
+});
+
+ipcMain.removeHandler('show-overwrite-dialog');
+ipcMain.handle('show-overwrite-dialog', async () => {
+  if (!mainWindow) return 'cancel';
+  const { response } = await dialog.showMessageBox(mainWindow, {
+    type: 'warning',
+    buttons: ['Overwrite', 'Cancel'],
+    defaultId: 1,
+    cancelId: 1,
+    message: 'This file has been modified externally.',
+    detail: 'Another program changed this file since you opened it. Overwrite with your version?',
+  });
+  return response === 0 ? 'overwrite' : 'cancel';
 });
 
 // ── IPC: File write (atomic temp → rename) ───────────────────────────────────

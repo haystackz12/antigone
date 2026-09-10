@@ -168,3 +168,20 @@
 **Why:** Dark mode introduced cascading bugs: oneDark theme leaking into light mode, invisible text selection, CM6 coordinate calculation breakage from font overrides on internal elements, stale stored prefs causing dark-on-launch, and unreadable text in preview pane. Each fix introduced new regressions. A clean light-only v1.0 is better than a buggy dark mode.
 **Revisit trigger:** Sprint 4 — implement dark mode properly with dedicated CSS variable sets, correct inline-render decoration colors, table/code styling, and full QA pass.
 **Date:** 2026-04-01
+
+## DEC-033 — v1.0 ships fully free, no Pro gate
+**Decision:** Supersedes the v1.0 portion of DEC-004. v1.0.0 has no proGate(),
+no upgrade modal, no trial. Vim mode, preprocessors, and all themes are enabled
+for everyone.
+**Why:** The app was feature-complete and notarized on 2026-04-05 and then
+stalled for five months on the business layer. Gating features in a product with
+zero users optimises the wrong thing. Shipping first produces the feedback that
+should shape the Pro tier.
+**Trade-off:** Users who adopt v1.0 will see features move behind a paywall in
+v1.1. Mitigation: v1.0 users are grandfathered on any feature they already have.
+**Payment stack:** unchanged — Paddle/Stripe evaluation moves to v1.1 planning.
+
+## DEC-034 — Save-time conflict check instead of live watcher for v1.0
+**Decision:** Instead of a live `fs.watch` watcher (removed in DEC-019), v1.0 checks for external modification at save time. On file open and after each save, the mtime is recorded. Before writing, the file is stat'd — if the mtime differs from the recorded value, a native "Overwrite / Cancel" dialog is shown.
+**Why:** Re-implementing a live watcher (DEC-019) requires solving the self-watch loop, content-hash comparison, and platform-specific `fs.watch` quirks. A save-time check provides the critical data-safety guarantee (never silently overwrite external changes) with minimal complexity. Live detection moves to v1.1.
+**Trade-off:** The user is not notified of external changes until they try to save. Acceptable for v1.0 — silent overwrites are the real risk, and this eliminates them.

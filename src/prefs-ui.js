@@ -131,6 +131,7 @@ async function open() {
     if (card.dataset.theme === currentEditorTheme) card.classList.add('active');
     card.addEventListener('click', async () => {
       await applyVisualTheme(card.dataset.theme);
+      await window.api.setPrefs({ editorTheme: card.dataset.theme });
       document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
       card.classList.add('active');
     });

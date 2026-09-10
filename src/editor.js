@@ -53,7 +53,7 @@ const baseEditorTheme = EditorView.theme({
 
 // ─── Tag autocomplete ────────────────────────────────────────────────────────
 function tagCompletion(context) {
-  const word = context.matchBefore(/#[\w-]*/);
+  const word = context.matchBefore(/#[\w\-\/]*/);
   if (!word || word.from === word.to) return null;
   const text = context.state.doc.toString();
   const tags = scanTags(text);
@@ -62,7 +62,7 @@ function tagCompletion(context) {
     type: 'keyword',
   }));
   if (options.length === 0) return null;
-  return { from: word.from, options, validFor: /#[\w-]*/ };
+  return { from: word.from, options, validFor: /#[\w\-\/]*/ };
 }
 
 function buildExtensions() {
@@ -176,14 +176,18 @@ function mount(container) {
 // ─── Load content ─────────────────────────────────────────────────────────────
 function loadContent(content, filePath) {
   if (!view) return;
+  // Set path and dirty state BEFORE dispatch — the updateListener fires
+  // synchronously during dispatch and reads currentFilePath via onDocChange.
+  currentFilePath = filePath;
+  isDirty = false;
   view.dispatch({
     changes: { from: 0, to: view.state.doc.length, insert: content },
     selection: { anchor: 0, head: 0 },
   });
-  currentFilePath = filePath;
   isDirty = false;
   updateTabBar(fileNameFromPath(filePath), false);
   editorSave.updateSaveStatus(false);
+  editorSave.recordMtime(filePath);
   updateWordCount(content);
   setEmptyState(false);
 
@@ -315,6 +319,7 @@ function init() {
     getIsDirty:     () => isDirty,
     setDirty:       (val) => { isDirty = val; },
     updateTabBar,
+    setActiveTabPath: tabs.setActiveTabPath,
   });
   editorSave.startRecovery();
   editorSave.setupBeforeClose();

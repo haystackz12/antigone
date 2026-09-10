@@ -39,7 +39,7 @@ Run this before tagging any release. All items must pass on macOS and Windows.
 - [ ] `⌘S` → file saved → `Saved ✓` indicator shown → open file in external editor → changes present
 - [ ] `⌘⇧S` → save dialog → saves to new path → tab title updates
 - [ ] `⌘W` on modified file → unsaved changes prompt shown → Cancel keeps file open
-- [ ] Modify open file externally → reload banner appears within 1 second
+- [ ] Modify open file externally → edit in app → ⌘S → overwrite dialog appears (DEC-034; live banner deferred to v1.1 per DEC-019)
 
 ### Editor
 - [ ] Type `**hello**` → move cursor off → bold, no asterisks
@@ -50,20 +50,20 @@ Run this before tagging any release. All items must pass on macOS and Windows.
 - [ ] Every toolbar button produces correct Markdown and toggles off correctly
 - [ ] `⌘B` on selected text → wraps in ** → `⌘B` again → removes **
 - [ ] Paste image from clipboard (take a screenshot first) → PNG saved to `assets/`, reference inserted, cursor in alt text position
-- [ ] `⌘F` → search finds all matches → counter shows correct count → Next/Prev cycle → Escape closes
-- [ ] `⌘H` → replace with regex → capture groups work → Replace All replaces only matches
+- [ ] `⌘F` → search finds all matches → Next/Prev cycle → Escape closes (match counter is stock CM6 — v1.1 enhancement)
+- [ ] `⌘⌥F` → replace → Replace All replaces only matches (⌘H reserved by macOS, DEC-022)
 
 ### Auto-save & safety
 - [ ] Edit file → wait 800ms → open in external editor → changes present
 - [ ] Edit file → `kill -9` the process → relaunch → recovery banner offers restore → restore works
 - [ ] Recovery file is in OS temp dir, NOT in the source file's directory
-- [ ] Modify file externally while editing → banner appears → Reload loads external version → Keep Mine discards external version
+- [ ] Modify file externally while editing → save → overwrite dialog appears (DEC-034; live reload deferred to v1.1)
 
 ### View modes
 - [ ] `⌘⇧F` → focus mode → non-active paragraphs dimmed to ~25% opacity
-- [ ] `⌘⇧P` → split view → editor left, preview right → scroll sync works
-- [ ] `⌘⇧R` → preview only → full width rendered preview
-- [ ] `⌘⇧E` → edit only → no preview, no decorations
+- [ ] View menu → Split View → editor left, preview right (no accelerator in v1.0)
+- [ ] View menu → Preview Only → full width rendered preview (no accelerator in v1.0)
+- [ ] View menu → Editor Only → no preview (no accelerator in v1.0; ⌘⇧E is Export PDF)
 - [ ] Drag split view divider → panels resize
 
 ### Navigation
@@ -72,21 +72,20 @@ Run this before tagging any release. All items must pass on macOS and Windows.
 - [ ] `⌘P` → quick open → type partial filename → correct file highlighted → Enter opens it
 
 ### Tags
-- [ ] Type `#project/antigone` → chip styling applied inline
+- [ ] Type `#project/antigone` → indexed correctly in sidebar (inline chip styling deferred to v1.1)
 - [ ] Save file → open tag sidebar → `project/antigone` appears
 - [ ] Type `#` in editor → autocomplete dropdown shows previously used tags within 100ms
 - [ ] YAML frontmatter `tags: [legal, draft]` → both indexed in tag sidebar
 
 ### Word count goal
-- [ ] Set goal to 50 words → type 50 words → ring fills to 100% → animation plays
-- [ ] Status bar shows `N / 50 words` with accurate live count
-- [ ] Select 10 words → status bar shows selection count
+- [ ] Word goal ring visible in toolbar → click → set goal → ring fills as words are typed
+- [ ] Status bar shows live word count
 
 ### Spell check
 - [ ] Misspelled word → red underline appears (not inside code block)
 - [ ] Right-click misspelled word → suggestions shown → click suggestion → word replaced
 - [ ] Add word to dictionary → word no longer underlined → verify dictionary.txt in OS user data dir
-- [ ] No spell check underline inside `` `code` `` or fenced code block
+- [ ] No spell check underline inside `` `code` `` or fenced code block (native Chromium spellcheck — code block exclusion deferred to v1.1)
 
 ### Export
 - [ ] `⌘⇧E` → PDF created in same directory as source file → opens correctly in Preview/Acrobat

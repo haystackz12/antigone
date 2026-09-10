@@ -7,7 +7,7 @@
 
 let getView = null;
 let debounceTimer = null;
-const TAG_REGEX = /(?:^|\s)#([a-zA-Z][\w-]*)/g;
+const TAG_REGEX = /(?:^|\s)#([a-zA-Z][\w-]*(?:\/[\w-]+)*)/g;
 
 function configure(opts) {
   getView = opts.getView;

@@ -53,6 +53,21 @@ contextBridge.exposeInMainWorld('api', {
       requireString(content,  'content'),
     ),
 
+  /**
+   * Stat a file to get its mtime (save-time conflict check, DEC-034).
+   * @param {string} filePath  Absolute path.
+   * @returns {Promise<{mtimeMs: number|null}>}
+   */
+  statFile: (filePath) =>
+    ipcRenderer.invoke('stat-file', requireString(filePath, 'filePath')),
+
+  /**
+   * Show the external-modification overwrite dialog.
+   * @returns {Promise<'overwrite'|'cancel'>}
+   */
+  showOverwriteDialog: () =>
+    ipcRenderer.invoke('show-overwrite-dialog'),
+
   // ── Dialogs ────────────────────────────────────────────────────────────────
 
   /**
@@ -229,6 +244,7 @@ contextBridge.exposeInMainWorld('api', {
    * @param {function(): void} callback
    */
   onBeforeClose: (callback) => {
+    ipcRenderer.removeAllListeners('before-close');
     ipcRenderer.on('before-close', () => callback());
   },
 
@@ -254,17 +270,17 @@ contextBridge.exposeInMainWorld('api', {
 
   // ── Menu triggers (inbound from native menu) ───────────────────────────────
 
-  onExportPDF:  (cb) => { ipcRenderer.on('export-pdf-trigger', () => cb()); },
-  onExportHTML: (cb) => { ipcRenderer.on('export-html-trigger', () => cb()); },
-  onPrint:      (cb) => { ipcRenderer.on('print-doc', () => cb()); },
-  onMenuNewFile:  (cb) => { ipcRenderer.on('menu-new-file', () => cb()); },
-  onMenuOpenFile: (cb) => { ipcRenderer.on('menu-open-file', () => cb()); },
-  onMenuSave:     (cb) => { ipcRenderer.on('menu-save', () => cb()); },
-  onMenuSaveAs:   (cb) => { ipcRenderer.on('menu-save-as', () => cb()); },
-  onMenuPrefs:    (cb) => { ipcRenderer.on('menu-preferences', () => cb()); },
-  onMenuViewMode: (cb) => { ipcRenderer.on('menu-view-mode', (_e, mode) => cb(mode)); },
-  onMenuToggleFocus: (cb) => { ipcRenderer.on('menu-toggle-focus', () => cb()); },
-  onMenuToggleLineNumbers: (cb) => { ipcRenderer.on('menu-toggle-line-numbers', () => cb()); },
+  onExportPDF:  (cb) => { ipcRenderer.removeAllListeners('export-pdf-trigger'); ipcRenderer.on('export-pdf-trigger', () => cb()); },
+  onExportHTML: (cb) => { ipcRenderer.removeAllListeners('export-html-trigger'); ipcRenderer.on('export-html-trigger', () => cb()); },
+  onPrint:      (cb) => { ipcRenderer.removeAllListeners('print-doc'); ipcRenderer.on('print-doc', () => cb()); },
+  onMenuNewFile:  (cb) => { ipcRenderer.removeAllListeners('menu-new-file'); ipcRenderer.on('menu-new-file', () => cb()); },
+  onMenuOpenFile: (cb) => { ipcRenderer.removeAllListeners('menu-open-file'); ipcRenderer.on('menu-open-file', () => cb()); },
+  onMenuSave:     (cb) => { ipcRenderer.removeAllListeners('menu-save'); ipcRenderer.on('menu-save', () => cb()); },
+  onMenuSaveAs:   (cb) => { ipcRenderer.removeAllListeners('menu-save-as'); ipcRenderer.on('menu-save-as', () => cb()); },
+  onMenuPrefs:    (cb) => { ipcRenderer.removeAllListeners('menu-preferences'); ipcRenderer.on('menu-preferences', () => cb()); },
+  onMenuViewMode: (cb) => { ipcRenderer.removeAllListeners('menu-view-mode'); ipcRenderer.on('menu-view-mode', (_e, mode) => cb(mode)); },
+  onMenuToggleFocus: (cb) => { ipcRenderer.removeAllListeners('menu-toggle-focus'); ipcRenderer.on('menu-toggle-focus', () => cb()); },
+  onMenuToggleLineNumbers: (cb) => { ipcRenderer.removeAllListeners('menu-toggle-line-numbers'); ipcRenderer.on('menu-toggle-line-numbers', () => cb()); },
 
   // ── Inbound from main ──────────────────────────────────────────────────────
 
@@ -280,6 +296,11 @@ contextBridge.exposeInMainWorld('api', {
     const handler = (_event, filePath) => callback(filePath);
     ipcRenderer.on('open-file', handler);
     return () => ipcRenderer.removeListener('open-file', handler);
+  },
+
+  onReplaceMisspelling: (cb) => {
+    ipcRenderer.removeAllListeners('replace-misspelling');
+    ipcRenderer.on('replace-misspelling', (_e, word, suggestion, x, y) => cb(word, suggestion, x, y));
   },
 
 });

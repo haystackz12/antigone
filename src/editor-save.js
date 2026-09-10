@@ -6,10 +6,11 @@
 'use strict';
 
 // ─── Module state ─────────────────────────────────────────────────────────────
-let autoSaveEnabled = false;
-let autoSaveTimer   = null;
-let recoveryId      = null;
-let recoveryTimer   = null;
+let autoSaveEnabled  = false;
+let autoSaveTimer    = null;
+let recoveryId       = null;
+let recoveryTimer    = null;
+let lastKnownMtime   = null;
 
 // ─── Accessors (set by editor.js via configure()) ─────────────────────────────
 let getView         = null;
@@ -18,6 +19,7 @@ let setCurrentPath  = null;
 let getIsDirty      = null;
 let setDirty        = null;
 let updateTabBar    = null;
+let setActiveTabPath = null;
 
 /**
  * Called once by editor.js to provide accessor functions.
@@ -30,6 +32,7 @@ function configure(opts) {
   getIsDirty     = opts.getIsDirty;
   setDirty       = opts.setDirty;
   updateTabBar   = opts.updateTabBar;
+  setActiveTabPath = opts.setActiveTabPath;
 }
 
 /**
@@ -40,6 +43,14 @@ function initFromPrefs(prefs) {
   autoSaveEnabled = !!prefs.autoSave;
 }
 
+// ─── Mtime tracking (DEC-034) ─────────────────────────────────────────────────
+
+async function recordMtime(filePath) {
+  if (!filePath) { lastKnownMtime = null; return; }
+  const stat = await window.api.statFile(filePath);
+  lastKnownMtime = stat.mtimeMs;
+}
+
 // ─── Save ─────────────────────────────────────────────────────────────────────
 
 async function saveFile(targetPath) {
@@ -47,15 +58,27 @@ async function saveFile(targetPath) {
   if (!view) return;
   if (!targetPath) return saveFileAs();
 
+  // Save-time conflict check (DEC-034): if the file changed on disk since we
+  // last opened/saved it, ask before overwriting.
+  if (lastKnownMtime != null) {
+    const stat = await window.api.statFile(targetPath);
+    if (stat.mtimeMs != null && stat.mtimeMs !== lastKnownMtime) {
+      const choice = await window.api.showOverwriteDialog();
+      if (choice !== 'overwrite') return;
+    }
+  }
+
   const content = view.state.doc.toString();
   // writeFile IPC requires non-empty content — write a newline for empty docs
   const result  = await window.api.writeFile(targetPath, content || '\n');
   if (result.ok) {
     setCurrentPath(targetPath);
+    if (setActiveTabPath) setActiveTabPath(targetPath);
     setDirty(false);
     updateTabBar(fileNameFromPath(targetPath), false);
     updateSaveStatus(false);
     showSavedFlash();
+    await recordMtime(targetPath);
   }
 }
 
@@ -203,6 +226,7 @@ function setupBeforeClose() {
     const result = await window.api.showUnsavedDialog();
     if (result === 'save') {
       await saveFile(getCurrentPath());
+      if (getIsDirty()) return; // save was cancelled or failed — abort close
       await stopRecovery();
       window.api.closeConfirmed();
     } else if (result === 'dontsave') {
@@ -246,4 +270,5 @@ module.exports = {
   checkRecovery,
   setupBeforeClose,
   updateSaveStatus,
+  recordMtime,
 };

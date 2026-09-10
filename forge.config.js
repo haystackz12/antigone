@@ -6,6 +6,7 @@ module.exports = {
     asar: true,
     name: 'Antigone',
     executableName: 'Antigone',
+    icon: './assets/icon',
     appBundleId: 'com.haystackz.antigone',
     extendInfo: {
       CFBundleDocumentTypes: [

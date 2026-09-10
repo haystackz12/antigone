@@ -62,18 +62,13 @@
 ---
 
 ## Day 14 — Freemium Gates + Account Stub
-**Status:** [ ] Not started
+**Status:** [x] CANCELLED — see DEC-033
 
 ### Tasks
-- [ ] `proGate()` function
-- [ ] All Pro gates wired (Vim, preprocessors)
-- [ ] Upgrade modal
-- [ ] 14-day trial
+- [x] CANCELLED — v1.0 ships fully free, no Pro gate (DEC-033)
 
 ### Gate
-- Pro features gated behind proGate()
-- Upgrade modal shows when Pro feature attempted
-- 14-day trial works correctly
+- N/A — cancelled
 
 ---
 

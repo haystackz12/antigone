@@ -40,11 +40,16 @@ class ImageWidget extends WidgetType {
     img.style.margin = '8px 0';
     img.style.borderRadius = '4px';
     img.onerror = () => {
-      img.style.display = 'none';
-      const span = document.createElement('span');
-      span.className = 'cm-image-error';
-      span.textContent = `[image: ${this.alt || this.src}]`;
-      img.parentNode?.insertBefore(span, img);
+      // Replace with text fallback — do NOT insertBefore, which triggers
+      // CM6's MutationObserver → applyDOMChange → re-render → onerror loop.
+      if (img.parentNode) {
+        const span = document.createElement('span');
+        span.className = 'cm-image-error';
+        span.textContent = `[image: ${this.alt || this.src}]`;
+        img.parentNode.replaceChild(span, img);
+      } else {
+        img.style.display = 'none';
+      }
     };
     return img;
   }

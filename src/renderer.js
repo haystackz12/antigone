@@ -23,13 +23,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Apply stored theme before editor mounts to prevent flash
   const prefs = await loadPrefs();
 
-  // Clean up ALL stale recovery files BEFORE editor mounts (prevents banner flash)
-  const staleRecovery = await window.api.listRecovery();
-  if (staleRecovery && staleRecovery.length > 0) {
-    for (const f of staleRecovery) {
-      await window.api.deleteRecovery(f.tabId).catch(() => {});
-    }
-  }
+  // Recovery files are checked by checkRecovery() inside initEditor().
+  // Do NOT delete them here — they are needed for crash recovery.
 
   initEditor();
   await loadEditorTheme();
@@ -94,5 +89,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (storedPrefs.keybindings === 'vim') editor.setVimMode(true);
 
   // Dark mode removed for v1.0 (DEC-032)
+
+  // Spell-check replacement via CM6 (BUG-049)
+  window.api.onReplaceMisspelling((word, suggestion, x, y) => {
+    const view = editor.getView();
+    if (!view) return;
+    // posAtCoords takes client/viewport coordinates directly
+    const pos = view.posAtCoords({ x, y });
+    if (pos == null) return;
+    // Expand to word boundaries around the position
+    const doc = view.state.doc;
+    const line = doc.lineAt(pos);
+    const text = line.text;
+    const col = pos - line.from;
+    let start = col, end = col;
+    while (start > 0 && /[a-zA-Z']/.test(text[start - 1])) start--;
+    while (end < text.length && /[a-zA-Z']/.test(text[end])) end++;
+    const found = text.slice(start, end);
+    if (found.toLowerCase() === word.toLowerCase()) {
+      view.dispatch({
+        changes: { from: line.from + start, to: line.from + end, insert: suggestion },
+      });
+    }
+  });
 
 });

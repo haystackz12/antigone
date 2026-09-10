@@ -38,6 +38,11 @@ function getActiveTab() {
   return tabs.find(t => t.id === activeTabId) || null;
 }
 
+function setActiveTabPath(filePath) {
+  const tab = getActiveTab();
+  if (tab) tab.filePath = filePath;
+}
+
 function saveCurrentTabState() {
   const tab = getActiveTab();
   if (!tab) return;
@@ -156,8 +161,8 @@ async function closeTab(id) {
   const tab = tabs.find(t => t.id === id);
   if (!tab) return;
 
-  // If closing the active tab and it's dirty, guard
-  if (id === activeTabId && tab.dirty) {
+  // If closing the active tab, check live dirty state (tab.dirty may be stale)
+  if (id === activeTabId && (tab.dirty || getIsDirty())) {
     const ok = await guardUnsaved();
     if (!ok) return;
   } else if (tab.dirty) {
@@ -217,13 +222,6 @@ function openFileInTab(filePath, content) {
 
 function saveSession() {
   saveCurrentTabState();
-  const sessionData = tabs.map(t => ({
-    filePath: t.filePath,
-    dirty: t.dirty,
-  }));
-  window.api.setPrefs({
-    session: { tabs: sessionData, activeTabId },
-  });
 }
 
 async function restoreSession() {
@@ -281,5 +279,6 @@ module.exports = {
   saveSession,
   restoreSession,
   getActiveTab,
+  setActiveTabPath,
   saveCurrentTabState,
 };

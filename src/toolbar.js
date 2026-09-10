@@ -160,8 +160,10 @@ function insertLink() {
 
 // ─── Image paste from clipboard ──────────────────────────────────────────────
 
+let pasteHandler = null;
 function setupImagePaste() {
-  document.addEventListener('paste', async (e) => {
+  if (pasteHandler) document.removeEventListener('paste', pasteHandler);
+  pasteHandler = async (e) => {
     const view = getView();
     if (!view) return;
 
@@ -196,7 +198,8 @@ function setupImagePaste() {
       view.focus();
       return; // Only handle first image
     }
-  });
+  };
+  document.addEventListener('paste', pasteHandler);
 }
 
 // ─── Wire toolbar buttons ────────────────────────────────────────────────────
@@ -253,15 +256,9 @@ function setupButtons() {
 
 // ─── Keyboard shortcuts (global fallback for when CM6 doesn't have focus) ───
 
-function setupKeyboardShortcuts() {
-  document.addEventListener('keydown', (e) => {
-    const mod = e.metaKey || e.ctrlKey;
-    if (!mod) return;
-    if (e.key === 'b') { e.preventDefault(); wrapSelection('**'); }
-    if (e.key === 'i') { e.preventDefault(); wrapSelection('*'); }
-    if (e.key === 'k') { e.preventDefault(); insertLink(); }
-  });
-}
+// Keyboard shortcuts for bold/italic/link are handled by CM6's keymap in
+// editor.js (Mod-b, Mod-i, Mod-k). No document-level listener needed —
+// a duplicate listener would double-toggle and cancel itself out.
 
 // ─── View mode toggles ──────────────────────────────────────────────────────
 
@@ -379,7 +376,6 @@ function setupResizer() {
 
 function init() {
   setupButtons();
-  setupKeyboardShortcuts();
   setupImagePaste();
   setupViewToggles();
   setupResizer();
