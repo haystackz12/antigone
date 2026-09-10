@@ -18,7 +18,6 @@ First public release.
   warning banner
 
 ### Writing tools
-- Word count goal with animated progress ring
 - Live word count and estimated read time in the status bar
 - Tags — inline `#tags` and YAML frontmatter `tags:` arrays, indexed in a
   sidebar panel with autocomplete and rename
@@ -26,8 +25,7 @@ First public release.
 - Preprocessors — pipe Markdown through a user-configured shell command
 
 ### Themes and typography
-- White and Sepia themes (dark mode deferred to a future release)
-- Five typeface pairings: Literary, Editorial, Technical, Modern, and Classic
+- Four editor themes: White, Parchment, Sepia, and Midnight
 - Adjustable editor font size
 
 ### Export
