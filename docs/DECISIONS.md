@@ -185,3 +185,9 @@ v1.1. Mitigation: v1.0 users are grandfathered on any feature they already have.
 **Decision:** Instead of a live `fs.watch` watcher (removed in DEC-019), v1.0 checks for external modification at save time. On file open and after each save, the mtime is recorded. Before writing, the file is stat'd — if the mtime differs from the recorded value, a native "Overwrite / Cancel" dialog is shown.
 **Why:** Re-implementing a live watcher (DEC-019) requires solving the self-watch loop, content-hash comparison, and platform-specific `fs.watch` quirks. A save-time check provides the critical data-safety guarantee (never silently overwrite external changes) with minimal complexity. Live detection moves to v1.1.
 **Trade-off:** The user is not notified of external changes until they try to save. Acceptable for v1.0 — silent overwrites are the real risk, and this eliminates them.
+
+## DEC-035 — Antigone is not a commercial product
+**Decision:** All Pro/Team/payment items in DEC-004, DEC-033, and the roadmap are cancelled, not deferred. There is no Pro tier, no Stripe/Paddle integration, no upgrade modal, no trial, no Team seats.
+**Why:** The project's purpose is learning to build better software. Commercialisation added complexity (freemium gates, payment UX, license validation) that competed with that goal and stalled development for five months. Every feature ships to every user.
+**Supersedes:** DEC-004 (freemium model), DEC-033 (v1.0 portion only — now the permanent state).
+**Date:** 2026-09-09

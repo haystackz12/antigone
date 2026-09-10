@@ -38,11 +38,25 @@ None yet.
 
 ---
 
-### Sprint 4 — v1.1.0 (Month 2, Week 1–2)
-- Stripe/Paddle real payment integration (replaces v1.0 stub)
-- DOCX export via docx-js
-- Mermaid diagrams in inline rendering mode (currently preview-pane only)
-- Content Blocks: `/path/to/file.md` embeds another file's content inline in preview
+### Sprint 4 — v1.1.0 (Foundation)
+**Purpose:** Harden the app before adding features. Every item here is
+infrastructure the Sprint 5 features (wikilinks, backlinks, git badges)
+depend on.
+
+| # | Focus | Key deliverables |
+|---|-------|-----------------|
+| 1 | Automated tests + CI | Playwright end-to-end suite covering the v1.0 manual checklist in TESTING.md. Priority: the three v1.0 regressions (tab title bleed BUG-042, theme persistence BUG-051, quit behaviour BUG-052) get tests first. GitHub Actions runs the suite on every push to main. Rule for the sprint: a bug fix is not done until it has a failing-then-passing test. |
+| 2 | Live file watcher | Reinstate external-change detection removed in DEC-019. Content-hash comparison to ignore own writes, debounce for sync clients that rewrite in bursts, quiet reload when the buffer is clean, non-destructive conflict banner when dirty. Keeps the DEC-034 save-time check as the last line of defence. |
+| 3 | Folder sidebar + quick-open | Workspace concept (open a folder, not a file). File tree in the icon rail, ⌘P fuzzy finder across the workspace, tags and TOC re-indexed against the workspace rather than the open file. Revisit trigger from DEC-023/024 is now. |
+
+**Cancelled from this sprint:** Stripe/Paddle (DEC-035).
+**Moved to Sprint 5:** DOCX export, Mermaid inline, content blocks.
+
+Order matters: tests first, so the watcher and the sidebar — both of
+which touch load, save, and tab state — get built with a safety net that
+the v1.0 session didn't have.
+
+**Tag:** v1.1.0
 
 ---
 
