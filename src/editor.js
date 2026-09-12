@@ -7,13 +7,14 @@
 'use strict';
 
 const { EditorState, Compartment }           = require('@codemirror/state');
-const { EditorView, keymap, lineNumbers,
+const { EditorView, ViewPlugin, keymap, lineNumbers,
         drawSelection, highlightActiveLine }  = require('@codemirror/view');
 const { defaultKeymap, history,
         historyKeymap, indentWithTab }       = require('@codemirror/commands');
 const { markdown, markdownLanguage }         = require('@codemirror/lang-markdown');
 const { languages }                          = require('@codemirror/language-data');
-const { searchKeymap, highlightSelectionMatches, openSearchPanel } = require('@codemirror/search');
+const { searchKeymap, highlightSelectionMatches, openSearchPanel,
+        getSearchQuery, SearchCursor, RegExpCursor }              = require('@codemirror/search');
 const { autocompletion }                     = require('@codemirror/autocomplete');
 const { inlineRenderPlugin }                 = require('./inline-render.js');
 const editorSave                             = require('./editor-save.js');
@@ -65,6 +66,47 @@ function tagCompletion(context) {
   return { from: word.from, options, validFor: /#[\w\-\/]*/ };
 }
 
+// ─── Search match counter ("N of M") ─────────────────────────────────────
+const searchCounterPlugin = ViewPlugin.fromClass(class {
+  constructor(view) { this.view = view; this.el = null; }
+  update() {
+    const panel = this.view.dom.querySelector('.cm-search');
+    if (!panel) { this.el = null; return; }
+
+    if (!this.el || !panel.contains(this.el)) {
+      this.el = document.createElement('span');
+      this.el.className = 'cm-search-counter';
+      panel.appendChild(this.el);
+    }
+
+    const query = getSearchQuery(this.view.state);
+    if (!query.valid) { this.el.textContent = ''; return; }
+
+    const doc = this.view.state.doc;
+    const pos = this.view.state.selection.main.from;
+    let total = 0, current = 0;
+
+    try {
+      let c;
+      if (query.regexp) {
+        c = new RegExpCursor(doc, query.search,
+          { ignoreCase: !query.caseSensitive });
+      } else {
+        c = new SearchCursor(doc, query.search, 0, doc.length,
+          query.caseSensitive ? undefined : x => x.toLowerCase());
+      }
+      while (!c.next().done) {
+        total++;
+        if (c.value.from <= pos && pos <= c.value.to) current = total;
+      }
+    } catch (_) { this.el.textContent = ''; return; }
+
+    this.el.textContent = total === 0 ? 'No results'
+      : current > 0 ? `${current} of ${total}` : `${total} found`;
+  }
+  destroy() { if (this.el) this.el.remove(); }
+});
+
 function buildExtensions() {
   return [
     history(),
@@ -95,6 +137,7 @@ function buildExtensions() {
     EditorView.contentAttributes.of({ spellcheck: 'true' }),
     EditorView.theme({}),
     vimCompartment.of([]),
+    searchCounterPlugin,
     EditorView.updateListener.of(update => {
       if (update.docChanged) onDocChange(update.state.doc.toString());
       if (update.selectionSet || update.docChanged) {

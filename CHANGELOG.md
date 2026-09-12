@@ -1,6 +1,20 @@
 # Changelog
 
-## 1.0.0 — 2026-09-08
+## [1.0.1] — 2026-09-11
+
+### Fixed
+- **BUG-053**: Right-click now shows a full context menu (Cut / Copy / Paste / Select All) everywhere in the editor — not just on misspelled words. Spelling suggestions and "Add to Dictionary" are prepended when a misspelled word is right-clicked. "Copy as HTML" is shown when there is a text selection.
+
+### Added
+- **View mode shortcuts**: `⌘1` Editor, `⌘2` Split, `⌘3` Preview — accelerators visible in the View menu.
+- **Find panel match counter**: Search panel now displays "N of M" showing the current match index and total matches.
+- **Inline tag chip decoration**: `#tag` and `#nested/tag` tokens render as styled chips in the editor (theme-aware background, revealed on cursor line for editing). Tags inside code blocks and headings are not decorated.
+
+### Changed
+- File → "Recent Files" renamed to **"Open Recent"**; "Clear Recent Files" renamed to **"Clear Menu"**.
+- Find and Replace menu items now properly wired to open the CM6 search panel.
+
+## [1.0.0] — 2026-09-08
 
 First public release.
 

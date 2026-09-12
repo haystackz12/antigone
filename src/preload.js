@@ -12,7 +12,7 @@
 //   Validate all arguments before forwarding — renderer input is untrusted.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const { contextBridge, ipcRenderer, webUtils } = require('electron');
+const { contextBridge, ipcRenderer, webFrame, webUtils } = require('electron');
 
 // ── Type guards ──────────────────────────────────────────────────────────────
 
@@ -281,6 +281,12 @@ contextBridge.exposeInMainWorld('api', {
   onMenuViewMode: (cb) => { ipcRenderer.removeAllListeners('menu-view-mode'); ipcRenderer.on('menu-view-mode', (_e, mode) => cb(mode)); },
   onMenuToggleFocus: (cb) => { ipcRenderer.removeAllListeners('menu-toggle-focus'); ipcRenderer.on('menu-toggle-focus', () => cb()); },
   onMenuToggleLineNumbers: (cb) => { ipcRenderer.removeAllListeners('menu-toggle-line-numbers'); ipcRenderer.on('menu-toggle-line-numbers', () => cb()); },
+  onMenuFind:    (cb) => { ipcRenderer.removeAllListeners('menu-find'); ipcRenderer.on('menu-find', () => cb()); },
+  onMenuReplace: (cb) => { ipcRenderer.removeAllListeners('menu-replace'); ipcRenderer.on('menu-replace', () => cb()); },
+  onEditCommand: (cb) => { ipcRenderer.removeAllListeners('edit-command'); ipcRenderer.on('edit-command', (_e, cmd) => cb(cmd)); },
+  clipboardWriteText: (text) => ipcRenderer.invoke('clipboard-write-text', text),
+  clipboardReadText: () => ipcRenderer.invoke('clipboard-read-text'),
+  clipboardWriteHtml: (html, fallbackText) => ipcRenderer.invoke('clipboard-write-html', html, fallbackText),
 
   // ── Inbound from main ──────────────────────────────────────────────────────
 
@@ -296,6 +302,14 @@ contextBridge.exposeInMainWorld('api', {
     const handler = (_event, filePath) => callback(filePath);
     ipcRenderer.on('open-file', handler);
     return () => ipcRenderer.removeListener('open-file', handler);
+  },
+
+  // ── Spell check (webFrame) ──────────────────────────────────────────────
+  isWordMisspelled: (word) => {
+    try { return webFrame.isWordMisspelled(word); } catch { return false; }
+  },
+  getWordSuggestions: (word) => {
+    try { return webFrame.getWordSuggestions(word); } catch { return []; }
   },
 
   onReplaceMisspelling: (cb) => {

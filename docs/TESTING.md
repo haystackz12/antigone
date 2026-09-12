@@ -117,6 +117,44 @@ Run this before tagging any release. All items must pass on macOS and Windows.
 - [ ] Linux: AppImage runs on Ubuntu 22.04 with no additional dependencies
 - [ ] Linux: fs.watch does not cause excessive reload banners (debounce working)
 
+## v1.0.1 polish release checklist
+
+### Context menu (BUG-053)
+- [ ] Right-click in editor with no selection → Cut (disabled), Copy (disabled), Paste, Select All shown
+- [ ] Right-click with text selected → Cut, Copy, Paste, Select All shown, Cut/Copy enabled
+- [ ] Right-click misspelled word → spelling suggestions shown above separator, click suggestion → word replaced
+- [ ] Right-click misspelled word → "Add to Dictionary" shown → click → word no longer underlined
+- [ ] Right-click with selection → "Copy as HTML" item shown → click → clipboard contains rendered HTML
+- [ ] Paste clipboard HTML into another app (e.g., TextEdit rich text) → formatting preserved
+
+### View mode shortcuts
+- [ ] `⌘1` → Editor only mode
+- [ ] `⌘2` → Split view mode
+- [ ] `⌘3` → Preview only mode
+- [ ] View menu shows ⌘1/⌘2/⌘3 accelerators next to each item
+
+### Find panel match counter
+- [ ] `⌘F` → search panel opens → type a word → "N of M" counter appears
+- [ ] Press Next/Prev → counter updates to show current match index
+- [ ] No matches → counter shows "No results"
+- [ ] Clear search field → counter disappears
+- [ ] Regex search → counter correctly counts regex matches
+
+### File → Open Recent
+- [ ] File → Open Recent → shows recently opened files (up to 5)
+- [ ] Click a recent file → file opens in new tab
+- [ ] "Clear Menu" item shown at bottom → click → list cleared
+- [ ] After clearing, submenu shows "No Recent Files" (disabled)
+
+### Inline tag chip decoration
+- [ ] Type `#project` → move cursor off line → tag rendered as chip with accent background
+- [ ] Type `#nested/tag` → move cursor off → rendered as chip
+- [ ] Move cursor back to tag line → raw `#tag` syntax revealed for editing
+- [ ] Tag inside `` `#code` `` → NOT rendered as chip
+- [ ] Tag inside fenced code block → NOT rendered as chip
+- [ ] Tag after heading `# ` → NOT rendered as chip (heading marker, not tag)
+- [ ] Chip styling adapts to current theme (light/dark)
+
 ### Data isolation
 - [ ] Verify `~/Library/Application Support/Antigone/` exists after first launch (macOS)
 - [ ] Verify NO `.antigone-*` files in any source directory after a full editing session

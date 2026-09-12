@@ -24,7 +24,7 @@ function buildMenu(recentFiles) {
         })),
         { type: 'separator' },
         {
-          label: 'Clear Recent Files',
+          label: 'Clear Menu',
           click: async () => {
             const s = await getStore();
             s.set('recentFiles', []);
@@ -62,7 +62,7 @@ function buildMenu(recentFiles) {
       submenu: [
         { label: 'New File', accelerator: 'CmdOrCtrl+N', click: () => win()?.webContents.send('menu-new-file') },
         { label: 'Open...', accelerator: 'CmdOrCtrl+O', click: () => win()?.webContents.send('menu-open-file') },
-        { label: 'Recent Files', submenu: recentSubmenu },
+        { label: 'Open Recent', submenu: recentSubmenu },
         { type: 'separator' },
         { label: 'Save', accelerator: 'CmdOrCtrl+S', click: () => win()?.webContents.send('menu-save') },
         { label: 'Save As...', accelerator: 'CmdOrCtrl+Shift+S', click: () => win()?.webContents.send('menu-save-as') },
@@ -76,17 +76,19 @@ function buildMenu(recentFiles) {
       ],
     },
 
-    // Edit
+    // Edit — all items routed through CM6 via edit-command IPC.
+    // registerAccelerator:false displays the shortcut but lets CM6's
+    // keymap handle the actual key event (⌘Z, ⌘C, etc.).
     {
       label: 'Edit',
       submenu: [
-        { role: 'undo' },
-        { role: 'redo' },
+        { label: 'Undo',       accelerator: 'CmdOrCtrl+Z',       registerAccelerator: false, click: () => win()?.webContents.send('edit-command', 'undo') },
+        { label: 'Redo',       accelerator: 'CmdOrCtrl+Shift+Z', registerAccelerator: false, click: () => win()?.webContents.send('edit-command', 'redo') },
         { type: 'separator' },
-        { role: 'cut' },
-        { role: 'copy' },
-        { role: 'paste' },
-        { role: 'selectAll' },
+        { label: 'Cut',        accelerator: 'CmdOrCtrl+X',       registerAccelerator: false, click: () => win()?.webContents.send('edit-command', 'cut') },
+        { label: 'Copy',       accelerator: 'CmdOrCtrl+C',       registerAccelerator: false, click: () => win()?.webContents.send('edit-command', 'copy') },
+        { label: 'Paste',      accelerator: 'CmdOrCtrl+V',       registerAccelerator: false, click: () => win()?.webContents.send('edit-command', 'paste') },
+        { label: 'Select All', accelerator: 'CmdOrCtrl+A',       registerAccelerator: false, click: () => win()?.webContents.send('edit-command', 'selectAll') },
         { type: 'separator' },
         { label: 'Find...', accelerator: 'CmdOrCtrl+F', click: () => win()?.webContents.send('menu-find') },
         { label: 'Find and Replace...', accelerator: 'CmdOrCtrl+Alt+F', click: () => win()?.webContents.send('menu-replace') },
@@ -97,9 +99,9 @@ function buildMenu(recentFiles) {
     {
       label: 'View',
       submenu: [
-        { label: 'Editor Only', click: () => win()?.webContents.send('menu-view-mode', 'editor') },
-        { label: 'Split View', click: () => win()?.webContents.send('menu-view-mode', 'split') },
-        { label: 'Preview Only', click: () => win()?.webContents.send('menu-view-mode', 'preview') },
+        { label: 'Editor Only',  accelerator: 'CmdOrCtrl+1', click: () => win()?.webContents.send('menu-view-mode', 'editor') },
+        { label: 'Split View',   accelerator: 'CmdOrCtrl+2', click: () => win()?.webContents.send('menu-view-mode', 'split') },
+        { label: 'Preview Only', accelerator: 'CmdOrCtrl+3', click: () => win()?.webContents.send('menu-view-mode', 'preview') },
         { type: 'separator' },
         { label: 'Toggle Focus Mode', accelerator: 'CmdOrCtrl+Shift+F', click: () => win()?.webContents.send('menu-toggle-focus') },
         { label: 'Toggle Line Numbers', click: () => win()?.webContents.send('menu-toggle-line-numbers') },

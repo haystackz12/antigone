@@ -13,10 +13,10 @@
 const {
   app,
   BrowserWindow,
+  Menu,
+  clipboard,
   ipcMain,
   dialog,
-  Menu,
-  MenuItem,
   shell,
   nativeTheme,
 } = require('electron');
@@ -159,31 +159,81 @@ function createWindow() {
     if (cliPath) mainWindow.webContents.send('open-file', cliPath);
   });
 
+  // ── Context menu ──────────────────────────────────────────────────────
+  // Selection state comes from CM6 (params.editFlags is unreliable — hit
+  // test lands on CM6's selection layer, not the contenteditable node).
+  // Spelling replacement uses IPC + view.dispatch (BUG-049).
+  mainWindow.webContents.on('context-menu', async (_event, params) => {
+    let hasSelection = false;
+    let spelling = null;
+
+    try {
+      const info = await mainWindow.webContents.executeJavaScript(
+        `window.__antigoneContextInfo(${params.x}, ${params.y})`
+      );
+      hasSelection = info.hasSelection;
+      spelling = info.spelling;
+    } catch (_) {}
+
+    // Prefer Electron's params when the hit test was accurate, fall back
+    // to CM6-derived spelling when the hit landed on the selection layer.
+    const misspelled = params.misspelledWord
+      || (spelling ? spelling.word : '');
+    const suggestions = params.misspelledWord
+      ? params.dictionarySuggestions.slice(0, 5)
+      : (spelling ? spelling.suggestions.slice(0, 5) : []);
+
+    const items = [];
+
+    // Spelling suggestions + Add to Dictionary (prepended when misspelled)
+    if (misspelled) {
+      if (suggestions.length > 0) {
+        for (const s of suggestions) {
+          items.push({
+            label: s,
+            click: () => mainWindow.webContents.send(
+              'replace-misspelling', misspelled, s, params.x, params.y
+            ),
+          });
+        }
+      } else {
+        items.push({ label: 'No Suggestions', enabled: false });
+      }
+      items.push({ type: 'separator' });
+      items.push({
+        label: 'Add to Dictionary',
+        click: () => {
+          mainWindow.webContents.session
+            .addWordToSpellCheckerDictionary(misspelled);
+        },
+      });
+      items.push({ type: 'separator' });
+    }
+
+    // Copy as HTML (when CM6 has a non-empty selection)
+    if (hasSelection) {
+      items.push({
+        label: 'Copy as HTML',
+        click: () => mainWindow.webContents.send('edit-command', 'copyAsHtml'),
+      });
+      items.push({ type: 'separator' });
+    }
+
+    // Standard edit items — all routed through CM6 via IPC (roles don't
+    // act on CM6's selection because the hit test misses contenteditable).
+    const send = (cmd) => mainWindow.webContents.send('edit-command', cmd);
+    items.push({ label: 'Cut',        enabled: hasSelection, click: () => send('cut') });
+    items.push({ label: 'Copy',       enabled: hasSelection, click: () => send('copy') });
+    items.push({ label: 'Paste',      click: () => send('paste') });
+    items.push({ label: 'Select All', click: () => send('selectAll') });
+
+    Menu.buildFromTemplate(items).popup();
+  });
+
   // Open DevTools only in development
   if (process.env.NODE_ENV === 'development') {
     mainWindow.webContents.openDevTools({ mode: 'detach' });
   }
-
-  // ── Spell-check context menu (BUG-049) ────────────────────────────────────
-  mainWindow.webContents.on('context-menu', (_event, params) => {
-    if (!params.misspelledWord) return;
-
-    const menu = new Menu();
-    for (const suggestion of params.dictionarySuggestions) {
-      menu.append(new MenuItem({
-        label: suggestion,
-        click: () => mainWindow.webContents.send(
-          'replace-misspelling', params.misspelledWord, suggestion, params.x, params.y
-        ),
-      }));
-    }
-    menu.append(new MenuItem({ type: 'separator' }));
-    menu.append(new MenuItem({
-      label: 'Add to Dictionary',
-      click: () => mainWindow.webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord),
-    }));
-    menu.popup();
-  });
 
   mainWindow.on('closed', () => { mainWindow = null; });
 }
@@ -472,6 +522,27 @@ ipcMain.handle('open-external', async (_event, url) => {
   // Only allow http, https, mailto protocols
   if (!resolved.match(/^(https?|mailto):/)) return { ok: false };
   await shell.openExternal(resolved);
+  return { ok: true };
+});
+
+// ── IPC: Clipboard (HTML) ────────────────────────────────────────────────
+
+ipcMain.removeHandler('clipboard-write-text');
+ipcMain.handle('clipboard-write-text', (_event, text) => {
+  if (typeof text !== 'string') return { ok: false };
+  clipboard.writeText(text);
+  return { ok: true };
+});
+
+ipcMain.removeHandler('clipboard-read-text');
+ipcMain.handle('clipboard-read-text', () => {
+  return clipboard.readText();
+});
+
+ipcMain.removeHandler('clipboard-write-html');
+ipcMain.handle('clipboard-write-html', (_event, html, fallbackText) => {
+  if (typeof html !== 'string') return { ok: false };
+  clipboard.write({ text: fallbackText || '', html });
   return { ok: true };
 });
 

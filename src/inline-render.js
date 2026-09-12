@@ -288,6 +288,43 @@ function buildDecorations(view) {
     }});
   }
 
+  // ── Inline tag chips (#tag, #nested/tag) ──────────────────────────────
+  for (const { from: vFrom, to: vTo } of view.visibleRanges) {
+    const text = state.sliceDoc(vFrom, vTo);
+    const tagRe = /(?:^|[\s([{])#([\w][\w/-]*)/gm;
+    let m;
+    while ((m = tagRe.exec(text)) !== null) {
+      const hashOffset = m[0].indexOf('#');
+      const tagFrom = vFrom + m.index + hashOffset;
+      const tagTo = tagFrom + 1 + m[1].length;
+
+      // Skip tags on cursor line
+      const tagLine = doc.lineAt(tagFrom).number;
+      if (tagLine === cursorLine) continue;
+
+      // Skip if inside code block, inline code, or heading
+      let inCode = false;
+      let node = syntaxTree(state).resolveInner(tagFrom);
+      while (node) {
+        const n = node.name;
+        if (n === 'FencedCode' || n === 'CodeBlock' || n === 'InlineCode' ||
+            n === 'CodeText' || n === 'CodeMark' || n === 'CodeInfo' ||
+            n.startsWith('ATXHeading') || n === 'HeaderMark') {
+          inCode = true;
+          break;
+        }
+        node = node.parent;
+      }
+      if (inCode) continue;
+
+      decos.push({
+        from: tagFrom,
+        to:   tagTo,
+        deco: Decoration.mark({ class: 'cm-tag-chip' }),
+      });
+    }
+  }
+
   // Sort by position (required by RangeSetBuilder)
   decos.sort((a, b) => a.from - b.from || a.to - b.to);
 
